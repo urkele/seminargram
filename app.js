@@ -8,7 +8,7 @@ var express = require('express')
   , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
-  , instagram = require('./lib/instagram.js');
+  , instagram = require('./lib/instagram');
 
 var app = express();
 
@@ -39,6 +39,6 @@ http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
   setTimeout(function(){
     console.log("listening");
-  instagram.init;
+    instagram.init();
   },10);
 });
