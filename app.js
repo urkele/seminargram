@@ -7,7 +7,8 @@ var express = require('express')
   , routes = require('./routes')
   , user = require('./routes/user')
   , http = require('http')
-  , path = require('path');
+  , path = require('path')
+  , instagram = require('./lib/instagram.js');
 
 var app = express();
 
@@ -19,7 +20,7 @@ app.configure(function(){
   app.use(express.logger('dev'));
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.cookieParser('your secret here'));
+  app.use(express.cookieParser('bubblefishing'));
   app.use(express.session());
   app.use(app.router);
   app.use(require('less-middleware')({ src: __dirname + '/public' }));
@@ -32,7 +33,10 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 app.get('/users', user.list);
+app.get('/tag', instagram.getTagInfo);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
+  instagram.init
+
 });

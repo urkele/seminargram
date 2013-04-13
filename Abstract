@@ -1,0 +1,130 @@
+Server{
+  
+  // Description:
+  // 
+  // Should get query as stringified JSON:
+  // [tagName, tagName..., tagName]
+  //
+  //
+  // 0.  When Server starts - Authenticate with Instagram
+  //
+  // 1.  Send Initial page to Client (with search box)
+  //
+  // 2.  When client sends query:
+  //     0.  Clear previous round's data.
+  //     1.  Subscribe to the matching tags on Instagram
+  //     2.  Get first Image(s?) from Instagram -> {imageUrl: url}
+  //     3.  Get total number of images for that tag in instagram -> {tagImageCount: count}
+  //     4.  Calculate the Image's dominant color -> {dominantCo lor: [r,g,b]}
+  //     5.  Push data to client -> {{tagname: tagname}, {imageUrl: url}, {tagImageCount: count}, {dominantColor: [r,g,b]}}
+  //
+  // 3.  Everytime Instagram notifies that a tag has been updated:
+  //     1.  Get the latest Image(s?) from Instagram -> {imageUrl: url}
+  //     2.  Get total number of images for that tag in instagram -> {tagImageCount: count}
+  //     3.  Calculate the Image's dominant color
+  //     4.  Calculate the tag's dominant color (using data that is saved from earlier photos) -> {dominantColor: [r,g,b]}
+  //     5.  Push data to client -> {{tagname: tagname}, {imageUrl: url}, {tagImageCount: count}, {dominantColor: [r,g,b]}}
+  //
+  // 4.  When client closes connection:
+  //     1.  Stop subscriptions
+  //
+  // For each update of an object sent in the qury (a tag, a location or a geographical location) - Should return a JSON object:
+  // {
+  //   tagName: name,
+  //   imageUrl: url,
+  //   data:{
+  //     dominantColor: color,
+  //     tagImageCount: number,
+  //   }
+  // }
+  //
+  // Note: tag color data should be saved for later access.
+  // idea for constructing the data: {queryID: a UUID for the search that issued the call,
+  //                                  tagName: the name of the tag (for future querying),
+  //                                  color: [r,g,b]
+  //                                 }
+  
+
+  // Server Initialization
+  // Should start a server to talk to Instagram, set global Instagram properties test connection to DB(?)
+
+
+
+  // New Query
+  // Should subscribe to Instagram, record queryID, run getTagInfo() for the first time and send back response
+  // query - array of hastags to subscribe to
+  // returns 
+  getQueryInfo(query){
+    var queryInfo = null;
+    queryID = uuid;
+    foreach (tagName in query){
+      if(verifyTag(tagName)){
+        subscriptionID = subscribeTag(tagName);
+        tagInfo = getTagInfo(tagName); //run only if subscription hasn't got notification yet
+        sendTagInfo(tagName,tagInfo); //run only if subscription hasn't got notification yet
+      }
+    }
+  }
+  verifyTag(tagName){
+    //make sure tag is valid?
+  }
+  subscribeTag(tagName){
+    //use Instagram API module for NodeJS - https://github.com/mckelvey/instagram-node-lib
+    subscription = Instagram.tags.subscribe({object_id: tagName, verify_token: "tag_"+tagName});
+    return subscription.id;
+  }
+
+
+  // Subscruption update - called everytime Instagram notifies an updated image in subscruption
+  // Should get the endPoint's info
+  onSubscriptionUpadte(data){
+    var info = null;
+    endPointType = data.object; // from instagram's docs - the type of the object returned (tag/user/location...)
+    endPointID = data.object_id // the id of the object (tag name for tags, user ID for users etc..)
+    if(endPointType == "tag"){
+      info = getTagInfo(endPointID);
+    }
+  }
+
+  // API
+  // info available: locations & geography - only aggregated information. tags - media count.
+  getTagInfo(tagName){
+    // Instagram API module for NodeJS - https://github.com/mckelvey/instagram-node-lib
+    var tagInfo = {tagName: tagName};
+    tagInfo.imageUrl = getRecentImage(tagName);
+    tagInfo.tagImageCount = getTagImageCount(tagName); //async
+    tagInfo.tagDominantColor = getTagDominantColor(tagName,[tagInfo.imageUrl]); //depends on getRecentImage() to get the image for processing
+    return tagInfo;
+  }
+    getRecentImage(tagName){
+    //get recent image with tagname from Instagram
+    return imageUrl
+  }
+  getTagDominantColor(tagName,[image]){
+    var TagDominantColor = null;
+    if(image){
+      var ImageDominantColor = getImageDominantColor(image)
+      TagDominantColor = ImageDominantColor;
+      addImageDominantColor2DB(ImageDominantColor,queryID,tagName) //on first image - could be aSync
+    }
+    var dbcolors = getTagColorsFromDB(tagname[queryID]) //shouldn't run on first image
+    if(dbColors && dbColors.length >= 1){
+      var imageData = createImageData(dbColors)
+      TagDominantColor = getImageDominantColor(imageData)
+    }
+    return TagDominantColor // [r,g,b]
+  }
+  getTagImageCount(tagName){
+    //get recent image with tagname from Instagram
+    return tagImageCount
+  }
+  getImageDominantColor(image|imageData){
+    // Use ColorThief to calculate domainant color - https://github.com/lokesh/color-thief
+    // TODO: Trasform ColorThief to enable use directly with ImageData.
+    return ImageDominantColor //[r,g,b]
+  }
+  createImageData(dbColors){
+    // HTML5 Canvas for NodeJS - http://thechangelog.com/node-canvas-render-and-stream-html5-canvas-using-node-js/
+    // JS CreateImageData() - http://www.w3schools.com/tags/canvas_createimagedata.asp
+    return imageData // Object. (return pixelCount as well?)
+  }
