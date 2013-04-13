@@ -1,15 +1,27 @@
 {
   "name": "seminargram",
-  "version": "0.0.1",
+  "version": "0.0.1-1",
+  "author": "Uri Leshem <urke.leshem@gmail.com>",
   "private": true,
   "scripts": {
-    "start": "node app"
+    "start": "node app.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/urkele/seminargram.git"
+  },
+  "keywords": [
+    "instagram"
+  ],
   "dependencies": {
     "express": "3.1.0",
     "ejs": "*",
     "less-middleware": "*",
     "socket.io": "*",
     "instagram-node-lib": "*"
+  },
+  "subdomain": "seminargram",
+  "engines": {
+    "node": "0.8.x"
   }
 }
