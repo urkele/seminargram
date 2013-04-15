@@ -14,16 +14,16 @@ Server{
   //     0.  Clear previous round's data.
   //     1.  Subscribe to the matching tags on Instagram
   //     2.  Get first Image(s?) from Instagram -> {imageUrl: url}
-  //     3.  Get total number of images for that tag in instagram -> {tagImageCount: count}
+  //     3.  Get total number of images for that tag in instagram -> {tagMediaCount: count}
   //     4.  Calculate the Image's dominant color -> {dominantCo lor: [r,g,b]}
-  //     5.  Push data to client -> {{tagname: tagname}, {imageUrl: url}, {tagImageCount: count}, {dominantColor: [r,g,b]}}
+  //     5.  Push data to client -> {{tagname: tagname}, {imageUrl: url}, {tagMediaCount: count}, {dominantColor: [r,g,b]}}
   //
   // 3.  Everytime Instagram notifies that a tag has been updated:
   //     1.  Get the latest Image(s?) from Instagram -> {imageUrl: url}
-  //     2.  Get total number of images for that tag in instagram -> {tagImageCount: count}
+  //     2.  Get total number of images for that tag in instagram -> {tagMediaCount: count}
   //     3.  Calculate the Image's dominant color
   //     4.  Calculate the tag's dominant color (using data that is saved from earlier photos) -> {dominantColor: [r,g,b]}
-  //     5.  Push data to client -> {{tagname: tagname}, {imageUrl: url}, {tagImageCount: count}, {dominantColor: [r,g,b]}}
+  //     5.  Push data to client -> {{tagname: tagname}, {imageUrl: url}, {tagMediaCount: count}, {dominantColor: [r,g,b]}}
   //
   // 4.  When client closes connection:
   //     1.  Stop subscriptions
@@ -34,7 +34,7 @@ Server{
   //   imageUrl: url,
   //   data:{
   //     dominantColor: color,
-  //     tagImageCount: number,
+  //     tagMediaCount: number,
   //   }
   // }
   //
@@ -92,7 +92,7 @@ Server{
     // Instagram API module for NodeJS - https://github.com/mckelvey/instagram-node-lib
     var tagInfo = {tagName: tagName};
     tagInfo.imageUrl = getRecentImage(tagName);
-    tagInfo.tagImageCount = getTagImageCount(tagName); //async
+    tagInfo.tagMediaCount = getTagImageCount(tagName); //async
     tagInfo.tagDominantColor = getTagDominantColor(tagName,[tagInfo.imageUrl]); //depends on getRecentImage() to get the image for processing
     return tagInfo;
   }
@@ -116,7 +116,7 @@ Server{
   }
   getTagImageCount(tagName){
     //get recent image with tagname from Instagram
-    return tagImageCount
+    return tagMediaCount
   }
   getImageDominantColor(image|imageData){
     // Use ColorThief to calculate domainant color - https://github.com/lokesh/color-thief

@@ -3,9 +3,15 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect('http://seminargram.jit.su/');
+      socket.on('debug', function (data) {
+        console.log(data);
+      });
+    </script>
   </head>
   <body>
-    <h1><%= title %></h1>
     <p>Welcome to <%= title %></p>
     <div id="searchbox">
       <form action="http://seminargram.jit.su/tag" method="GET">
