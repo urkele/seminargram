@@ -1,4 +1,4 @@
-var instalib = require('../lib/instalib.js');
+var gramlib = require('../lib/gramlib.js');
 
 /*
  * GET home page.
@@ -13,7 +13,7 @@ module.exports = {
     var tagsInfo = {};
     for (var i = 0; i < tags.length; i++) {
       var tagName = tags[i];
-      tagsInfo.tagName = instalib.getTagMediaCount(tagName);
+      tagsInfo.tagName = gramlib.getTagMediaCount(tagName);
     };
     return tagsInfo;
   }
