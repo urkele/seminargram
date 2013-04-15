@@ -36,7 +36,7 @@ app.configure('development', function(){
 
 app.get('/', routes.index);
 // app.get('/users', user.list);
-app.get('/tag', instagram.getTagsInfo);
+app.post('/tags', instagram.getTagsInfo);
 
 
 server.listen(app.get('port'), function(){
