@@ -4,12 +4,12 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
+  // , routes = require('./routes')
+  // , user = require('./routes/user')
   , http = require('http')
   , path = require('path')
   , socketio = require('socket.io')
-  , instagram = require('./lib/instagram');
+  , gramroutes = require('./routes/gramroutes.js');
 
 var app = express()
   , server = http.createServer(app)
@@ -34,9 +34,9 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', routes.index);
+app.get('/', gramroutes.getIndex);
 // app.get('/users', user.list);
-app.post('/tags', instagram.getTagsInfo);
+app.post('/tags', gramroutes.getTagsInfo);
 
 
 server.listen(app.get('port'), function(){
