@@ -36,7 +36,7 @@ app.configure('development', function(){
 
 app.get('/', gramroutes.getIndex);
 // app.get('/users', user.list);
-app.get('/tags', gramroutes.getTagsInfo);
+app.get('/tags', gramroutes.getInitialData);
 
 
 server.listen(app.get('port'), function(){

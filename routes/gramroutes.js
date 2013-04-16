@@ -1,18 +1,24 @@
-var gramlib = require('../lib/gramlib.js')
+var instalib = require('../lib/instalib.js')
   , async = require('async');
 
-function Tag(tagName) {
-  this.name = tagName;
-  this.mediaCount = null;
-  this.color = null;
+function Image(){
+  this.imageURL = null;
+  this.imageDominantColor = null;
+}
 
+function Tag(tagName) {
+  this.tagName = tagName;
+  this.recentImage = new Image(); //maybe should be this.images = {array of images}?
+  this.data = {}
+  this.data.tagDominantColor = null;
+  this.data.tagMediaCount = null;
 };
 
 module.exports = {
   getIndex : function(req, res){
     res.render('index', { title: 'Seminargram' });
   },
-  getTagsInfo: function(req,res){
+  getInitialData: function(req,res){
     var tags = req.query.tagString.split(" ")
     console.log("@1 getTagsInfo: tags are: ", tags);
     var tagsInfo = {};
@@ -20,8 +26,8 @@ module.exports = {
       tags,
       function(tagName,callback){
         tagsInfo[tagName] = new Tag(tagName);
-        gramlib.getTagMediaCount(tagName,function(mediaCount){
-          tagsInfo[tagName].mediaCount = mediaCount;
+        instalib.getTagMediaCount(tagName,function(mediaCount){
+          tagsInfo[tagName].data.tagMediaCount = mediaCount;
           callback();
         });
       },
