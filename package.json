@@ -18,7 +18,8 @@
     "ejs": "*",
     "less-middleware": "*",
     "socket.io": "*",
-    "instagram-node-lib": "*"
+    "instagram-node-lib": "*",
+    "async": "*"
   },
   "subdomain": "seminargram",
   "engines": {
