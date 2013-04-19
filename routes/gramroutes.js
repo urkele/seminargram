@@ -23,17 +23,18 @@ module.exports = {
   getInitialData: function(req,res){
     var tags = req.query.tagString.split(" ");
     console.log("@1 getInitialData for: ", tags);
-    var tagsInfo = {};
+    var tagsInfo = [];
     async.each(
       tags,
       function(tagName,eachCallback){ // the async.each iterator
         console.log("@2 getting info for: ", tagName);
-        tagsInfo[tagName] = new Tag(tagName);
+        var tag = new Tag(tagName);
+        tagsInfo.push(tag);
         async.parallel({ // the async.parallel functions object. Contains the function to be called.
           getTagMediaCount: function(parallelCallback){
             console.log("@21 getting TagMediaCount for: ", tagName);
             instalib.getTagMediaCount(tagName,function(mediaCount){
-              tagsInfo[tagName].data.tagMediaCount = mediaCount;
+              tag.data.tagMediaCount = mediaCount;
               parallelCallback();
             });
           },
@@ -44,18 +45,18 @@ module.exports = {
               getImageUrl: function(seriesCallback){
                 console.log("@211 getting image url for tag: ", tagName);
                 instalib.getRecentImageUrl(tagName,function(imageUrl){
-                  tagsInfo[tagName].recentImage.imageURL = imageUrl;
+                  tag.recentImage.imageURL = imageUrl;
                   seriesCallback();
                 });
               },
               getImageDominantColor: function(seriesCallback){
                 console.log("@212 getting image color for tag: ", tagName);
-                tagsInfo[tagName].recentImage.imageDominantColor = "red";
+                tag.recentImage.imageDominantColor = "red";
                 seriesCallback();
               },
               setTagDominantColor: function(seriesCallback){
                 console.log("@213 setting tag color for tag: ", tagName);
-                tagsInfo[tagName].data.tagDominantColor = tagsInfo[tagName].recentImage.imageDominantColor;
+                tag.data.tagDominantColor = tag.recentImage.imageDominantColor;
                 seriesCallback();
               }
             }, //--end async.series functions object
