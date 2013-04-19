@@ -21,7 +21,7 @@ module.exports = {
     res.render('index', { title: 'Seminargram' });
   },
   getInitialData: function(req,res){
-    var tags = req.query.tagString.split(" ");
+    var tags = req.query.tags;
     console.log("@1 getInitialData for: ", tags);
     var tagsInfo = [];
     async.each(
