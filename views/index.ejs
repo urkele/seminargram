@@ -3,6 +3,8 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var socket = io.connect('http://seminargram.jit.su/');
@@ -13,9 +15,9 @@
   </head>
   <body>
     <p>Welcome to <%= title %></p>
-    <div id="searchbox">
-      <form action="/tags" method="get">
-        <input type="text" name="tagString" id="search" placeholder="enter sentence" />
+    <div id="search">
+      <form action="/tags" method="get" id="searchform">
+        <input type="text" name="tagString" id="searchbox" placeholder="enter sentence" />
         <input type="submit">
       </form>
     </div>

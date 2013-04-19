@@ -1,6 +1,8 @@
 var instalib = require('../lib/instalib.js')
   , async = require('async');
 
+var initialDataSent = false;
+
 function Image(){
   this.imageURL = null;
   this.imageDominantColor = null;
@@ -19,7 +21,7 @@ module.exports = {
     res.render('index', { title: 'Seminargram' });
   },
   getInitialData: function(req,res){
-    var tags = req.query.tagString.split(" ")
+    var tags = req.query.tagString.split(" ");
     console.log("@1 getInitialData for: ", tags);
     var tagsInfo = {};
     async.each(
@@ -41,8 +43,10 @@ module.exports = {
             async.series({ // the async.series functions object. Contains the function to be called.
               getImageUrl: function(seriesCallback){
                 console.log("@211 getting image url for tag: ", tagName);
-                tagsInfo[tagName].recentImage.imageURL = "URL";
-                seriesCallback();
+                instalib.getRecentImageUrl(tagName,function(imageUrl){
+                  tagsInfo[tagName].recentImage.imageURL = imageUrl;
+                  seriesCallback();
+                });
               },
               getImageDominantColor: function(seriesCallback){
                 console.log("@212 getting image color for tag: ", tagName);
@@ -83,6 +87,7 @@ module.exports = {
         };
         console.log("@3 sending tagsInfo: ", tagsInfo)
         res.send(tagsInfo);
+        initialDataSent = true;
       }) //--end async.each
   }
 }
