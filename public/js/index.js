@@ -11,6 +11,7 @@ $(document).ready(function(){
           console.log(data[i]);
           var img = document.createElement("img");
           img.src = data[i].recentImage.imageUrl;
+          img.alt = data[i].tagName
           $("#result").append(img);
         };
         console.log("succesfuly got data: ", data);
