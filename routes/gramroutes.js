@@ -4,7 +4,7 @@ var instalib = require('../lib/instalib.js')
 var initialDataSent = false;
 
 function Image(){
-  this.imageURL = null;
+  this.imageUrl = null;
   this.imageDominantColor = null;
 }
 
@@ -45,7 +45,7 @@ module.exports = {
               getImageUrl: function(seriesCallback){
                 console.log("@211 getting image url for tag: ", tagName);
                 instalib.getRecentImageUrl(tagName,function(imageUrl){
-                  tag.recentImage.imageURL = imageUrl;
+                  tag.recentImage.imageUrl = imageUrl;
                   seriesCallback();
                 });
               },
