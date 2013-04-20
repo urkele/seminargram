@@ -2,6 +2,7 @@ var instalib = require('../lib/instalib.js')
   , async = require('async');
 
 var initialDataSent = false;
+var subscriptions = {};
 
 function Image(){
   this.imageUrl = null;
@@ -21,10 +22,16 @@ module.exports = {
     res.render('index', { title: 'Seminargram' });
   },
   getInitialData: function(req,res){
+    // first unsubscribe from all previous subscriptions.
+    // TODO: this should be done more intelegently, first - to prevent unsubscribing other clients, second - maybe avoid unsbscribing and resubscribing to the same tags.
+    console.log("subscriptions are: ", subscriptions);
+    instalib.unsubscribeAllTags(subscriptions,function(result){
+      console.log("result of unsubscribing is: ",result);
+    });
     var tags = req.query.tags;
     console.log("@1 getInitialData for: ", tags);
     var tagsInfo = [];
-    async.each(
+    async.each( //should be repeated for same tags in one query.
       tags,
       function(tagName,eachCallback){ // the async.each iterator
         console.log("@2 getting info for: ", tagName);
@@ -70,8 +77,17 @@ module.exports = {
           },
           subscribeTag: function(parallelCallback){
             console.log("@21 subscribing to tag: ",tagName);
-            //subscribe to a tag
-            parallelCallback();
+            if(!subscriptions.tagName){
+              //subscribe to a tag
+              instalib.subscribeTag(tagName,function(subscribedTag,subscriptionId){ //handle error
+                subscriptions[subscribedTag] = subscriptionId;
+                parallelCallback();
+              });
+            }
+            else {
+              console.log("@21 already subscribed to tag: ",tagName);
+              parallelCallback();
+            };
           }
         }, //--end async.parallel functions object
           function(err, results){ // this is the 'parallelCallback' which is called after all function are complete.
@@ -90,5 +106,9 @@ module.exports = {
         res.send(tagsInfo);
         initialDataSent = true;
       }) //--end async.each
+  },
+  gotSubscription: function(req,res){
+    console.log("got subscription: ", req);
+    res.send(200);
   }
 }
