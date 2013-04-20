@@ -34,7 +34,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', gramroutes.getIndex);
+app.get('/app', gramroutes.getIndex);
 // app.get('/users', user.list);
 app.get('/tags', gramroutes.getInitialData);
 app.post('/subscriptions', gramroutes.gotSubscription)
