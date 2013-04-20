@@ -3,15 +3,9 @@
   <head>
     <title><%= title %></title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io.connect('http://seminargram.jit.su/');
-      socket.on('debug', function (data) {
-        console.log(data);
-      });
-    </script>
   </head>
   <body>
     <p>Welcome to <%= title %></p>

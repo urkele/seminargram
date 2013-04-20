@@ -3,6 +3,7 @@ var instalib = require('../lib/instalib.js')
 
 var initialDataSent = false;
 var subscriptions = {};
+// var clients = {};
 
 function Image(){
   this.imageUrl = null;
@@ -18,6 +19,14 @@ function Tag(tagName) {
 };
 
 module.exports = {
+  //create socket session
+  createSocket: function(server){
+    io = require('socket.io').listen(server);
+    io.sockets.on('connection', function (socket) {
+      socket.emit('connection', 'connected');
+      //need to  register the socket using the seesion id (clients.[sessionID] = socket). need to implement session store.;
+    });
+  },
   getIndex : function(req, res){
     res.render('index', { title: 'Seminargram' });
   },
