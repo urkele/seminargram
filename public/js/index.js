@@ -2,6 +2,7 @@ var url = "/tags";
 
 $(document).ready(function(){
   $("form").submit(function(e){
+    $("#result").empty();
     var query = $("#searchbox").val().trim().split(" ");
     console.log(query);
     e.preventDefault();
@@ -11,7 +12,8 @@ $(document).ready(function(){
           console.log(data[i]);
           var img = document.createElement("img");
           img.src = data[i].recentImage.imageUrl;
-          img.alt = data[i].tagName
+          img.alt = data[i].tagName;
+          img.title = data[i].tagName;
           $("#result").append(img);
         };
         console.log("succesfuly got data: ", data);
