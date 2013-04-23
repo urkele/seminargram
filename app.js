@@ -32,14 +32,14 @@ app.configure('development', function(){
 
 app.get('/', gramroutes.getIndex);
 app.get('/tags', gramroutes.getInitialData);
-app.get('/subscriptions', gramroutes.handleSubscription);
+app.get('/subscriptions', gramroutes.handshakeSubscription);
 app.post('/subscriptions', gramroutes.gotSubscription);
+app.get('/stopAll', gramroutes.unsubscribeAll);
 
 
 server.listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
   //when app starts unsubscribe from all exisiting instagram subscriptions
-
   gramroutes.unsubscribeAll();
 });
 gramroutes.createSocket(server);
