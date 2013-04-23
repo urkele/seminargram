@@ -124,7 +124,7 @@ module.exports = {
     });
   },
   gotSubscription: function(req,res){
-    console.log("@@ got subscription: ",req);
+    console.log("@@ got subscription: ",req.body);
     res.send(200);
   }
 };
