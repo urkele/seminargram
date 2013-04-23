@@ -1,5 +1,6 @@
 var instalib = require('../lib/instalib.js')
-  , async = require('async');
+  , async = require('async')
+  , Instagram = require('instagram-node-lib');
 
 var initialDataSent = false;
 var subscriptions = {};
@@ -117,7 +118,7 @@ module.exports = {
       }) //--end async.each
   },
   gotSubscription: function(req,res){
+    Instagram.tags.subscribe(req,res);
     console.log("got subscription: ", req);
-    res.send(200);
   }
-}
+};
