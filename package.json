@@ -1,6 +1,6 @@
 {
   "name": "seminargram",
-  "version": "0.0.1-64",
+  "version": "0.0.1-66",
   "author": "Uri Leshem <urke.leshem@gmail.com>",
   "private": true,
   "scripts": {
@@ -15,11 +15,11 @@
   ],
   "dependencies": {
     "express": "3.1.0",
-    "ejs": "*",
-    "less-middleware": "*",
-    "socket.io": "*",
-    "instagram-node-lib": "*",
-    "async": "*"
+    "ejs": "0.8.3",
+    "less-middleware": "0.1.11",
+    "socket.io": "0.9.14",
+    "instagram-node-lib": "0.1.1",
+    "async": "0.2.7"
   },
   "subdomain": "seminargram",
   "engines": {
