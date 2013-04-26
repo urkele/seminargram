@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/poster.js"></script>
+  </head>
+  <body>
+    <p>Welcome to <%= title %></p>
+    <div id="search">
+      <form action="/subscriptions" method="post" id="posterForm">
+        <fieldset>
+          1
+          <input type="text" name="subscription_id" id="subscription_id1" value=3107285 />
+          <input type="text" name="object" id="object1" value="tag" />
+          <input type="text" name="object_id" id="object_id1" value="mister" />
+        </fieldset>
+        <fieldset>
+          2
+          <input type="text" name="subscription_id" id="subscription_id2" value=3107467 />
+          <input type="text" name="object" id="object2" value="tag" />
+          <input type="text" name="object_id" id="object_id2" value="hours" />
+        </fieldset>
+        <input type="submit">
+      </form>
+    </div>
+    <div id="result"></div>
+  </body>
+</html>

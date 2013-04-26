@@ -35,6 +35,7 @@ app.get('/tags', gramroutes.getInitialData);
 app.get('/subscriptions', gramroutes.handshakeSubscription);
 app.post('/subscriptions', gramroutes.gotSubscription);
 app.get('/stopAll', gramroutes.unsubscribeAll);
+app.get('/poster', gramroutes.getPoster);
 
 
 server.listen(app.get('port'), function(){
