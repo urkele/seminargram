@@ -31,7 +31,7 @@ app.configure('development', function(){
 });
 
 app.get('/', gramroutes.getIndex);
-app.get('/tags', gramroutes.getInitialData);
+// app.get('/tags', gramroutes.getInitialData);
 app.get('/subscriptions', gramroutes.handshakeSubscription);
 app.post('/subscriptions', gramroutes.gotSubscription);
 app.get('/stopAll', gramroutes.unsubscribeAll);

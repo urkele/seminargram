@@ -4,8 +4,6 @@ var async = require('async')
 
 var initialDataSent = false;
 var tags = {};
-// var clients = {};
-// var socket1 = {}; //an object to hols a single socket. just for now...
 
 function Image(){
   this.imageUrl = null;
@@ -14,7 +12,7 @@ function Image(){
 
 function Tag(tagName) {
   this.tagName = tagName;
-  this.recentImage = new Image(); //maybe should be this.images = {array of images}?
+  this.images = new Array();
   this.data = {}
   this.data.tagDominantColor = null;
   this.data.tagMediaCount = null;
@@ -27,106 +25,28 @@ module.exports = {
     io.sockets.on('connection', function (socket) {
       // socket1 = socket;
       socket.emit('connection', 'connected');
-      //need to  register the socket using the seesion id (clients.[sessionID] = socket). need to implement session store.;
+      socket.on('init',function(requestedTagsDirty){
+        console.log("@gramroutes.createSocket - got init form client:",requestedTagsDirty);
+        if (requestedTagsDirty && requestedTagsDirty.length !== 0){
+          for(var badIndex = requestedTagsDirty.indexOf(""); badIndex > -1;badIndex = requestedTagsDirty.indexOf("")){
+            requestedTagsDirty.splice(badIndex,1);
+          }
+          requestedTags = requestedTagsDirty;
+        };
+        if (requestedTags && requestedTags.length !== 0){
+          getInitialData(requestedTags,function(tagsInfo){
+            console.log("@gramroutes.createSocket - got tagsInfo:",tagsInfo);
+            socket.emit('newData',tagsInfo);
+          })
+        }
+        else {
+          console.log("@gramroutes.createSocket - no tags requested")
+        }
+      });
     });
   },
   getIndex : function(req, res){
     res.render('index', { title: 'Seminargram' });
-  },
-  getInitialData: function(req,res){
-    // first unsubscribe from all previous subscriptions.
-    // TODO: this should be done more intelegently, first - to prevent unsubscribing other clients, second - maybe avoid unsbscribing and resubscribing to the same tags.
-    // console.log("@gramroutes.getInitialData - tags array starts with:", tags);
-    // instalib.unsubscribeAllTags(subscriptions,function(result){
-    //   console.log("result of unsubscribing is:",result);
-    // });
-    var requestedTags = req.query.tags;
-    console.log("@gramroutes.getInitialData - for the follwing tags:", requestedTags);
-    var tagsInfo = [];
-    async.each( //should be repeated for same tags in one query.
-      requestedTags,
-      function(tagName,eachCallback){ // the async.each iterator
-        console.log("@gramroutes.getInitialData - for:", tagName);
-        if(tags[tagName]){
-          tag = tags[tagName];
-        }
-        else {
-          tag = new Tag(tagName);
-          tags[tagName] = tag;
-        }
-        tagsInfo.push(tag);
-        async.parallel({ // the async.parallel functions object. Contains the function to be called.
-          getTagMediaCount: function(parallelCallback){
-            console.log("@gramroutes.getInitialData.getTagMediaCount - for:", tagName);
-            instalib.getTagMediaCount(tagName,function(mediaCount){
-              tag.data.tagMediaCount = mediaCount;
-              parallelCallback();
-            });
-          },
-          getImageInfo: function(parallelCallback){
-            //get data about image
-            console.log("@gramroutes.getInitialData.getImageInfo - for:", tagName);
-            async.series({ // the async.series functions object. Contains the function to be called.
-              getImageUrl: function(seriesCallback){
-                console.log("@gramroutes.getInitialData.getImageUrl - for:", tagName);
-                instalib.getRecentImageUrl(tagName,function(imageUrl){
-                  tag.recentImage.imageUrl = imageUrl;
-                  seriesCallback();
-                });
-              },
-              getImageDominantColor: function(seriesCallback){
-                console.log("@gramroutes.getInitialData.getImageDominantColor - for:", tagName);
-                colorlib.getImageDominantColor(tag.recentImage.imageUrl,function(imageDominantColor){
-                  tag.recentImage.imageDominantColor = imageDominantColor;
-                  seriesCallback();
-                });
-              },
-              setTagDominantColor: function(seriesCallback){
-                console.log("@gramroutes.getInitialData.setTagDominantColor - for:", tagName);
-                tag.data.tagDominantColor = tag.recentImage.imageDominantColor;
-                seriesCallback();
-              }
-            }, //--end async.series functions object
-            function(err, results){ // this is the 'seriesCallback' which is called after all function are complete.
-              // results is an object of the results from each of the functions.
-              if(err){
-                console.log("@gramroutes.getInitialData.seriesCallback.err - error:",err);
-              };
-              parallelCallback();
-            }) //--end async.series
-          },
-          subscribeTag: function(parallelCallback){
-            console.log("@gramroutes.getInitialData.subscribeTag - for:",tagName);
-            if(typeof tags[tagName].subscriptionId === 'undefined'){
-              instalib.subscribeTag(tagName,function(subscribedTag,subscriptionId){ //TODO: handle error
-                console.log("@gramroutes.getInitialData.subscribeTag - subscription details for:",tagName, " are:",subscribedTag, " and" ,subscriptionId);
-                tags[tagName].subscriptionId = subscriptionId;
-                parallelCallback();
-              });
-            }
-            else {
-              console.log("@gramroutes.getInitialData.subscribeTag - already subscribed to tag:",tagName);
-              parallelCallback();
-            };
-          }
-        }, //--end async.parallel functions object
-          function(err, results){ // this is the 'parallelCallback' which is called after all function are complete.
-            // results is an object of the results from each of the functions.
-            if(err){
-              console.log("@gramroutes.getInitialData.parallelCallback.err - error:",err);
-            };
-            eachCallback();
-        }) //--end async.parallel
-      }, //--end async.each iterator
-      function(err){ //this is the 'eachCallback' which is called after all of the array members were processed
-        if(err){
-          console.log("@gramroutes.getInitialData.eachCallback.err - error:",err);
-        };
-        console.log("@gramroutes.getInitialData - sending tagsInfo:", tagsInfo)
-        res.send(tagsInfo); 
-        initialDataSent = true;
-        // console.log("@gramroutes.getInitialData - the tags array is:", tags)
-      }) //--end async.each
   },
   handshakeSubscription: function(req,res){
     console.log("@gramroutes.handshakeSubscription");
@@ -227,13 +147,6 @@ module.exports = {
         // res.send(tagsInfo); 
         // console.log("@gramroutes.getInitialData - the tags array is:", tags)
       }) //--end async.each
-
-/*    var tagNames = [];
-    for (var i = 0; i < updatedTags.length; i++) {
-      tagNames[i] = updatedTags[i].object_id
-    };
-    // socket1.emit('debugging', tagNames)
-    console.log("@gramroutes.gotSubscription - updated tags:",tagNames);*/
   },
   unsubscribeAll: function(){
     console.log("@gramroutes.unsubscribeAll");
@@ -247,3 +160,118 @@ module.exports = {
     res.render('poster', { title: 'Seminargram' });
   },
 };
+
+function getInitialData(requestedTags,callback){
+    // first unsubscribe from all previous subscriptions.
+    // TODO: this should be done more intelegently, first - to prevent unsubscribing other clients, second - maybe avoid unsbscribing and resubscribing to the same tags.
+    // console.log("@gramroutes.getInitialData - tags array starts with:", tags);
+    // instalib.unsubscribeAllTags(subscriptions,function(result){
+    //   console.log("result of unsubscribing is:",result);
+    // });
+    // var requestedTags = req.query.tags;
+    console.log("@gramroutes.getInitialData - for the follwing tags:", requestedTags);
+    var tagsInfo = [];
+    async.each( //should be repeated for same tags in one query.
+      requestedTags,
+      function(tagName,eachCallback){ // the async.each iterator
+        console.log("@gramroutes.getInitialData - for:", tagName);
+        if(tags[tagName]){
+          var tag = tags[tagName];
+        }
+        else {
+          var tag = new Tag(tagName);
+          tags[tagName] = tag;
+        }
+        tagsInfo.push(tag);
+        async.parallel({ // the async.parallel functions object. Contains the function to be called.
+          getTagMediaCount: function(parallelCallback){
+            console.log("@gramroutes.getInitialData.getTagMediaCount - for:", tagName);
+            instalib.getTagMediaCount(tagName,function(mediaCount){
+              tag.data.tagMediaCount = mediaCount;
+              parallelCallback();
+            });
+          },
+          getImagesInfo: function(parallelCallback){
+            //get data about image
+            console.log("@gramroutes.getInitialData.getImagesInfo - for:", tagName);
+            async.series({ // the async.series functions object. Contains the function to be called.
+              getImagesUrl: function(seriesCallback){
+                console.log("@gramroutes.getInitialData.getImagesUrl - for:", tagName);
+                instalib.getRecentImagesUrl(tagName,function(imagesUrl){
+                  // console.log("@gramroutes.getInitialData.getImagesUrl.callback - urls:",imagesUrl)
+                  async.each(
+                    imagesUrl,
+                    function(imageUrl,eachCallback2){
+                      //create a new image object
+                      var img = new Image();
+                      //set the image url for this object
+                      img.imageUrl = imageUrl;
+                      //get image dominant color
+                      colorlib.getImageDominantColor(img.imageUrl,function(imageDominantColor){
+                        img.imageDominantColor = imageDominantColor;
+                        //add image to the array of images for this tag.
+                        tag.images.push(img);
+                        eachCallback2();
+                      });
+                    },
+                    function(err){ //this is the 'eachCallback2' which is called after all of the array members were processed
+                      if(err){
+                        console.log("@gramroutes.getInitialData.eachCallback2.err - error:",err);
+                      };
+                      console.log("@gramroutes.getInitialData.eachCallback2 - ok");
+                      seriesCallback();
+                      // console.log("@gramroutes.getInitialData - the tags array is:", tags)
+                    })
+                });
+              },
+              getTagDominantColor: function(seriesCallback){
+                console.log("@gramroutes.gotSubscription.getTagDominantColor - for:", tagName);
+                colorlib.getTagDominantColor(tagName,function(tagDominantColor){
+                  tag.data.tagDominantColor = tagDominantColor;
+                  seriesCallback();
+                });
+              }
+            }, //--end async.series functions object
+            function(err, results){ // this is the 'seriesCallback' which is called after all function are complete.
+              // results is an object of the results from each of the functions.
+              if(err){
+                console.log("@gramroutes.getInitialData.seriesCallback.err - error:",err);
+              };
+              console.log("@gramroutes.getInitialData.seriesCallback - ok");
+              parallelCallback();
+            }) //--end async.series
+          },
+          subscribeTag: function(parallelCallback){
+            console.log("@gramroutes.getInitialData.subscribeTag - for:",tagName);
+            if(typeof tags[tagName].subscriptionId === 'undefined'){
+              instalib.subscribeTag(tagName,function(subscribedTag,subscriptionId){ //TODO: handle error
+                console.log("@gramroutes.getInitialData.subscribeTag - subscription details for:",tagName, " are:",subscribedTag, " and" ,subscriptionId);
+                tags[tagName].subscriptionId = subscriptionId;
+                parallelCallback();
+              });
+            }
+            else {
+              console.log("@gramroutes.getInitialData.subscribeTag - already subscribed to tag:",tagName);
+              parallelCallback();
+            };
+          }
+        }, //--end async.parallel functions object
+          function(err, results){ // this is the 'parallelCallback' which is called after all function are complete.
+            // results is an object of the results from each of the functions.
+            if(err){
+              console.log("@gramroutes.getInitialData.parallelCallback.err - error:",err);
+            };
+            console.log("@gramroutes.getInitialData.parallelCallback - ok")
+            eachCallback();
+        }) //--end async.parallel
+      }, //--end async.each iterator
+      function(err){ //this is the 'eachCallback' which is called after all of the array members were processed
+        if(err){
+          console.log("@gramroutes.getInitialData.eachCallback.err - error:",err);
+        };
+        // console.log("@gramroutes.getInitialData - sending tagsInfo:", tagsInfo)
+        callback(tagsInfo); 
+        initialDataSent = true;
+        // console.log("@gramroutes.getInitialData - the tags array is:", tags)
+      }) //--end async.each
+  }

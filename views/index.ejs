@@ -5,6 +5,8 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/underscore.js"></script>
+    <script type="text/javascript" src="js/backbone.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
   </head>
   <body>
@@ -12,9 +14,12 @@
     <div id="search">
       <form action="/tags" method="get" id="searchform">
         <input type="text" name="tags" id="searchbox" placeholder="enter sentence" />
-        <input type="submit">
+        <input type="button" id="submit" name="go" value="GO">
       </form>
     </div>
-    <div id="result"></div>
+    <div id="result">
+      <div class="loader"></div>
+      <div id="tagsCanvas"></div>
+    </div>
   </body>
 </html>
