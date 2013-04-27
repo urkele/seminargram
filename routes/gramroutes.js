@@ -22,6 +22,7 @@ module.exports = {
   //create socket session
   createSocket: function(server){
     io = require('socket.io').listen(server);
+    io.set('log level', 1); // set socket.io logging level to 'warn'
     io.sockets.on('connection', function (socket) {
       // socket1 = socket;
       socket.emit('connection', 'connected');
