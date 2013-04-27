@@ -1,15 +1,15 @@
 var socket = io.connect();
 // var socket = io.connect('http://seminargram.jit.su');
 
-var ImagesCollection = Backbone.Collection.extend({
-  model: ImageModel
-});
-
 var ImageModel = Backbone.Model.extend({
   defaults: {
     imageUrl: "",
     tagName: "",
   }
+});
+
+var ImagesCollection = Backbone.Collection.extend({
+  model: ImageModel
 });
 
 var ImageView = Backbone.View.extend({
@@ -20,26 +20,29 @@ var ImageView = Backbone.View.extend({
   }
 });
 
+var TagModel = Backbone.Model.extend({});
 
 var TagsCollection = Backbone.Collection.extend({
   model: TagModel
 });
 
-var TagModel = Backbone.Model.extend({
+
+
+/*var TagModel = Backbone.Model.extend({
   defaults: {
     tagName: "",
     images: new ImagesCollection,
     data: {
       tagDominantColor: [0,0,0],
       tagMediaCount : 0    
-    },
-    initialize: function(){
-      this.on('change:images',function(){
-        //do something when the images change.
-      })
     }
+  },
+  initialize: function(){
+    this.on('change:images',function(){
+      //do something when the images change.
+    })
   }
-});
+});*/
 
 var TagView = Backbone.View.extend({
   className: 'tagContainer', // optional, you can assign multiple classes to this property  should have the tagName as a class
@@ -49,6 +52,8 @@ var TagView = Backbone.View.extend({
   }
 });
 
+var deleteButton = '<span id="delete">X</span>'
+var searchLoader = "<div class='loader' id='searchLoader'></div>"
 
 // Handle socket events
 socket.on('connection', function(data){
@@ -62,13 +67,6 @@ socket.on('connection', function(data){
 socket.on('debug', function (data) {
   console.log(data);
 });
-socket.on('newData', function(data){
-  console.log("newData recieved",data);
-  for (var i = 0; i < data.length; i++) {
-    data[i]
-  };
-  $(".loader").toggle();
-})
 
 //send data to server
 $(document).ready(function () {
@@ -88,13 +86,16 @@ $(document).ready(function () {
   });
 
   $("#submitButton").click(function () {
-    $("#result").empty(); // erease images
+    // empty current images
+    $("#result").empty();
     var queryString = $("#searchbox").val().trim();
     if (queryString !== ""){
       var query = queryString.split(" ");
       console.log("sending query",query);
-      //create a new TagModel for each tag?
-      $("#delete").replaceWith("<div class='loader' id='searchLoader'></div>");
+      //start loader animation
+      $("#delete").replaceWith(searchLoader);
+      // create the tagsCollection
+      tags = new TagsCollection;
       //get Initial data from server
       socket.emit('init', query);
     }
@@ -103,14 +104,26 @@ $(document).ready(function () {
 
 
 
-//first, create a TagsCollection
-var tags = new TagsCollection;
-tags.on("add",function(tag){
+// get data from server
+socket.on('newData', function(data){
+  console.log("newData recieved",data);
+  tags.add(data);
+
+  // handle search box graphics
+  $("#searchLoader").replaceWith(deleteButton);
+  $("#delete").click(function() {
+    $("#searchbox").val("");
+    $(this).hide();
+  });
+})
+
+
+/*tags.on("add",function(tag){
   //do something when a tag is added
 })
 tags.on('change',function(tag){
   //do somehitng when a tagModel is changed. can also listen to a specific propertey that is changed - 'change:data'
-})
+})*/
 
 
 
