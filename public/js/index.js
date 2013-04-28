@@ -13,7 +13,7 @@ var ImagesCollection = Backbone.Collection.extend({
 });
 
 var ImageView = Backbone.View.extend({
-  tagName: 'img',
+  el: 'img',
   className: 'tagImage',
   render: function(){
     var template = _.template("<img src='<%=imageUrl%>'' alt='<%=tagName%>' title='<%=tagName%>'>"); //the tagName already creates an img. what should I do?
