@@ -47,7 +47,7 @@ module.exports = {
     });
   },
   getIndex : function(req, res){
-    res.render('index', { title: 'Seminargram' });
+    res.render('index', { title: 'sultag.it' });
   },
   handshakeSubscription: function(req,res){
     console.log("@gramroutes.handshakeSubscription");

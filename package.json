@@ -1,6 +1,6 @@
 {
   "name": "seminargram",
-  "version": "0.0.1-77",
+  "version": "0.0.1-78",
   "author": "Uri Leshem <urke.leshem@gmail.com>",
   "private": true,
   "scripts": {
@@ -22,6 +22,10 @@
     "async": "0.2.7"
   },
   "subdomain": "seminargram",
+  "domains": [
+    "sultag.it",
+    "www.sultag.it"
+  ],
   "engines": {
     "node": "0.8.x"
   }
