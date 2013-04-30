@@ -1,4 +1,6 @@
 var socket = io.connect();
+var maxImages = 4;
+var imageRefreshInterval = 1500;
 // var socket = io.connect('http://seminargram.jit.su');
 
 var ImageModel = Backbone.Model.extend({
@@ -20,12 +22,13 @@ var ImageView = Backbone.View.extend({
   }
 });
 
-var TagModel = Backbone.Model.extend({});
+var TagModel = Backbone.Model.extend({
+  idAttribute: "tagName"
+});
 
 var TagsCollection = Backbone.Collection.extend({
   model: TagModel
 });
-
 
 
 /*var TagModel = Backbone.Model.extend({
@@ -85,6 +88,19 @@ $(document).ready(function () {
     $(this).hide();
   });
 
+
+  //bind 'enter' keystroke to the submit button click handler
+  $('#searchbox').keypress(function(e){
+      if(e.which == 13){//Enter key pressed
+          $('#submitButton').click();//Trigger search button click event
+      }
+  });
+  $('#submitButton').keypress(function(e){
+      if(e.which == 13){//Enter key pressed
+          $('#submitButton').click();//Trigger search button click event
+      }
+  });
+
   $("#submitButton").click(function () {
     // empty current images
     $("#result").empty();
@@ -108,6 +124,57 @@ $(document).ready(function () {
 socket.on('newData', function(data){
   console.log("newData recieved",data);
   tags.add(data);
+  for (var i = 0; i < data.length; i++) {
+    var tagName = data[i].tagName;
+    var tagImages = data[i].images;
+    var tagData = data[i].data;
+    var wrapperWidth = $("#maincontainer").width();
+    var tagContainerWidth = Math.floor(wrapperWidth / data.length);
+    console.log("there are %d images and the top width is %d therefor each el width is %d",data.length,wrapperWidth,tagContainerWidth);
+
+    var tagContainerElement = $("<div class='"+tagName+" tagContainer'>");
+    tagContainerElement.width(tagContainerWidth);
+    var tagTitleElement = $("<div class='"+tagName+" tagTitle'>"+tagName+"</div>");
+    var tagImagesElement = $("<div class='"+tagName+" tagImages'>")
+    $("#searchbox").val("");
+    $("#result").append(tagContainerElement);
+    $(tagContainerElement).append(tagTitleElement);
+    $(tagContainerElement).append(tagImagesElement);
+
+    for (var j = 0; j < tagImages.length; j++) {
+      tagImages[j]
+      var imgElement =$("<img src='"+tagImages[j].imageUrl+"' alt='"+tagName+"' title='"+tagName+"'>")
+      $(tagImagesElement).prepend(imgElement);
+    };
+  };
+  var wrapperWidth = $("#result").width();
+  var tagContainerWidth = Math.floor(wrapperWidth / data.length);
+  imageSlider();
+  /*$(".tagContainer").fadeIn("slow",function(){
+    imageSlider();
+  })*/
+
+  //Try to animate the tag titles.
+  /*$('.tagContainer').each(function() {
+    var el = $(this);
+    // Make it static
+    el.css({
+      visibility: 'hidden', // Hide it so the position change isn't visible
+      position: 'static'
+    });
+    // Get the static position
+    var end = el.position();
+    // Turn it back to absolute
+    el.css({
+      visibility: 'visible', // Show it
+      position: 'absolute'
+    }).animate({ // Animate to the static position
+      top: end.top,
+      left: end.left
+    }, function() { // Make it static
+      $(this).css('position', 'static');
+    });
+  });*/
 
   // handle search box graphics
   $("#searchLoader").replaceWith(deleteButton);
@@ -117,6 +184,28 @@ socket.on('newData', function(data){
   });
 })
 
+function imageSlider(){
+  $(".tagImages").each(function(){
+    console.log("the set width of each el is %d",$(this).width());
+    var _this = this
+    var counter = 1
+    setInterval(function(){
+      console.log("sliding image %d of %d",counter,maxImages);
+      if(counter <= maxImages){
+       $(_this).find("img:hidden").last().slideDown("slow");
+       counter++;
+      }
+      else{
+        // console.log("a lot of images are here already");
+        $(_this).find("img:visible").last().fadeOut("slow",function(){
+          $(this).remove();
+          $(_this).find("img:hidden").last().slideDown("slow");
+        });
+      };
+    },imageRefreshInterval);
+  })
+}
+
 
 /*tags.on("add",function(tag){
   //do something when a tag is added
@@ -125,6 +214,7 @@ tags.on('change',function(tag){
   //do somehitng when a tagModel is changed. can also listen to a specific propertey that is changed - 'change:data'
 })*/
 
+//tags.get('bar').get('images')
 
 
 
