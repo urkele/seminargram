@@ -1,3 +1,115 @@
-body{font:14px "Lucida Grande",Helvetica,Arial,sans-serif;}
-a{color:#00B7FF;}
-#search{width:250px;margin:0 auto;}
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+a {
+  color: #00B7FF;
+}
+#title {
+  width: 200px;
+  margin: 0 auto;
+  font-family: Courier, monospace;
+}
+#title sup {
+  font-weight: bold;
+}
+.loader {
+  display: none;
+  height: 100%;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.8) url('../images/loader.gif') 50% 50% no-repeat;
+}
+.searchboxText {
+  line-height: 27px;
+  text-indent: 10px;
+  font-size: 1em;
+  color: #333;
+}
+#maincontainer {
+  width: 1280px;
+  text-align: center;
+  margin: 10px auto;
+  /*.tagContainerStart{
+    // width: 160px;
+    float: left;
+    text-align: center;
+    position: absolute;
+    z-index: -1;
+    top: 0;
+  }*/
+
+}
+#maincontainer #searchContainer {
+  width: 500px;
+  margin: 70px auto 40px;
+}
+#maincontainer #searchContainer input:focus {
+  outline: none;
+}
+#maincontainer #searchContainer #searchbox {
+  line-height: 27px;
+  text-indent: 10px;
+  font-size: 1em;
+  color: #333;
+  float: left;
+  width: 300px;
+  height: 27px;
+  background: #fff;
+  border: solid 1px #d9d9d9;
+  border-top: solid 1px #c0c0c0;
+  border-right: none;
+}
+#maincontainer #searchContainer #searchIndicator {
+  float: left;
+  width: 25px;
+  height: 29px;
+  line-height: 27px;
+  margin-right: 15px;
+  padding-right: 3px;
+  font-family: "Lucida Sans", "Lucida Sans Unicode", sans-serif;
+  font-size: 22px;
+  background: #fff;
+  border: solid 1px #d9d9d9;
+  border-top: solid 1px #c0c0c0;
+  border-left: none;
+  text-align: center;
+}
+#maincontainer #searchContainer #searchIndicator #delete {
+  color: #A1B9ED;
+  cursor: pointer;
+  display: none;
+}
+#maincontainer #searchContainer #searchIndicator #delete:hover {
+  color: #36c;
+}
+#maincontainer #searchContainer #searchIndicator .loader {
+  display: block;
+  height: 100%;
+  width: 100%;
+  background: url('../images/loader.gif') 50% 50% no-repeat;
+}
+#maincontainer #searchContainer #submitButton {
+  cursor: pointer;
+  color: #ddd;
+  font-size: 17px;
+  width: 70px;
+  height: 31px;
+  background-color: #4d90fe;
+  border: 1px solid #3079ED;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+#maincontainer #result {
+  position: relative;
+}
+#maincontainer #result .tagContainer {
+  float: left;
+  text-align: center;
+}
+#maincontainer #result .tagContainer .tagImages .geryBKG {
+  background-color: grey;
+  z-index: -1;
+}
+#maincontainer #result .tagContainer .tagImages img {
+  display: none;
+  position: relative;
+}

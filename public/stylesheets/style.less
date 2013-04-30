@@ -1,11 +1,21 @@
 body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  // background-color: grey;
 }
 
 a {
   color: #00B7FF;
 }
 
+#title {
+  width: 200px;
+  margin: 0 auto;
+  font-family: Courier, monospace;
+
+  sup {
+    font-weight: bold;
+  }
+}
 
 .loader{
   display: none;
@@ -31,7 +41,7 @@ a {
 
   #searchContainer {
     width: 500px;
-    margin: 70px auto 0;
+    margin: 70px auto 40px;
     // position: relative;
     
     input:focus {
@@ -111,31 +121,33 @@ a {
 
   #result{
     position: relative;
-  }
-  .tagContainer {  
-    // display: none;
-    float: left;
-    text-align: center;
+
+    .tagContainer {  
+      float: left;
+      text-align: center;
 
 
-    .tagTitle {
-      // font-size: 4em;
-    }
-
-    .tagImages{
-
-      img {
-        display: none;
-        width: 150px;
-        margin: 10px;
+      .tagTitle {
+        // font-size: 4em;
       }
-    }
-  }
 
-  #testResult {
-    display: none;
-    img {
-      margin: 10px;
+      .tagImages {
+
+        .geryBKG {
+          background-color: grey;
+          z-index: -1;
+        }
+
+
+        
+        img {
+          display: none;
+          position: relative;
+          // top: -100px;
+          // width: 150px;
+          // margin: 10px;
+        }
+      }
     }
   }
 }

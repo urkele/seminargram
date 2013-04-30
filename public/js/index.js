@@ -1,6 +1,6 @@
 var socket = io.connect();
 var maxImages = 4;
-var imageRefreshInterval = 1500;
+var imageRefreshInterval = 3000;
 // var socket = io.connect('http://seminargram.jit.su');
 
 var ImageModel = Backbone.Model.extend({
@@ -144,15 +144,13 @@ socket.on('newData', function(data){
     for (var j = 0; j < tagImages.length; j++) {
       tagImages[j]
       var imgElement =$("<img src='"+tagImages[j].imageUrl+"' alt='"+tagName+"' title='"+tagName+"'>")
+      imgElement.width(tagContainerWidth);
       $(tagImagesElement).prepend(imgElement);
     };
   };
   var wrapperWidth = $("#result").width();
   var tagContainerWidth = Math.floor(wrapperWidth / data.length);
   imageSlider();
-  /*$(".tagContainer").fadeIn("slow",function(){
-    imageSlider();
-  })*/
 
   //Try to animate the tag titles.
   /*$('.tagContainer').each(function() {
@@ -186,20 +184,66 @@ socket.on('newData', function(data){
 
 function imageSlider(){
   $(".tagImages").each(function(){
-    console.log("the set width of each el is %d",$(this).width());
     var _this = this
-    var counter = 1
+    console.log("the set width of each el is %d",$(this).width());
     setInterval(function(){
-      console.log("sliding image %d of %d",counter,maxImages);
-      if(counter <= maxImages){
-       $(_this).find("img:hidden").last().slideDown("slow");
-       counter++;
+      var displayedImagesNum = $(_this).find("img:visible").length
+      var imagesLeftInQueue = $(_this).find("img:hidden").length;
+      console.log("there are %d images displayed",displayedImagesNum);
+
+      //only 1 image
+      if(displayedImagesNum == 1 && !imagesLeftInQueue){
+        var lastImg = $(_this).find("img:visible")
+        if(!lastImg.parent().hasClass('geryBKG')){
+          lastImg.wrap("<div class='geryBKG' />");
+          lastImg.parent().width(lastImg.width());
+          lastImg.parent().height(lastImg.height());
+          // console.log("img width is %d and parnent width is %d",lastImg.width(),lastImg.parent().width());
+        }
+        var lastImgOpc = lastImg.css("opacity")
+        if(lastImgOpc >= 0.1){
+          lastImg.fadeTo('slow', (lastImgOpc-0.1));
+        }
       }
+
+
+      else if(displayedImagesNum < maxImages){
+        if(!imagesLeftInQueue){
+          $(_this).find("img:visible").last().fadeOut("slow",function(){
+            $(this).remove();
+          });
+        }
+        else {
+          $(_this).find("img:hidden").last().slideDown("slow");
+          /*var distance = $(_this).find("img:visible").first().height();
+          $(_this).find("img:visible")
+            .animate({
+              top: '+='+distance,
+            }, "slow");
+          $(_this).find("img:hidden").last()
+          .css({opacity: 0}).show()
+          .animate({
+            opacity: 1,
+            top: '+='+distance,
+          }, "slow");*/
+        }
+      }
+
       else{
-        // console.log("a lot of images are here already");
+        // var distance = $(_this).find("img:visible").first().height();
         $(_this).find("img:visible").last().fadeOut("slow",function(){
           $(this).remove();
           $(_this).find("img:hidden").last().slideDown("slow");
+          /*$(_this).find("img:visible")
+            .animate({
+              top: '+='+distance,
+            }, "slow");
+          $(_this).find("img:hidden").last()
+          .css({opacity: 0}).show()
+          .animate({
+            opacity: 1,
+            top: '+='+distance,
+          }, "slow");*/
         });
       };
     },imageRefreshInterval);
