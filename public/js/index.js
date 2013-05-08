@@ -1,7 +1,6 @@
 var socket = io.connect();
 var maxImages = 4;
-var imageRefreshInterval = 3000;
-// var socket = io.connect('http://seminargram.jit.su');
+var imageRefreshInterval = 5000;
 
 var ImageModel = Backbone.Model.extend({
   defaults: {
@@ -116,9 +115,23 @@ $(document).ready(function () {
       socket.emit('init', query);
     }
   })
+
+  $("#title").click(function(){
+    $("#secretControls").toggle();
+  })
+
+  $("#speedSelector").change(function(){
+    imageRefreshInterval = $(this).val()*1000;
+    $(this).next('span').html(imageRefreshInterval/1000);
+  });
+  $("#stopSubscriptions").click(function(){
+    console.log("sendstop");
+    socket.emit('subscriptions',{handle: "stop"});
+  });
 });
 
 
+  
 
 // get data from server
 socket.on('newData', function(data){

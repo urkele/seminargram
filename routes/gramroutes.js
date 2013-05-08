@@ -44,6 +44,16 @@ module.exports = {
           console.log("@gramroutes.createSocket - no tags requested")
         }
       });
+      socket.on('subscriptions',function(data){
+        console.log("@gramroutes.createSocket - got 'subscriptions' form client",data);
+        if (data.handle) {
+          if (data.handle == "stop") {
+            unsubscribeAll();
+          }
+
+        }
+        // data = stop, stop subscriptions
+      })
     });
   },
   getIndex : function(req, res){
@@ -149,18 +159,20 @@ module.exports = {
         // console.log("@gramroutes.getInitialData - the tags array is:", tags)
       }) //--end async.each
   },
-  unsubscribeAll: function(){
+  getPoster : function(req, res){
+    res.render('poster', { title: 'Seminargram' });
+  },
+};
+
+function unsubscribeAll(){
     console.log("@gramroutes.unsubscribeAll");
     instalib.unsubscribeAll(function(data){
       if (data != null) {
         console.log("@gramroutes.unsubscribeAll - error:", data)
       }
     });
-  },
-  getPoster : function(req, res){
-    res.render('poster', { title: 'Seminargram' });
-  },
-};
+  }
+
 
 function getInitialData(requestedTags,callback){
     // first unsubscribe from all previous subscriptions.
