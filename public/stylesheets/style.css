@@ -4,10 +4,15 @@ body {
 a {
   color: #00B7FF;
 }
+#secretControls {
+  float: left;
+  display: none;
+}
 #title {
   width: 200px;
   margin: 0 auto;
   font-family: Courier, monospace;
+  cursor: default;
 }
 #title sup {
   font-weight: bold;

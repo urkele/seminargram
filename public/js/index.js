@@ -156,7 +156,7 @@ socket.on('newData', function(data){
 
     for (var j = 0; j < tagImages.length; j++) {
       tagImages[j]
-      var imgElement =$("<img src='"+tagImages[j].imageUrl+"' alt='"+tagName+"' title='"+tagName+"'>")
+      var imgElement =$("<img src='"+tagImages[j]+"' alt='"+tagName+"' title='"+tagName+"'>")
       imgElement.width(tagContainerWidth);
       $(tagImagesElement).prepend(imgElement);
     };
