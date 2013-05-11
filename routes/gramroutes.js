@@ -166,6 +166,9 @@ var unsubscribeAll = function () {
     });
 }
 
+//expose unsubscribeAll
+module.exports.unsubscribeAll = unsubscribeAll;
+
 var handleImageDominantColor = function (imageUrl, callback) { // get image's dominant color and write it to the DB
     colorlib.getImageDominantColor (imageUrl, function (err, imageDominantColor) {
         if (err) {
