@@ -85,7 +85,7 @@ module.exports = {
                         unsubscribeAll();
                     }
                 }
-            })
+            });
         });
     },
     handshakeSubscription: function(req,res){
@@ -104,14 +104,38 @@ module.exports = {
             updatedTags[i] = updatedData[i].object_id;
         };
         console.log("@gramroutes.gotSubscription - updatedTags:", updatedTags);
-        async.map(updatedTags, getTagUpdatedData, function (err, results) {
+        async.each(updatedTags,
+            function (tagName, outerEachCallback) {
+                getTagUpdatedData(tagName, function (err, tag) {
+                    if (err) {
+                        outerEachCallback(err);
+                    }
+                    else {
+                        var clients = tag.subscription.registeredClients;
+                        var data = tag.data;
+                        async.each(clients,
+                            function (clientId, innerEachCallback) {
+                                io.sockets.socket(clientId).emit('newData', data);
+                                innerEachCallback();
+                            },
+                            function (err) {
+                                if (err) {
+                                    outerEachCallback(err);
+                                }
+                                else {
+                                    outerEachCallback();
+                                }
+                            });
+                    };
+                });
+            },
+            function (err) {
             if (err) {
-                console.log ("@gramroutes.gotSubscription.map err:", err);
+                console.log ("@gramroutes.gotSubscription.each err:", err);
                 // emit an (err);
             }
             else {
-                console.log ("@gramroutes.gotSubscription.map results:", results);
-                // emit (results);
+                //?
             };
         })
     },
@@ -231,7 +255,7 @@ var getTagUpdatedData = function (tagName, callback) {
                 tag.data.images = results.getTagUrlsandColor.getImagesUrlandColors;
                 tag.data.dominantColor = results.getTagUrlsandColor.getTagDominantColor;
                 tag.data.mediaCount = results.getTagMediaCount;
-                callback(null, tag.data);
+                callback(null, tag);
             }
         })
     }
