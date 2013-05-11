@@ -3,7 +3,6 @@ var async = require('async')
     , colorlib = require('../lib/colorlib.js')
     , dblib = require('../lib/dblib.js');
 
-var initialDataSent = false;
 var tags = {};
 
 function Tag(tagName) {
@@ -39,7 +38,6 @@ module.exports = {
                         else {
                             console.log("@gramroutes.createSocket - got initial data:", data);
                             socket.emit('newData', data);
-                            initialDataSent = true;
                         };
                     })
                 }
@@ -76,10 +74,6 @@ module.exports = {
             updatedTags[i] = updatedData[i].object_id;
         };
         console.log("@gramroutes.gotSubscription - updatedTags:", updatedTags);
-        if (!initialDataSent){ //TODO: is this really necessary? after all, the only difference is the subscription, which exists for sure.
-            console.log("@gramroutes.gotSubscription - initial data wasn't sent yet")
-            //TODO: exit
-        }
         async.map(updatedTags, getTagUpdatedData, function (err, results) {
             if (err) {
                 console.log ("@gramroutes.gotSubscription.map err:", err);
