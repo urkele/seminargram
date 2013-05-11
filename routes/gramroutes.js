@@ -3,6 +3,7 @@ var async = require('async')
     , colorlib = require('../lib/colorlib.js')
     , dblib = require('../lib/dblib.js');
 
+//an array that hold all of the currently subscribed tags and their up to date info
 var tags = {};
 
 function Tag(tagName) {
@@ -85,9 +86,12 @@ module.exports = {
             };
         })
     },
-    getPoster : function(req, res){
-        res.render('poster', { title: 'Seminargram' });
+    getPoster: function (req, res) {
+        res.render('poster', {title: 'Seminargram'});
     },
+    gettags: function (req, res) {
+        res.send(tags);
+    }
 };
 
 var unsubscribeAll = function () {
