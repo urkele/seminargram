@@ -32,7 +32,8 @@ app.configure('development', function(){
 
 app.get('/', gramroutes.getIndex);
 app.get('/subscriptions', gramroutes.handshakeSubscription);
-// app.post('/subscriptions', gramroutes.gotSubscription);
+app.post('/subscriptions', gramroutes.gotSubscription);
+app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);
 
 

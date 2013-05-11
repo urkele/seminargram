@@ -11,7 +11,7 @@ socket.on('connection', function(data){
   };
 });
 
-var url = "/subscriptions";
+var url = "/fakesubscriptions";
 
 $(document).ready(function(){
   $("form").submit(function(e){
