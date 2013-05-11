@@ -7,12 +7,44 @@ var async = require('async')
 var tags = {};
 
 function Tag(tagName) {
-    //TODO: maybe set up setters and getters
-    this.tagName = tagName;
-    this.images = new Array();
-    this.data = {}
-    this.data.tagDominantColor = null;
-    this.data.tagMediaCount = null;
+    this.data = {};    
+    this.data.tagName = tagName;
+    this.data.images = new Array();
+    this.data.dominantColor = null;
+    this.data.mediaCount = null;
+
+    this.subscription = {};
+    this.subscription.subscriptionId = null;
+    this.subscription.registeredClients = new Array();
+
+    //define setters
+    /*this.setImages = function (images) {
+        info.images = images;
+    };
+    this.setDominantColor = function (color) {
+        info.data.dominantColor = color;
+    };
+    this.setMediaCount = function (num) {
+        info.data.mediaCount = num;
+    };
+    this.setSubscriptionId = function (id) {
+        subscription.instagramSubscriptionId = id;
+    };*/
+    this.registerClient = function (clientId) {
+        this.subscription.registeredClients.push(clientId);
+    };
+
+    //define getters
+    /*this.getTegisteredClients = function () {
+        return subscription.registeredClients;
+    };
+    this.getSubscriptionId =function () {
+        return subscription.instagramSubscriptionId;
+    };
+    this.getInfo = function () {
+        return this.info;
+    };*/
+
 };
 
 module.exports = {
@@ -32,7 +64,7 @@ module.exports = {
                     var requestedTags = requestedTagsDirty;
                 };
                 if (requestedTags && requestedTags.length !== 0) {
-                    getInitialData(requestedTags, function(err, data) {
+                    getInitialData(requestedTags, socket.id, function(err, data) {
                         if (err) {
                             console.log("@gramroutes.createSocket - error getting initial data:", err);
                         }
@@ -55,9 +87,6 @@ module.exports = {
                 }
             })
         });
-    },
-    getIndex : function(req, res){
-        res.render('index', { title: 'sultag.it' });
     },
     handshakeSubscription: function(req,res){
         console.log("@gramroutes.handshakeSubscription");
@@ -85,6 +114,9 @@ module.exports = {
                 // emit (results);
             };
         })
+    },
+    getIndex : function(req, res){
+        res.render('index', { title: 'sultag.it' });
     },
     getPoster: function (req, res) {
         res.render('poster', {title: 'Seminargram'});
@@ -128,57 +160,57 @@ var handleImageDominantColor = function (imageUrl, callback) { // get image's do
     });
 }
 
-var getTagData = function (tagName, callback) {
-    //TODO: handle API errors - APINotAllowedError
-    async.parallel ({
-        getTagMediaCount: function (parallelCallback) {
-            instalib.getTagMediaCount(tagName, parallelCallback)
-        },
-        getTagUrlsandColor: function (parallelCallback) {
-            async.series ({
-                getImagesUrlandColors: function (seriesCallback) {
-                    instalib.getRecentImagesUrl(tagName, function (err, imagesUrl) {
-                        if (err) {
-                            console.log("@gramroutes.getImagesUrlandColors err", err);
-                            seriesCallback(err);
-                        }
-                        else {
-                            async.each(imagesUrl, handleImageDominantColor, function (err) {
-                                if (err) {
-                                    console.log("@gramroutes.getImagesUrlandColors.each err", err);
-                                    seriesCallback(err);
-                                };
-                            });
-                            // console.log("@gramroutes.getImagesUrlandColors imagesUrl = success");
-                            seriesCallback(null, imagesUrl);
-                        };
-                    });
-                },
-                getTagDominantColor: function (seriesCallback) {
-                    colorlib.getTagDominantColor(tagName, seriesCallback);
-                }
+    var getTagData = function (tagName, callback) {
+        //TODO: handle API errors - APINotAllowedError
+        async.parallel ({
+            getTagMediaCount: function (parallelCallback) {
+                instalib.getTagMediaCount(tagName, parallelCallback)
             },
-            function (err, results) { // this is the 'seriesCallback' which is called after all function are complete.
-                if (err) {
-                    console.log ("@gramroutes.getImagesInfo.series err:", err);
-                    parallelCallback (err);
-                }
-                else {
-                    parallelCallback (null, results);
-                };
-            })
-        }
-    },
-    function (err, results) { // this is the 'parallelCallback' which is called after all function are complete.
-        if (err) {
-            console.log ("@gramroutes.getTagData.parallel err:", err);
-            callback (err);
-        }
-        else {
-            // console.log ("@gramroutes.getTagData.parallel results:", results);
-            callback (null, results);
-        };
-    })
+            getTagUrlsandColor: function (parallelCallback) {
+                async.series ({
+                    getImagesUrlandColors: function (seriesCallback) {
+                        instalib.getRecentImagesUrl(tagName, function (err, imagesUrl) {
+                            if (err) {
+                                console.log("@gramroutes.getImagesUrlandColors err", err);
+                                seriesCallback(err);
+                            }
+                            else {
+                                async.each(imagesUrl, handleImageDominantColor, function (err) {
+                                    if (err) {
+                                        console.log("@gramroutes.getImagesUrlandColors.each err", err);
+                                        seriesCallback(err);
+                                    };
+                                });
+                                // console.log("@gramroutes.getImagesUrlandColors imagesUrl = success");
+                                seriesCallback(null, imagesUrl);
+                            };
+                        });
+                    },
+                    getTagDominantColor: function (seriesCallback) {
+                        colorlib.getTagDominantColor(tagName, seriesCallback);
+                    }
+                },
+                function (err, results) { // this is the 'seriesCallback' which is called after all function are complete.
+                    if (err) {
+                        console.log ("@gramroutes.getImagesInfo.series err:", err);
+                        parallelCallback (err);
+                    }
+                    else {
+                        parallelCallback (null, results);
+                    };
+                })
+            }
+        },
+        function (err, results) { // this is the 'parallelCallback' which is called after all function are complete.
+            if (err) {
+                console.log ("@gramroutes.getTagData.parallel err:", err);
+                callback (err);
+            }
+            else {
+                // console.log ("@gramroutes.getTagData.parallel results:", results);
+                callback (null, results);
+            };
+        })
 }
 
 var getTagUpdatedData = function (tagName, callback) {
@@ -196,22 +228,24 @@ var getTagUpdatedData = function (tagName, callback) {
             else {
                 // console.log ("@gramroutes.getTagUpdatedData.getTagData results:", results);
                 // set the Tag's properties
-                tag.images = results.getTagUrlsandColor.getImagesUrlandColors;
-                tag.data.tagDominantColor = results.getTagUrlsandColor.getTagDominantColor;
-                tag.data.tagMediaCount = results.getTagMediaCount;
-                callback(null, tag);
+                tag.data.images = results.getTagUrlsandColor.getImagesUrlandColors;
+                tag.data.dominantColor = results.getTagUrlsandColor.getTagDominantColor;
+                tag.data.mediaCount = results.getTagMediaCount;
+                callback(null, tag.data);
             }
         })
     }
 
 }
 
-var getTagInitialData = function (tagName, callback) {
+var getTagInitialData = function (tagName, clientId, callback) {
     if (tags[tagName]) {
         var tag = tags[tagName];
+        tag.registerClient(clientId);
     }
     else {
         var tag = new Tag (tagName);
+        tag.registerClient(clientId);
         tags[tagName] = tag;
     }
     async.parallel ({
@@ -219,7 +253,8 @@ var getTagInitialData = function (tagName, callback) {
             getTagData(tagName, parallelCallback);
         },
         subscribeTag: function (parallelCallback) {
-            if (typeof tag.subscriptionId === 'undefined' || tag.subscriptionId == null || tag.subscriptionId == "") {
+            var id = tag.subscription.subscriptionId;
+            if (typeof id === 'undefined' || id == null || id == "") {
                 instalib.subscribeTag (tagName, function (err, subscriptionId) {
                     if (err) {
                         console.log ("@gramroutes.getTagInitialData.subscribeTag err:", err);
@@ -232,7 +267,7 @@ var getTagInitialData = function (tagName, callback) {
             }
             else {
                 console.log ("@gramroutes.getTagInitialData.subscribeTag - already subscribed to tag:", tagName);
-                parallelCallback(null, tag.subscriptionId); //take care not to overwrite the subscription ID afterwards.
+                parallelCallback(null, id); //take care not to overwrite the subscription ID afterwards.
             };
         }
     },
@@ -243,23 +278,34 @@ var getTagInitialData = function (tagName, callback) {
         }
         else {
             //set the Tag's properties
-            tag.images = results.getTagData.getTagUrlsandColor.getImagesUrlandColors;
-            tag.data.tagDominantColor = results.getTagData.getTagUrlsandColor.getTagDominantColor;
-            tag.data.tagMediaCount = results.getTagData.getTagMediaCount;
-            tag.subscriptionId = results.subscribeTag;
-            callback(null, tag);
+            tag.data.images = results.getTagData.getTagUrlsandColor.getImagesUrlandColors;
+            tag.data.dominantColor = results.getTagData.getTagUrlsandColor.getTagDominantColor;
+            tag.data.mediaCount = results.getTagData.getTagMediaCount;
+            tag.subscription.subscriptionId = results.subscribeTag;
+            callback(null, tag.data);
         };
     })
 }
 
-var getInitialData = function (requestedTags, callback) {
-    async.map (requestedTags, getTagInitialData, function (err, results) {
-        if (err) {
-            console.log ("@gramroutes.getInitialData.map err:", err);
-            callback (err);
-        }
-        else {
-            callback (null, results);
-        };
-    })
+var getInitialData = function (requestedTags, clientId, callback) {
+    async.map (requestedTags,
+        function(tagName, mapCallback) {
+            getTagInitialData (tagName, clientId, function (err, results) {
+                if (err) {
+                    mapCallback(err);
+                }
+                else {
+                    mapCallback(null, results);
+                }
+            })
+        },
+        function (err, results) {
+            if (err) {
+                console.log ("@gramroutes.getInitialData.map err:", err);
+                callback (err);
+            }
+            else {
+                callback (null, results);
+            };
+        })
 }
