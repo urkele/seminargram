@@ -18,32 +18,9 @@ function Tag(tagName) {
     this.subscription.registeredClients = new Array();
 
     //define setters
-    /*this.setImages = function (images) {
-        info.images = images;
-    };
-    this.setDominantColor = function (color) {
-        info.data.dominantColor = color;
-    };
-    this.setMediaCount = function (num) {
-        info.data.mediaCount = num;
-    };
-    this.setSubscriptionId = function (id) {
-        subscription.instagramSubscriptionId = id;
-    };*/
     this.registerClient = function (clientId) {
         this.subscription.registeredClients.push(clientId);
     };
-
-    //define getters
-    /*this.getTegisteredClients = function () {
-        return subscription.registeredClients;
-    };
-    this.getSubscriptionId =function () {
-        return subscription.instagramSubscriptionId;
-    };
-    this.getInfo = function () {
-        return this.info;
-    };*/
 
 };
 
@@ -100,7 +77,8 @@ module.exports = {
     gotSubscription: function (req, res) {
         res.send(200);
         // console.log("@gramroutes.gotSubscription - req.body:", req.body);
-        var updatedData = req.body;
+        // var updatedData = req.body; //real data
+        var updatedData = req.body.data; //localhost simulator
         // console.log("@gramroutes.gotSubscription - updatedData:", updatedData);
         var updatedTags = new Array();
         for (var i = 0; i < updatedData.length; i++) {
