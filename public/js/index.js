@@ -191,6 +191,7 @@ socket.on('newData', function(data){
         if (tags.get(tagName)) {
             console.log("@newData - existing tag", tagName);
             updateTag(data[i]);
+            $(".tagImages."+tagName).find(".greyBKG").children().unwrap();
         }
         else {
             // new tag
@@ -214,8 +215,8 @@ function imageSlider(){
             //only 1 image
             if(displayedImagesNum == 1 && !imagesLeftInQueue){
                 var lastImg = $(_this).find("img:visible")
-                if(!lastImg.parent().hasClass('geryBKG')){
-                    lastImg.wrap("<div class='geryBKG' />");
+                if(!lastImg.parent().hasClass('greyBKG')){
+                    lastImg.wrap("<div class='greyBKG' />");
                     lastImg.parent().width(lastImg.width());
                     lastImg.parent().height(lastImg.height());
                     // console.log("img width is %d and parnent width is %d",lastImg.width(),lastImg.parent().width());
