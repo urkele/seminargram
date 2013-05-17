@@ -1,4 +1,4 @@
-var socket = io.connect();
+var socket = io.connect("https://sultag.it",{secure: true});
 var maxImages = 4;
 var imageRefreshInterval = 5000;
 

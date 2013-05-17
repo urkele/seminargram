@@ -51,7 +51,10 @@ module.exports = {
     //create socket session
     createSocket: function (server) {
         io = require('socket.io').listen(server);
-        io.set('log level', 1); // set socket.io logging level to 'warn'
+        io.configure(function () {
+            io.set('flash policy server', false);
+            io.set('log level', 1); // set socket.io logging level to 'warn'
+        })
         io.sockets.on('connection', function (socket) {
             socket.emit('connection', 'connected');
             socket.on('init', function (requestedTagsDirty) {
@@ -96,8 +99,8 @@ module.exports = {
     },
     gotSubscription: function (req, res) {
         res.send(200);
-        console.log("@gramroutes.gotSubscription - req.body:", req.body);
-        var updatedData = req.body.data;
+        // console.log("@gramroutes.gotSubscription - req.body:", req.body);
+        var updatedData = req.body;
         // console.log("@gramroutes.gotSubscription - updatedData:", updatedData);
         var updatedTags = new Array();
         for (var i = 0; i < updatedData.length; i++) {
