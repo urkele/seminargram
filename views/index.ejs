@@ -1,29 +1,34 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="js/underscore.js"></script>
-    <script type="text/javascript" src="js/backbone.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-  </head>
-  <body>
-    <div id="secretControls">
-      <input id="stopSubscriptions"type="button" value="stop sub"></br>
-      <input id="speedSelector" type="range" min="0.5" max="15" step="0.5" value="5"><span>5</span> sec.
-    </div>
-    <div id="title"><%= title %><sup>beta</sup></div>
-    <div id="maincontainer">
-      <div id="searchContainer">
-        <div id="searchForm">
-          <input type="text" id="searchbox" placeholder="enter sentence (english only)"><div id="searchIndicator"><span id="delete">X</span></div></input>
-          <input type="button" id="submitButton" name="go" value="Go">
+    <head>
+        <title><%= title %></title>
+        <link rel='stylesheet' href='/stylesheets/style.css' />
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="js/underscore.js"></script>
+        <script type="text/javascript" src="js/backbone.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </head>
+    <body>
+        <div id="maincontainer">
+            <div id="secretControls">
+                <input id="stopSubscriptions"type="button" value="stop sub"></br>
+                <input id="speedSelector" type="range" min="0.5" max="15" step="0.5" value="5"><span>5</span> sec.
+            </div>
+            <div id="title">
+                <%= title %><sup>beta</sup>
+            </div>
+            <div id="searchForm">
+                <input type="text" id="searchbox" placeholder="enter sentence (english only)" />
+                <div id="searchIndicator">
+                    <span id="delete">X</span>
+                </div>
+                <input type="button" id="submitButton" name="go" value="Go">
+            </div>
+            <div id="result">
+                <div id="resultTitles"></div>
+                <div id="resultImages"></div>
+            </div>
         </div>
-      </div>
-      <div id="result">
-      </div>
-    </div>
-  </body>
+    </body>
 </html>

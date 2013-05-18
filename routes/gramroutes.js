@@ -220,7 +220,7 @@ var handleImageDominantColor = function (imageUrl, callback) { // get image's do
 
 var getTagUpdatedData = function (tagName, callback) {
     if (!tags[tagName]) {
-        var err = "cannot match tag '" + tagName + "'' to list of existing tags";
+        var err = "cannot match tag '" + tagName + "' to list of existing tags";
         console.log ("@gramroutes.getTagUpdatedData err:", err);
         callback (err);
     }

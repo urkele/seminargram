@@ -51,6 +51,33 @@ socket.on('connection', function(data){
         console.log("something wrong with the socket.io connection");
     };
 });
+
+//connection stages
+socket.on('connect', function () {
+    console.log("socket.io - socket connected successfully");
+});
+socket.on('connecting', function () {
+    console.log("socket.io - socket is attempting to connect with the server");
+});
+socket.on('disconnect', function () {
+    console.log("socket.io - socket disconnected");
+});
+socket.on('connect_failed', function () {
+    console.log("socket.io - failed to establish a connection to the server and has no more transports to fallback to");
+});
+socket.on('error', function () {
+    console.log("socket.io - an error occured and it cannot be handled by the other event types");
+});
+socket.on('reconnect_failed', function () {
+    console.log("socket.io - failed to re-establish a working connection after the connection was dropped");
+});
+socket.on('reconnect', function () {
+    console.log("socket.io - successfully reconnected to the server");
+});
+socket.on('reconnecting', function () {
+    console.log("socket.io - attempting to reconnect with the server");
+});
+
 socket.on('debug', function (data) {
     console.log(data);
 });
@@ -87,7 +114,7 @@ $(document).ready(function () {
 
     $("#submitButton").click(function () {
         // empty current images
-        $("#result").empty();
+        $("#result").children().empty();
         var queryString = $("#searchbox").val().trim();
         if (queryString !== ""){
             var query = queryString.split(" ");
@@ -129,22 +156,33 @@ $(document).ready(function () {
 function newTag (tagName) {
     var tagContainerElement = $("<div class='"+tagName+" tagContainer'>");
     tagContainerElement.width(imageSideLength);
+
     var tagTitleElement = $("<div class='"+tagName+" tagTitle'>"+tagName+"</div>");
+    tagTitleElement.width(imageSideLength);
+    $("#resultTitles").append(tagTitleElement);
     var tagImagesElement = $("<div class='"+tagName+" tagImages'>");
-    $("#result").append(tagContainerElement);
-    $(tagContainerElement).append(tagTitleElement);
-    $(tagContainerElement).append(tagImagesElement);
+    tagImagesElement.width(imageSideLength);
+    // $("#result").append(tagContainerElement);
+    // $(tagContainerElement).append(tagTitleElement);
+
+    $("#resultImages").append(tagImagesElement);
+    // $(tagContainerElement).append(tagImagesElement);
     tagImages = tags.get(tagName).get("images");
     prependImages(tagName, tagImages);
 }
 
 function calculateSideLength (tagsCount) {
+    var searchDivHeight = $("#searchForm").outerHeight(true);
+    var titleDivHeight = $("#title").outerHeight(true);
+    var resultTitlesDivHeight = $("#resultTitles").outerHeight(true);
+    var otherDivHeight = searchDivHeight + titleDivHeight + resultTitlesDivHeight;
+    var windowHeight = $(window).height();
+    var maxResultHeight = windowHeight - otherDivHeight;
+
     var wrapperWidth = $("#maincontainer").width();
-    var searchDivHeight = $("#searchContainer").height();
-    var titleDivHeight = $("#title").height();
 
     var maxWidth = Math.floor(wrapperWidth / tagsCount);
-    var maxHeight = (window.innerHeight - titleDivHeight - searchDivHeight) / maxImages;
+    var maxHeight = Math.floor((maxResultHeight / maxImages)*0.9);
 
     return maxWidth < maxHeight ? maxWidth : maxHeight
 }
@@ -194,7 +232,6 @@ socket.on('newData', function(data){
             $(".tagImages."+tagName).find(".greyBKG").children().unwrap();
         }
         else {
-            // new tag
             console.log("@newData - new tag", tagName);
             tags.add(data[i]);
             newTag(tagName);
