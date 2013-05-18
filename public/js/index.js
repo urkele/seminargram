@@ -243,44 +243,71 @@ socket.on('newData', function(data){
 function imageSlider(){
     $(".tagImages").each(function(){
         var _this = this
-        // console.log("the set width of each el is %d",$(this).width());
         setInterval(function(){
-            var displayedImagesNum = $(_this).find("img:visible").length
-            var imagesLeftInQueue = $(_this).find("img:hidden").length;
-            // console.log("there are %d images displayed",displayedImagesNum);
+            var imgBrutoSideLength = $(_this).find("img").outerWidth();
+            console.log("imgBrutoSideLength:",imgBrutoSideLength);
+            var animationSpeed = 1;
+            var visibleImgs = $(_this).find("img:visible");
+            var hiddenImages = $(_this).find("img:hidden");
+            var imagesLeftInQueue = hiddenImages.length;
+            var lastHiddenImg = hiddenImages.last();
+            var lastVisibleImg = visibleImgs.last();
+            console.log("imageSlider - visible images - %d; queue - ", visibleImgs.length, imagesLeftInQueue);
 
-            //only 1 image
-            if(displayedImagesNum == 1 && !imagesLeftInQueue){
-                var lastImg = $(_this).find("img:visible")
-                if(!lastImg.parent().hasClass('greyBKG')){
-                    lastImg.wrap("<div class='greyBKG' />");
-                    lastImg.parent().width(lastImg.width());
-                    lastImg.parent().height(lastImg.height());
-                    // console.log("img width is %d and parnent width is %d",lastImg.width(),lastImg.parent().width());
+            //only 1 image left
+            if(visibleImgs.length == 1 && !imagesLeftInQueue){
+                if(!lastVisibleImg.parent().hasClass('greyBKG')){
+                    lastVisibleImg.wrap("<div class='greyBKG' />");
+                    lastVisibleImg.parent().width(lastVisibleImg.width());
+                    lastVisibleImg.parent().height(lastVisibleImg.height());
                 }
-                var lastImgOpc = lastImg.css("opacity")
-                if(lastImgOpc >= 0.1){
-                    lastImg.fadeTo('slow', (lastImgOpc-0.1));
+                var lastVisibleImgOpc = lastVisibleImg.css("opacity")
+                if(lastVisibleImgOpc >= 0.1){
+                    lastVisibleImg.fadeTo('slow', (lastVisibleImgOpc-0.1));
                 }
             }
-            else if(displayedImagesNum < maxImages){
+            //working the way up to total images displayed
+            else if(visibleImgs.length < maxImages){
                 if(!imagesLeftInQueue){
-                    $(_this).find("img:visible").last().fadeOut("slow",function(){
-                        $(this).remove();
+                    console.log("@imageSlider - going down from %d to 1", maxImages);
+                    TweenLite.to(lastVisibleImg, animationSpeed, {top: "+=100", autoAlpha: 0,
+                        onComplete: function () {
+                            $(lastVisibleImg).remove();
+                        }
                     });
                 }
                 else {
-                    $(_this).find("img:hidden").last().slideDown("slow");
+                    console.log("@imageSlider - going up from %d to %d", visibleImgs.length, maxImages);
+                    slideInNewImg(lastHiddenImg, animationSpeed, visibleImgs, imgBrutoSideLength)
                 }
             }
-
             else{
-                $(_this).find("img:visible").last().fadeOut("slow",function(){
-                    $(this).remove();
-                    $(_this).find("img:hidden").last().slideDown("slow");
+                console.log("@imageSlider - all %d images are on. meaning there are %d images visible", maxImages, visibleImgs.length);
+                TweenLite.to(lastVisibleImg, animationSpeed, {top: "+=100", autoAlpha: 0,
+                    onComplete: function () {
+                        $(lastVisibleImg).remove();
+                    },
+                    onStart: slideInNewImg(lastHiddenImg, animationSpeed, visibleImgs, imgBrutoSideLength)
                 });
+
             };
         },imageRefreshInterval);
     })
-}
+};
 
+/*function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
+    var startFromDistance = -50;
+    TweenLite.to(visibleImgs, speed, {top: "+="+slideDownDistance,
+        onStart: function () {
+            TweenLite.fromTo(img, speed, {top: startFromDistance, display: "block", autoAlpha: 0}, {top: 0, autoAlpha: 1,
+                onStart: function () {
+                    $(visibleImgs).css("top", 0);
+                }
+            });
+        }
+    })
+};*/
+function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
+    var startFromDistance = -50;
+    TweenLite.fromTo(img, speed, {top: startFromDistance, display: "block", autoAlpha: 0}, {top: 0, autoAlpha: 1});
+};
