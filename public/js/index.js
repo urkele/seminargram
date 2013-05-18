@@ -191,7 +191,7 @@ function prependImages (tagName, tagImages) {
     for (var i = 0; i < tagImages.length; i++) {
         tagImages[i]
         var imgElement =$("<img src='"+tagImages[i]+"' alt='"+tagName+"' title='"+tagName+"'>")
-        imgElement.width(imageSideLength);
+        imgElement.height(0);
         var parentElement = $(".tagImages."+tagName);
         $(parentElement).prepend(imgElement);
     };
@@ -295,19 +295,7 @@ function imageSlider(){
     })
 };
 
-/*function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
-    var startFromDistance = -50;
-    TweenLite.to(visibleImgs, speed, {top: "+="+slideDownDistance,
-        onStart: function () {
-            TweenLite.fromTo(img, speed, {top: startFromDistance, display: "block", autoAlpha: 0}, {top: 0, autoAlpha: 1,
-                onStart: function () {
-                    $(visibleImgs).css("top", 0);
-                }
-            });
-        }
-    })
-};*/
 function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
     var startFromDistance = -50;
-    TweenLite.fromTo(img, speed, {top: startFromDistance, display: "block", autoAlpha: 0}, {top: 0, autoAlpha: 1});
+    TweenLite.fromTo(img, speed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imageSideLength, display: "block"});
 };

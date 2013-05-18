@@ -2,7 +2,7 @@ body{font:16px "Lucida Grande",Helvetica,Arial,sans-serif;}
 a{color:#00B7FF;}
 .loader{display:none;height:100%;width:100%;background:rgba(255, 255, 255, 0.8) url('../images/loader.gif') 50% 50% no-repeat;}
 .searchboxText{text-indent:2%;font-size:1em;color:#333;}
-.tagResultFloater{float:left;}
+.tagResultElement{float:left;margin:0 0.5%;}
 #maincontainer{width:1200px;text-align:center;margin:10px auto;}#maincontainer #secretControls{position:absolute;display:none;}
 #maincontainer #title{font-family:Courier, monospace;cursor:default;}#maincontainer #title sup{font-weight:bold;}
 #maincontainer #searchForm{text-indent:2%;font-size:1em;color:#333;width:33%;margin:5% auto 3%;}#maincontainer #searchForm input:focus{outline:none;}
@@ -11,6 +11,6 @@ a{color:#00B7FF;}
 #maincontainer #searchForm #searchIndicator .loader{display:block;height:100%;width:100%;background:url('../images/loader.gif') 50% 50% no-repeat;}
 #maincontainer #searchForm #submitButton{cursor:pointer;color:#ddd;font-size:1em;width:15%;height:2em;background-color:#4d90fe;border:1px solid #3079ED;-moz-border-radius:2px;-webkit-border-radius:2px;}
 #maincontainer #result{position:relative;width:100%;}#maincontainer #result #resultTitles{height:3em;}
-#maincontainer #result .tagTitle{float:left;}
-#maincontainer #result .tagImages{float:left;}#maincontainer #result .tagImages .greyBKG{background-color:grey;z-index:-1;}
-#maincontainer #result .tagImages img{display:none;position:relative;}
+#maincontainer #result .tagTitle{float:left;margin:0 0.5%;}
+#maincontainer #result .tagImages{float:left;margin:0 0.5%;}#maincontainer #result .tagImages .greyBKG{background-color:grey;z-index:-1;}
+#maincontainer #result .tagImages img{display:none;position:relative;margin:7% auto;}
