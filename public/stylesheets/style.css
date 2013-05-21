@@ -1,4 +1,4 @@
-body{font:16px "Lucida Grande",Helvetica,Arial,sans-serif;}
+body{font:16px "Lucida Grande",Helvetica,Arial,sans-serif;overflow:hidden;}
 a{color:#00B7FF;}
 .loader{display:none;height:100%;width:100%;background:rgba(255, 255, 255, 0.8) url('../images/loader.gif') 50% 50% no-repeat;}
 .searchboxText{text-indent:2%;font-size:1em;color:#333;}

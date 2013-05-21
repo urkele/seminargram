@@ -78,14 +78,12 @@ module.exports = {
         res.send(200);
         // console.log("@gramroutes.gotSubscription - req.body:", req.body);
         if (process.env.NODE_ENV) {
-            console.log("@gramroutes.gotSubscription - NODE_ENV:", process.env.NODE_ENV);
             var updatedData = req.body; //real production data
         }
         else {
-            console.log("@gramroutes.gotSubscription - NODE_ENV:", process.env.NODE_ENV);
             var updatedData = req.body.data; //localhost simulator
         }
-        console.log("@gramroutes.gotSubscription - updatedData:", updatedData);
+        // console.log("@gramroutes.gotSubscription - updatedData:", updatedData);
         var updatedTags = new Array();
         for (var i = 0; i < updatedData.length; i++) {
             updatedTags[i] = updatedData[i].object_id;
