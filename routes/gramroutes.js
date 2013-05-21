@@ -77,7 +77,7 @@ module.exports = {
     gotSubscription: function (req, res) {
         res.send(200);
         // console.log("@gramroutes.gotSubscription - req.body:", req.body);
-        // var updatedData = req.body; //real data
+        // var updatedData = req.body; //real production data
         var updatedData = req.body.data; //localhost simulator
         // console.log("@gramroutes.gotSubscription - updatedData:", updatedData);
         var updatedTags = new Array();
