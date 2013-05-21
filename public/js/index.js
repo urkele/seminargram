@@ -1,5 +1,10 @@
-// var socket = io.connect("https://sultag.it",{secure: true}); //production connetion
-var socket = io.connect(); //localhost connection
+
+if (document.title.indexOf("local") == -1) {
+    var socket = io.connect("https://sultag.it",{secure: true}); //production (remote) secure connetion
+}
+else {
+    var socket = io.connect(); //localhost non secure connection
+}
 var maxImages = 4;
 var imageRefreshInterval = 5000;
 
@@ -52,7 +57,7 @@ socket.on('connection', function(data){
     };
 });
 
-//connection stages
+/*//connection stages
 socket.on('connect', function () {
     console.log("socket.io - socket connected successfully");
 });
@@ -80,7 +85,7 @@ socket.on('reconnecting', function () {
 
 socket.on('debug', function (data) {
     console.log(data);
-});
+});*/
 
 //send data to server
 $(document).ready(function () {
