@@ -16,6 +16,8 @@ function Tag(tagName) {
     this.subscription = {};
     this.subscription.subscriptionId = null;
     this.subscription.registeredClients = new Array();
+    this.pagination = {};
+    this.pagination.min_tag_id = null; //to get only the most recent data
 
     //define setters
     this.registerClient = function (clientId) {
@@ -49,7 +51,7 @@ module.exports = {
                             console.log("@gramroutes.createSocket - error getting initial data:", err);
                         }
                         else {
-                            console.log("@gramroutes.createSocket - got initial data:", data);
+                            // console.log("@gramroutes.createSocket - got initial data:", data);
                             socket.emit('newData', data);
                         };
                     })
@@ -71,7 +73,7 @@ module.exports = {
     handshakeSubscription: function(req,res){
         console.log("@gramroutes.handshakeSubscription");
         instalib.handshake(req,res,function(data){
-            console.log("@gramroutes.handshakeSubscription - verify token is:", data);
+            // console.log("@gramroutes.handshakeSubscription - verify token is:", data);
         });
     },
     gotSubscription: function (req, res) {
@@ -98,6 +100,8 @@ module.exports = {
                     else {
                         var clients = tag.subscription.registeredClients;
                         var data = tag.data;
+                        // console.log("@gramroutes.gotSubscription - sending data:", data);
+
                         async.each(clients,
                             function (clientId, innerEachCallback) {
                                 io.sockets.socket(clientId).emit('newData', data);
@@ -174,57 +178,59 @@ var handleImageDominantColor = function (imageUrl, callback) { // get image's do
     });
 }
 
-    var getTagData = function (tagName, callback) {
-        //TODO: handle API errors - APINotAllowedError
-        async.parallel ({
-            getTagMediaCount: function (parallelCallback) {
-                instalib.getTagMediaCount(tagName, parallelCallback)
-            },
-            getTagUrlsandColor: function (parallelCallback) {
-                async.series ({
-                    getImagesUrlandColors: function (seriesCallback) {
-                        instalib.getRecentImagesUrl(tagName, function (err, imagesUrl) {
-                            if (err) {
-                                console.log("@gramroutes.getImagesUrlandColors err", err);
-                                seriesCallback(err);
-                            }
-                            else {
-                                async.each(imagesUrl, handleImageDominantColor, function (err) {
-                                    if (err) {
-                                        console.log("@gramroutes.getImagesUrlandColors.each err", err);
-                                        seriesCallback(err);
-                                    };
-                                });
-                                // console.log("@gramroutes.getImagesUrlandColors imagesUrl = success");
-                                seriesCallback(null, imagesUrl);
-                            };
-                        });
-                    },
-                    getTagDominantColor: function (seriesCallback) {
-                        colorlib.getTagDominantColor(tagName, seriesCallback);
-                    }
-                },
-                function (err, results) { // this is the 'seriesCallback' which is called after all function are complete.
-                    if (err) {
-                        console.log ("@gramroutes.getImagesInfo.series err:", err);
-                        parallelCallback (err);
-                    }
-                    else {
-                        parallelCallback (null, results);
-                    };
-                })
-            }
+var getTagData = function (tagName, callback) {
+    //TODO: handle API errors - APINotAllowedError
+    async.parallel ({
+        getTagMediaCount: function (parallelCallback) {
+            instalib.getTagMediaCount(tagName, parallelCallback)
         },
-        function (err, results) { // this is the 'parallelCallback' which is called after all function are complete.
-            if (err) {
-                console.log ("@gramroutes.getTagData.parallel err:", err);
-                callback (err);
-            }
-            else {
-                // console.log ("@gramroutes.getTagData.parallel results:", results);
-                callback (null, results);
-            };
-        })
+        getTagUrlsandColor: function (parallelCallback) {
+            async.series ({
+                getImagesUrlandColors: function (seriesCallback) {
+                    var min_tag_id = tags[tagName].pagination.min_tag_id;
+                    instalib.getRecentImagesUrl(tagName, min_tag_id, function (err, imagesUrl, min_tag_id) {
+                        if (err) {
+                            console.log("@gramroutes.getImagesUrlandColors err", err);
+                            seriesCallback(err);
+                        }
+                        else {
+                            async.each(imagesUrl, handleImageDominantColor, function (err) {
+                                if (err) {
+                                    console.log("@gramroutes.getImagesUrlandColors.each err", err);
+                                    seriesCallback(err);
+                                };
+                            });
+                            tags[tagName].pagination.min_tag_id = min_tag_id;
+                            // console.log("@gramroutes.getImagesUrlandColors imagesUrl = success");
+                            seriesCallback(null, imagesUrl);
+                        };
+                    });
+                },
+                getTagDominantColor: function (seriesCallback) {
+                    colorlib.getTagDominantColor(tagName, seriesCallback);
+                }
+            },
+            function (err, results) { // this is the 'seriesCallback' which is called after all function are complete.
+                if (err) {
+                    console.log ("@gramroutes.getImagesInfo.series err:", err);
+                    parallelCallback (err);
+                }
+                else {
+                    parallelCallback (null, results);
+                };
+            })
+        }
+    },
+    function (err, results) { // this is the 'parallelCallback' which is called after all function are complete.
+        if (err) {
+            console.log ("@gramroutes.getTagData.parallel err:", err);
+            callback (err);
+        }
+        else {
+            // console.log ("@gramroutes.getTagData.parallel results:", results);
+            callback (null, results);
+        };
+    })
 }
 
 var getTagUpdatedData = function (tagName, callback) {
