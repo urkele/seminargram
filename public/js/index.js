@@ -7,7 +7,7 @@ else {
     var socket = io.connect(); //localhost non secure connection
     var imageRefreshInterval = 1500; //faster images
 }
-var maxImages = 4;
+var maxImages = 3;
 
 var TagModel = Backbone.Model.extend({
     idAttribute: "tagName",
