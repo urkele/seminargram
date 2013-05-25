@@ -64,7 +64,9 @@ module.exports = {
                 console.log("@gramroutes.createSocket - got 'subscriptions' form client", data);
                 if (data.handle) {
                     if (data.handle == "stop") {
-                        unsubscribeAll();
+                        unsubscribeAll(function (data) {
+                            socket.emit('debug', {"unsubscribed": data});
+                        });
                     }
                 }
             });
@@ -144,12 +146,15 @@ module.exports = {
     }
 };
 
-var unsubscribeAll = function () {
+var unsubscribeAll = function (callback) {
     console.log ("@gramroutes.unsubscribeAll");
     instalib.unsubscribeAll (function (data) {
         if (data != null) {
-            console.log ("@gramroutes.unsubscribeAll - error:", data)
-        }
+            console.log ("@gramroutes.unsubscribeAll - error:", data);
+        };
+        if (typeof callback == "function") {
+            callback(data)
+        };
     });
 }
 

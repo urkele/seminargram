@@ -24,15 +24,19 @@ var TagsCollection = Backbone.Collection.extend({
 var deleteButton = '<span id="delete">X</span>'
 var searchLoader = "<div class='loader' id='searchLoader'></div>"
 
-// Handle socket events
-socket.on('connection', function(data){
-    if(data == 'connected'){
+// server connected
+socket.on('connection', function (data) {
+    if (data == 'connected') {
         console.log("connection:", data);
     }
-    else{
+    else {
         console.log("something wrong with the socket.io connection");
     };
 });
+
+socket.on('debug', function (data) {
+    console.log("message from server:", data);
+})
 
 $(document).ready(function () {
     // if text input field value is not empty show the "X" button
@@ -81,7 +85,7 @@ $(document).ready(function () {
         imageRefreshInterval = $(this).val()*1000;
         $(this).next('span').html(imageRefreshInterval/1000);
     });
-    
+
     $("#stopSubscriptions").click(function(){
         console.log("sendstop");
         socket.emit('subscriptions',{handle: "stop"});
