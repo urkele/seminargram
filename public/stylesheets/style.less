@@ -1,156 +1,138 @@
 body {
-  font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
-  overflow: hidden;
+    font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
+    overflow: hidden;
 }
 
 a {
-  color: #00B7FF;
+    color: #00B7FF;
 }
 
-
-
 .loader {
-  display: none;
-  height: 100%;
-  width: 100%;
-  background: rgba( 255, 255, 255, .8 ) 
-              url('../images/loader.gif') 
-              50% 50% 
-              no-repeat;
+    display: none;
+    height: 100%;
+    width: 100%;
+    background: rgba( 255, 255, 255, .8 ) 
+                            url('../images/loader.gif') 
+                            50% 50% 
+                            no-repeat;
 }
 
 .searchboxText {
-  // line-height:27px;
-  text-indent:2%; 
-  font-size:1em; 
-  color:#333;
+    text-indent:2%; 
+    font-size:1em; 
+    color:#333;
 }
 
 // if changes are mase to margin/padding/border of this styling, make sure to propogate them in index.js->calculateSideLength
 .tagResultElement {
-  float: left;
-  margin: 0 0.5%
+    float: left;
+    margin: 0 0.5%
 }
 
 #maincontainer {
-  width: 1200px;
-  text-align: center;
-  margin: 10px auto;
+    width: 1200px;
+    text-align: center;
+    margin: 10px auto;
 
-  #secretControls {
-    // float: left;
-    position: absolute;
-    display: none;
-  }
-
-  #title {
-    font-family: Courier, monospace;
-    cursor: default;
-
-    sup {
-      font-weight: bold;
-    }
-  }
-
-  #searchForm {
-    .searchboxText;
-    width: 33%;
-    margin: 5% auto 3%;
-    // position: relative;
-    
-    input:focus {
-      outline: none;
-    }
-
-    #searchbox {
-      .searchboxText;
-      float: left; 
-      width: 70%; 
-      height: 1.7em;  
-      // background: #fff; 
-      border: solid 1px #d9d9d9; 
-      border-top: solid 1px #c0c0c0; 
-      border-right: none;
-    }
-
-
-    #searchIndicator {
-      float: left; 
-      width: 5%;
-      height: 1.8em; 
-      // line-height: 27px; 
-      // margin-right: 15px; 
-      padding-right: 1%;
-      // font-family: "Lucida Sans", "Lucida Sans Unicode",sans-serif;
-      // font-size: 1em; 
-      // background: #fff;  
-      border: solid 1px #d9d9d9; 
-      border-top: solid 1px #c0c0c0; 
-      border-left: none;
-      // text-align: center;
-
-      #delete {
-      color:#A1B9ED; 
-      cursor:pointer;
-      display:none;
-      vertical-align: middle;
-
-        &:hover {
-          color:#36c;
-        }
-      }
-
-      .loader{
-        display: block;
-        // cursor: pointer;
-        height: 100%;
-        width: 100%;
-        background: url('../images/loader.gif') 
-                    50% 50% 
-                    no-repeat;
-      }
-
-    }
-    #submitButton {
-      cursor:pointer; 
-      color: #ddd;
-      font-size: 1em;
-      width:15%; 
-      height: 2em; 
-      background-color: #4d90fe;  
-      border: 1px solid #3079ED; 
-      -moz-border-radius: 2px; 
-      -webkit-border-radius: 2px; 
-    }
-  }
-
-  #result{
-    position: relative;
-    width: 100%;
-
-    #resultTitles {
-      height: 3em;
-    }
-
-    .tagTitle {
-      .tagResultElement;
-      // font-size: 4em;
-    }
-
-    .tagImages {
-      .tagResultElement;
-
-      .greyBKG {
-        background-color: grey;
-        z-index: -1;
-      }
-
-      img {
+    #secretControls {
+        // float: left;
+        position: absolute;
         display: none;
-        position: relative;
-        margin: 7% auto;
-      }
     }
-  }
+
+    #title {
+        font-family: Courier, monospace;
+        cursor: default;
+
+        sup {
+            font-weight: bold;
+        }
+    }
+
+    #searchForm {
+        .searchboxText;
+        width: 33%;
+        margin: 5% auto 3%;   
+
+        input:focus {
+            outline: none;
+        }
+
+        #searchbox {
+            .searchboxText;
+            float: left; 
+            width: 70%; 
+            height: 1.7em;  
+            border: solid 1px #d9d9d9; 
+            border-top: solid 1px #c0c0c0; 
+            border-right: none;
+        }
+
+        #searchIndicator {
+            float: left; 
+            width: 5%;
+            height: 1.8em; 
+            padding-right: 1%;
+            border: solid 1px #d9d9d9; 
+            border-top: solid 1px #c0c0c0; 
+            border-left: none;
+
+            #delete {
+                color:#A1B9ED; 
+                cursor:pointer;
+                display:none;
+                vertical-align: middle;
+
+                    &:hover {
+                        color:#36c;
+                    }
+            }
+
+            .loader{
+                display: block;
+                // cursor: pointer;
+                height: 100%;
+                width: 100%;
+                background: url('../images/loader.gif') 
+                                        50% 50% 
+                                        no-repeat;
+            }
+        }
+
+        #submitButton {
+            cursor:pointer; 
+            color: #ddd;
+            font-size: 1em;
+            width:15%; 
+            height: 2em; 
+            background-color: #4d90fe;  
+            border: 1px solid #3079ED; 
+            -moz-border-radius: 2px; 
+            -webkit-border-radius: 2px; 
+        }
+    }
+
+    #result{
+        position: relative;
+        width: 100%;
+
+        #resultTitles {
+            height: 3em;
+
+            .tagTitle {
+                .tagResultElement;
+                // font-size: 4em;
+            }
+        }
+
+        .tagImages {
+            .tagResultElement;
+            img {
+                display: none;
+                position: relative;
+                margin: 7% auto;
+            }
+        }
+    }
 
 }

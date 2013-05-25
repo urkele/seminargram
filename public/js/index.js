@@ -208,7 +208,6 @@ function updateTag (data) {
     var tagName = data.tagName;
     var tagNewImage = data.images;
     // console.log("@updateTag for", tagName);
-    $(".tagImages."+tagName).find(".greyBKG").children().unwrap();
     prependImages(tagName, tagNewImage);
 }
 
@@ -256,14 +255,8 @@ function imageSlider (tagName) { //TODO: add a skip flag that sets the lastRefre
 
     //only 1 image left
     if (visibleImgs.length == 1 && !imagesLeftInQueue) {
-        if (!lastVisibleImg.parent().hasClass('greyBKG')) {
-            lastVisibleImg.wrap("<div class='greyBKG' />");
-            lastVisibleImg.parent().width(lastVisibleImg.width());
-            lastVisibleImg.parent().height(lastVisibleImg.height());
-        }
         var lastVisibleImgOpc = lastVisibleImg.css("opacity")
         if(lastVisibleImgOpc >= 0.1){
-            // lastVisibleImg.fadeTo('slow', (lastVisibleImgOpc-0.1));
             TweenLite.to(lastVisibleImg, animationSpeed, {opacity: lastVisibleImgOpc - 0.1})
         }
     }
