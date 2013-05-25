@@ -1,9 +1,8 @@
-//color pallett variables:
-@textColor: #ffffff;
-@invertTextColor: #F08080;
-@bkgColor: #F08080;
-@invertBkgColor: #ffffff;
-@hoverTextColor: #cccccc;
+//color palette variables:
+@mainColor: #F08080;
+@secondaryColor: #FEE1E1;
+@invertColor: #ffffff;
+@secondaryInvertColor: #F0F0F0;
 
 body {
     font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -14,7 +13,7 @@ body {
     display: none;
     height: 100%;
     width: 100%;
-    background: @bkgColor 
+    background: @mainColor 
                 url('../images/loader.gif') 
                 50% 50% 
                 no-repeat;
@@ -23,7 +22,7 @@ body {
 .searchboxText {
     text-indent:2%; 
     font-size:1em; 
-    color: @textColor;
+    color: @invertColor;
 }
 
 // if changes are mase to margin/padding/border of this styling, make sure to propogate them in index.js->calculateSideLength
@@ -46,7 +45,7 @@ body {
     #title {
         font-family: Courier, monospace;
         cursor: default;
-        color: @invertTextColor;
+        color: @mainColor;
 
         sup {
             font-weight: bold;
@@ -66,16 +65,16 @@ body {
 
             //placeholder styling
             &::-webkit-input-placeholder { /* WebKit browsers */
-                color: @textColor;
+                color: @secondaryColor;
             }
             &:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-                color: @textColor;
+                color: @secondaryColor;
             }
             &::-moz-placeholder { /* Mozilla Firefox 19+ */
-                color: @textColor;
+                color: @secondaryColor;
             }
             &:-ms-input-placeholder { /* Internet Explorer 10+ */
-                color: @textColor;
+                color: @secondaryColor;
             }
         }
 
@@ -84,10 +83,10 @@ body {
             float: left; 
             width: 70%; 
             height: 1.7em;  
-            border: solid 1px @bkgColor; 
+            border: solid 1px @mainColor; 
             // border-top: solid 1px #c0c0c0; 
             border-right: none;
-            background-color: @bkgColor;
+            background-color: @mainColor;
         }
 
         #searchIndicator {
@@ -95,19 +94,19 @@ body {
             width: 5%;
             height: 1.8em; 
             padding-right: 1%;
-            border: solid 1px @bkgColor; 
+            border: solid 1px @mainColor; 
             // border-top: solid 1px #c0c0c0; 
             border-left: none;
-            background-color: @bkgColor;
+            background-color: @mainColor;
 
             #delete {
-                color:@textColor; 
+                color:@secondaryColor; 
                 cursor:pointer;
                 display:none;
                 vertical-align: middle;
 
                     &:hover {
-                        color: @hoverTextColor;
+                        color: @invertColor;
                     }
             }
 
@@ -124,12 +123,12 @@ body {
 
         #submitButton {
             cursor:pointer; 
-            color: @invertTextColor;
+            color: @mainColor;
             font-size: 1em;
             width:15%; 
             height: 2em; 
-            background-color: @invertBkgColor;  
-            border: 1px solid @bkgColor; 
+            background-color: @invertColor;  
+            border: 1px solid @mainColor; 
             -moz-border-radius: 2px; 
             -webkit-border-radius: 2px; 
         }

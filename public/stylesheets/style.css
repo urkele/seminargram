@@ -5,12 +5,12 @@ body{font:16px "Lucida Grande",Helvetica,Arial,sans-serif;overflow:hidden;}
 #maincontainer{width:1200px;text-align:center;margin:10px auto;}#maincontainer #secretControls{position:absolute;display:none;}
 #maincontainer #title{font-family:Courier, monospace;cursor:default;color:#f08080;}#maincontainer #title sup{font-weight:bold;}
 #maincontainer #searchForm{text-indent:2%;font-size:1em;color:#ffffff;width:33%;margin:5% auto 3%;}#maincontainer #searchForm input:focus{outline:none;}
-#maincontainer #searchForm input::-webkit-input-placeholder{color:#ffffff;}
-#maincontainer #searchForm input:-moz-placeholder{color:#ffffff;}
-#maincontainer #searchForm input::-moz-placeholder{color:#ffffff;}
-#maincontainer #searchForm input:-ms-input-placeholder{color:#ffffff;}
+#maincontainer #searchForm input::-webkit-input-placeholder{color:#fee1e1;}
+#maincontainer #searchForm input:-moz-placeholder{color:#fee1e1;}
+#maincontainer #searchForm input::-moz-placeholder{color:#fee1e1;}
+#maincontainer #searchForm input:-ms-input-placeholder{color:#fee1e1;}
 #maincontainer #searchForm #searchbox{text-indent:2%;font-size:1em;color:#ffffff;float:left;width:70%;height:1.7em;border:solid 1px #f08080;border-right:none;background-color:#f08080;}
-#maincontainer #searchForm #searchIndicator{float:left;width:5%;height:1.8em;padding-right:1%;border:solid 1px #f08080;border-left:none;background-color:#f08080;}#maincontainer #searchForm #searchIndicator #delete{color:#ffffff;cursor:pointer;display:none;vertical-align:middle;}#maincontainer #searchForm #searchIndicator #delete:hover{color:#cccccc;}
+#maincontainer #searchForm #searchIndicator{float:left;width:5%;height:1.8em;padding-right:1%;border:solid 1px #f08080;border-left:none;background-color:#f08080;}#maincontainer #searchForm #searchIndicator #delete{color:#fee1e1;cursor:pointer;display:none;vertical-align:middle;}#maincontainer #searchForm #searchIndicator #delete:hover{color:#ffffff;}
 #maincontainer #searchForm #searchIndicator .loader{display:block;height:100%;width:100%;background:url('../images/loader.gif') 50% 50% no-repeat;}
 #maincontainer #searchForm #submitButton{cursor:pointer;color:#f08080;font-size:1em;width:15%;height:2em;background-color:#ffffff;border:1px solid #f08080;-moz-border-radius:2px;-webkit-border-radius:2px;}
 #maincontainer #result{position:relative;width:100%;}#maincontainer #result #resultTitles{height:3em;}#maincontainer #result #resultTitles .tagTitle{float:left;margin:0 0.5%;}
