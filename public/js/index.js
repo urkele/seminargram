@@ -263,7 +263,8 @@ function imageSlider (tagName) { //TODO: add a skip flag that sets the lastRefre
         }
         var lastVisibleImgOpc = lastVisibleImg.css("opacity")
         if(lastVisibleImgOpc >= 0.1){
-            lastVisibleImg.fadeTo('slow', (lastVisibleImgOpc-0.1));
+            // lastVisibleImg.fadeTo('slow', (lastVisibleImgOpc-0.1));
+            TweenLite.to(lastVisibleImg, animationSpeed, {opacity: lastVisibleImgOpc - 0.1})
         }
     }
     //working the way up to total images displayed
