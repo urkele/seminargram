@@ -8,6 +8,9 @@ else {
     var imageRefreshInterval = 1500; //faster images
 }
 var maxImages = 3;
+var maxTags = 6;
+var illegalCharactersInHashtags = /[^\w]/;
+var illegalCharactersInSentence = /[^\w\s]/;
 
 //backbone models and collections
 var TagModel = Backbone.Model.extend({
@@ -77,6 +80,23 @@ $(document).ready(function () {
         }
     })
 
+    $('#searchbox').keyup(function (e) {
+        if (e.which !== 13) { //return key
+            var str = $("#searchbox").val().trim();
+            if (e.which == 32) { //spacebar key
+                var wordsCount = str.split(illegalCharactersInHashtags).length;
+                if (wordsCount >= maxTags) {
+                    // alert("max words");
+                    $("#searchbox").val(str);
+                }
+            }
+            if (str.match(illegalCharactersInSentence)) {
+                // alert("only legal chars plaese");
+                $("#searchbox").val(str.slice(0, - 1));
+            }
+        }
+    })
+
     $("#title").click(function(){
         $("#secretControls").toggle();
     })
@@ -93,7 +113,11 @@ $(document).ready(function () {
 });
 
 function startNewQuery (queryString) {
-    var tags = queryString.split(" ");
+    var tags = queryString.split(illegalCharactersInHashtags);
+    //only 6 tags are allowed
+    if (tags.length > maxTags) {
+        tags.length = maxTags;
+    }
     console.log("@startNewQuery - sending query",tags);
     // create the tagsCollection if it doesn't exist
     if (typeof tagsCollection == "undefined" || !tagsCollection) {
