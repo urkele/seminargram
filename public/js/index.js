@@ -9,6 +9,7 @@ else {
 }
 var maxImages = 3;
 
+//backbone models and collections
 var TagModel = Backbone.Model.extend({
     idAttribute: "tagName",
     defaults: {
@@ -33,36 +34,6 @@ socket.on('connection', function(data){
     };
 });
 
-/*//connection stages
-socket.on('connect', function () {
-    console.log("socket.io - socket connected successfully");
-});
-socket.on('connecting', function () {
-    console.log("socket.io - socket is attempting to connect with the server");
-});
-socket.on('disconnect', function () {
-    console.log("socket.io - socket disconnected");
-});
-socket.on('connect_failed', function () {
-    console.log("socket.io - failed to establish a connection to the server and has no more transports to fallback to");
-});
-socket.on('error', function () {
-    console.log("socket.io - an error occured and it cannot be handled by the other event types");
-});
-socket.on('reconnect_failed', function () {
-    console.log("socket.io - failed to re-establish a working connection after the connection was dropped");
-});
-socket.on('reconnect', function () {
-    console.log("socket.io - successfully reconnected to the server");
-});
-socket.on('reconnecting', function () {
-    console.log("socket.io - attempting to reconnect with the server");
-});
-
-socket.on('debug', function (data) {
-    console.log(data);
-});*/
-
 $(document).ready(function () {
     // if text input field value is not empty show the "X" button
     $("#searchbox").keyup(function() {
@@ -79,7 +50,6 @@ $(document).ready(function () {
         $(this).hide();
     });
 
-
     //bind 'enter' keystroke to the submit button click handler
     $('#searchbox').keypress(function(e){
             if(e.which == 13){//Enter key pressed
@@ -93,12 +63,11 @@ $(document).ready(function () {
     });
 
     $("#submitButton").click(function () {
-        // empty current images
-        $("#result").children().empty();
         var queryString = $("#searchbox").val().trim();
         if (queryString !== ""){
-
-            startNewQuery(queryString);
+            destroyPreviousQuery(function () {
+                startNewQuery(queryString);
+            });
             //start loader animation
             $("#delete").replaceWith(searchLoader);
         }
@@ -112,6 +81,7 @@ $(document).ready(function () {
         imageRefreshInterval = $(this).val()*1000;
         $(this).next('span').html(imageRefreshInterval/1000);
     });
+    
     $("#stopSubscriptions").click(function(){
         console.log("sendstop");
         socket.emit('subscriptions',{handle: "stop"});
@@ -121,8 +91,10 @@ $(document).ready(function () {
 function startNewQuery (queryString) {
     var tags = queryString.split(" ");
     console.log("@startNewQuery - sending query",tags);
-    // create the tagsCollection
-    tagsCollection = new TagsCollection;
+    // create the tagsCollection if it doesn't exist
+    if (typeof tagsCollection == "undefined" || !tagsCollection) {
+        tagsCollection = new TagsCollection;
+    }
     //register events in collection
     /*tagsCollection.on("add",function(tag){
         // console.log("something added to tagsCollection collection:", tag);
@@ -131,17 +103,29 @@ function startNewQuery (queryString) {
         //do somehitng when a tagModel is changed. can also listen to a specific propertey that is changed - 'change:data'
         // console.log("something changed in tagsCollection collection:", tag);
     })*/
-    
     //get Initial data from server
     socket.emit('init', tags);
     makeTagElemnts(tags);
 }
 
+function destroyPreviousQuery (callback) {
+    console.log("@destroyPreviousQuery");
+    if (typeof tagsCollection !== "undefined" && tagsCollection.length !== 0) {
+        //get all inervalID from all tags and stop intervals (intervalID)
+        var intervals = tagsCollection.pluck("intervalID");
+        for (var i = 0; i < intervals.length; i++) {
+            clearInterval(intervals[i]);
+        };
+        // destroy previous models
+        tagsCollection.reset();
+    }
+    // empty current images
+    $("#result").children().empty();
+    callback();
+}
 
 function makeTagElemnts (tags) {
-    // set global image side's length
     window.imageSideLength = calculateSideLength(tags.length);
-    console.log("imageSideLength",imageSideLength);
     var tagTitleStyleElement = $("<style type='text/css'> .tagTitle{width: "+imageSideLength+"px} </style>");
     var tagImagesStyleElement = $("<style type='text/css'> .tagImages{width: "+imageSideLength+"px} </style>");
     $("head").append(tagTitleStyleElement, tagImagesStyleElement);
@@ -156,7 +140,6 @@ function makeTagElemnts (tags) {
         $("#resultImages").append(tagImagesElement);
     };
 }
-
 
 function calculateSideLength (tagsCount) {
     // The margin/padding/border as set in the css/less file, should be taken into account.
@@ -212,7 +195,7 @@ function updateTag (data) {
 }
 
 // recived data from server
-socket.on('newData', function(data){
+socket.on('newData', function(data) {
     // in case only 1 object is returned, it does not have a "length" property, therefor we wrap it in an array
     if (typeof data.length == "undefined") {
         var _data = data;
@@ -241,7 +224,7 @@ socket.on('newData', function(data){
     };
 })
 
-function imageSlider (tagName) { //TODO: add a skip flag that sets the lastRefresh to 0
+function imageSlider (tagName) {
     var tagImagesElement = $(".tagImages."+tagName);
     var imgBrutoSideLength = $(tagImagesElement).find("img").outerWidth();
     // console.log("imgBrutoSideLength:",imgBrutoSideLength);
