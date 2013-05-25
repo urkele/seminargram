@@ -246,7 +246,7 @@ function imageSlider (tagName) { //TODO: add a skip flag that sets the lastRefre
     var tagImagesElement = $(".tagImages."+tagName);
     var imgBrutoSideLength = $(tagImagesElement).find("img").outerWidth();
     // console.log("imgBrutoSideLength:",imgBrutoSideLength);
-    var animationSpeed = 1;
+    var animationSpeed = imageRefreshInterval > 1000 ? 1 : imageRefreshInterval / 1000 * 0.50;
     var visibleImgs = $(tagImagesElement).find("img:visible");
     var hiddenImages = $(tagImagesElement).find("img:hidden");
     var imagesLeftInQueue = hiddenImages.length;
