@@ -1,14 +1,17 @@
 body{font:16px "Lucida Grande",Helvetica,Arial,sans-serif;overflow:hidden;}
-a{color:#00B7FF;}
-.loader{display:none;height:100%;width:100%;background:rgba(255, 255, 255, 0.8) url('../images/loader.gif') 50% 50% no-repeat;}
-.searchboxText{text-indent:2%;font-size:1em;color:#333;}
+.loader{display:none;height:100%;width:100%;background:#f08080 url('../images/loader.gif') 50% 50% no-repeat;}
+.searchboxText{text-indent:2%;font-size:1em;color:#ffffff;}
 .tagResultElement{float:left;margin:0 0.5%;}
 #maincontainer{width:1200px;text-align:center;margin:10px auto;}#maincontainer #secretControls{position:absolute;display:none;}
-#maincontainer #title{font-family:Courier, monospace;cursor:default;}#maincontainer #title sup{font-weight:bold;}
-#maincontainer #searchForm{text-indent:2%;font-size:1em;color:#333;width:33%;margin:5% auto 3%;}#maincontainer #searchForm input:focus{outline:none;}
-#maincontainer #searchForm #searchbox{text-indent:2%;font-size:1em;color:#333;float:left;width:70%;height:1.7em;border:solid 1px #d9d9d9;border-top:solid 1px #c0c0c0;border-right:none;}
-#maincontainer #searchForm #searchIndicator{float:left;width:5%;height:1.8em;padding-right:1%;border:solid 1px #d9d9d9;border-top:solid 1px #c0c0c0;border-left:none;}#maincontainer #searchForm #searchIndicator #delete{color:#A1B9ED;cursor:pointer;display:none;vertical-align:middle;}#maincontainer #searchForm #searchIndicator #delete:hover{color:#36c;}
+#maincontainer #title{font-family:Courier, monospace;cursor:default;color:#f08080;}#maincontainer #title sup{font-weight:bold;}
+#maincontainer #searchForm{text-indent:2%;font-size:1em;color:#ffffff;width:33%;margin:5% auto 3%;}#maincontainer #searchForm input:focus{outline:none;}
+#maincontainer #searchForm input::-webkit-input-placeholder{color:#ffffff;}
+#maincontainer #searchForm input:-moz-placeholder{color:#ffffff;}
+#maincontainer #searchForm input::-moz-placeholder{color:#ffffff;}
+#maincontainer #searchForm input:-ms-input-placeholder{color:#ffffff;}
+#maincontainer #searchForm #searchbox{text-indent:2%;font-size:1em;color:#ffffff;float:left;width:70%;height:1.7em;border:solid 1px #f08080;border-right:none;background-color:#f08080;}
+#maincontainer #searchForm #searchIndicator{float:left;width:5%;height:1.8em;padding-right:1%;border:solid 1px #f08080;border-left:none;background-color:#f08080;}#maincontainer #searchForm #searchIndicator #delete{color:#ffffff;cursor:pointer;display:none;vertical-align:middle;}#maincontainer #searchForm #searchIndicator #delete:hover{color:#cccccc;}
 #maincontainer #searchForm #searchIndicator .loader{display:block;height:100%;width:100%;background:url('../images/loader.gif') 50% 50% no-repeat;}
-#maincontainer #searchForm #submitButton{cursor:pointer;color:#ddd;font-size:1em;width:15%;height:2em;background-color:#4d90fe;border:1px solid #3079ED;-moz-border-radius:2px;-webkit-border-radius:2px;}
+#maincontainer #searchForm #submitButton{cursor:pointer;color:#f08080;font-size:1em;width:15%;height:2em;background-color:#ffffff;border:1px solid #f08080;-moz-border-radius:2px;-webkit-border-radius:2px;}
 #maincontainer #result{position:relative;width:100%;}#maincontainer #result #resultTitles{height:3em;}#maincontainer #result #resultTitles .tagTitle{float:left;margin:0 0.5%;}
 #maincontainer #result .tagImages{float:left;margin:0 0.5%;}#maincontainer #result .tagImages img{display:none;position:relative;margin:7% auto;}
