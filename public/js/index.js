@@ -24,9 +24,6 @@ var TagsCollection = Backbone.Collection.extend({
     model: TagModel
 });
 
-var deleteButton = '<span id="delete">X</span>'
-var searchLoader = "<div class='loader' id='searchLoader'></div>"
-
 // server connected
 socket.on('connection', function (data) {
     if (data == 'connected') {
@@ -42,20 +39,6 @@ socket.on('debug', function (data) {
 })
 
 $(document).ready(function () {
-    // if text input field value is not empty show the "X" button
-    $("#searchbox").keyup(function() {
-        if ($.trim($("#searchbox").val()) !== "") {
-            $("#delete").fadeIn();
-        }
-        else {
-            $("#delete").fadeOut();
-        }
-    });
-
-    $("#delete").click(function() {
-        $("#searchbox").val("");
-        $(this).hide();
-    });
 
     //bind 'enter' keystroke to the submit button click handler
     $('#searchbox').keypress(function(e){
@@ -76,8 +59,6 @@ $(document).ready(function () {
             destroyPreviousQuery(function () {
                 startNewQuery(queryString);
             });
-            //start loader animation
-            $("#delete").replaceWith(searchLoader);
         }
     })
 
@@ -233,11 +214,6 @@ socket.on('newData', function(data) {
     if (tagsCollection.length == 0) { // if this is all initial data
         // handle search box graphics
         $("#searchbox").val("");
-        $("#searchLoader").replaceWith(deleteButton);
-        $("#delete").click(function() {
-            $("#searchbox").val("");
-            $(this).hide();
-        });     
     }
     for (var i = 0; i < data.length; i++) {
         var tagName = data[i].tagName;
