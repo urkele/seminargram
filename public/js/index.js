@@ -61,6 +61,7 @@ $(document).ready(function () {
     $('#searchbox').keypress(function(e){
             if(e.which == 13){//Enter key pressed
                     $('#submitButton').click();//Trigger search button click event
+                    $(this).blur();
             }
     });
     $('#submitButton').keypress(function(e){
@@ -175,10 +176,9 @@ function calculateSideLength (tagsCount) {
     var padding = 0;
     var border = 0;
 
-    var searchDivHeight = $("#searchForm").outerHeight(true);
-    var titleDivHeight = $("#title").outerHeight(true);
+    var topDivHeight = $("#top").outerHeight(true);
     var resultTitlesDivHeight = $("#resultTitles").outerHeight(true);
-    var otherDivHeight = searchDivHeight + titleDivHeight + resultTitlesDivHeight;
+    var otherDivHeight = topDivHeight + resultTitlesDivHeight;
     var windowHeight = $(window).height();
     var maxResultHeight = windowHeight - otherDivHeight;
 
