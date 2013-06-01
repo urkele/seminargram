@@ -140,7 +140,7 @@ function destroyPreviousQuery (callback) {
 function makeTagElemnts (tags) {
     window.imageSideLength = calculateSideLength(tags.length);
     var tagTitleStyleElement = $("<style type='text/css'> .tagTitle{width: "+imageSideLength+"px} </style>");
-    var tagImagesStyleElement = $("<style type='text/css'> .tagImages{width: "+imageSideLength+"px} </style>");
+    var tagImagesStyleElement = $("<style type='text/css'> .tagImages{width: "+imageSideLength+"px; height: 1px;} </style>");
     $("head").append(tagTitleStyleElement, tagImagesStyleElement);
     
     for (var i = 0; i < tags.length; i++) {
@@ -152,6 +152,7 @@ function makeTagElemnts (tags) {
         var tagImagesElement = $("<div class='"+tagName+" tagImages'>");
         $("#resultImages").append(tagImagesElement);
     };
+    displayLoader($(".tagImages"), "", false);
 }
 
 function calculateSideLength (tagsCount) {
@@ -193,6 +194,7 @@ function newTag (data) {
     tagsCollection.add(data,{merge: true});
     var tagName = data.tagName;
     var tagImages = data.images;
+    removeLoader($(".tagImages."+tagName));
     prependImages(tagName, tagImages);
     var intervalID = setInterval(function () {imageSlider(tagName)},imageRefreshInterval);
     tagsCollection.get(tagName).set({intervalID: intervalID});
@@ -280,3 +282,30 @@ function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
     var startFromDistance = -50;
     TweenLite.fromTo(img, speed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imageSideLength, display: "block"});
 };
+
+function displayLoader (parentElement, message, overlay) {
+    var loaderWrapper = $("<div class='loaderWrapper'>" +
+                            "<div class='loaderMessage'>"+message+"</div>" +
+                            "<div class='circularGWrapper'>" +
+                                "<div id='circularG_1' class='circularG'></div>" +
+                                "<div id='circularG_2' class='circularG'></div>" +
+                                "<div id='circularG_3' class='circularG'></div>" +
+                                "<div id='circularG_4' class='circularG'></div>" +
+                                "<div id='circularG_5' class='circularG'></div>" +
+                                "<div id='circularG_6' class='circularG'></div>" +
+                                "<div id='circularG_7' class='circularG'></div>" +
+                                "<div id='circularG_8' class='circularG'></div>" +
+                            "</div>" +
+                        "</div>");
+    loaderWrapper.width(parentElement.width());
+    if (overlay) {
+        loaderWrapper.addClass("loaderWrapperOverlay");
+    }
+    parentElement.prepend(loaderWrapper);
+}
+
+function removeLoader (parentElement) {
+    parentElement.find(".loaderWrapper").remove();
+}
+
+
