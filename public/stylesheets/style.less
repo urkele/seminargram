@@ -3,9 +3,10 @@
 @secondaryColor: #FEE1E1;
 @invertColor: #ffffff;
 @secondaryInvertColor: #F0F0F0;
+@overlayColor: fadeout(#000000, 25%);
 
 body {
-    margin: 0;
+    // margin: 0;
     font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
     overflow: hidden;
 }
@@ -16,31 +17,37 @@ body {
     height: 100%;
     text-align: center;
 
-    .loaderMessage {
-        color: @mainColor;
+    .loaderContent {
         position: relative;
-    }
-
-    .circularGWrapper {
-        position:relative;
-        width:50px;
-        height:50px;
-        margin: 1% auto 0;
-    }
-
-    &.loaderWrapperOverlay {
-        background-color: fadeout(#000000, 50%);
-        // opacity: 0.5;
 
         .loaderMessage {
-            top: 50%;
+            color: @mainColor;
+            position: relative;
         }
 
         .circularGWrapper {
-            top: 50%;
+            position:relative;
+            width:50px;
+            height:50px;
+            margin: 1% auto 0;
         }
+    }
 
-        .circularG {
+    &.loaderWrapperOverlay {
+        background-color: @overlayColor;
+
+        .loaderContent {
+            position: fixed;
+            top: 40%;
+
+            @media only screen {
+                @media (min-device-width : 1200px) {
+                    left: 42.5%;
+                }
+                @media (min-device-width : 768px) and (max-device-width : 1024px) {
+                    left: 38%;
+                }
+            }
         }
     }
 

@@ -27,6 +27,7 @@ var TagsCollection = Backbone.Collection.extend({
 // server connected
 socket.on('connection', function (data) {
     if (data == 'connected') {
+        removeLoader($("body"));
         console.log("connection:", data);
     }
     else {
@@ -38,7 +39,43 @@ socket.on('debug', function (data) {
     console.log("message from server:", data);
 })
 
+//server connection status
+// connection lost temporarily
+socket.on('connecting', function () {
+    console.log("connection lost - connecting");
+    displayLoader($("body"), "Connection lost - trying to reconnect", true);
+});
+socket.on('disconnect', function () {
+    console.log("connection lost - disconnect");
+    displayLoader($("body"), "Connection lost - trying to reconnect", true);
+});
+//connection lost permenantly
+socket.on('connect_failed', function () {
+    console.log("connection lost - connect_failed");
+    displayLoader($("body"), "Failed to connect - please restart the app", true);
+});
+socket.on('error', function () {
+    console.log("connection lost - error");
+    displayLoader($("body"), "Failed to connect - please restart the app", true);
+});
+socket.on('reconnect_failed', function () {
+    console.log("connection lost - reconnect_failed");
+    displayLoader($("body"), "Failed to connect - please restart the app", true);
+});
+socket.on('reconnecting', function () {
+    console.log("connection lost - reconnecting");
+    displayLoader($("body"), "Failed to connect - please restart the app", true);
+});
+//connection back on
+socket.on('reconnect', function () {
+    console.log("connection found - reconnect");
+    removeLoader($("body"));
+});
+
+
 $(document).ready(function () {
+    //start connecting to server animation
+    displayLoader($("body"), "Please Wait - Connecting to server", true);
 
     //bind 'enter' keystroke to the submit button click handler
     $('#searchbox').keypress(function(e){
@@ -284,17 +321,23 @@ function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
 };
 
 function displayLoader (parentElement, message, overlay) {
+    if (parentElement.find(".loaderWrapper").length !== 0) {
+        console.log("wrapper exists");
+        return;
+    }
     var loaderWrapper = $("<div class='loaderWrapper'>" +
-                            "<div class='loaderMessage'>"+message+"</div>" +
-                            "<div class='circularGWrapper'>" +
-                                "<div id='circularG_1' class='circularG'></div>" +
-                                "<div id='circularG_2' class='circularG'></div>" +
-                                "<div id='circularG_3' class='circularG'></div>" +
-                                "<div id='circularG_4' class='circularG'></div>" +
-                                "<div id='circularG_5' class='circularG'></div>" +
-                                "<div id='circularG_6' class='circularG'></div>" +
-                                "<div id='circularG_7' class='circularG'></div>" +
-                                "<div id='circularG_8' class='circularG'></div>" +
+                            "<div class='loaderContent'>" +
+                                "<div class='loaderMessage'>"+message+"</div>" +
+                                "<div class='circularGWrapper'>" +
+                                    "<div id='circularG_1' class='circularG'></div>" +
+                                    "<div id='circularG_2' class='circularG'></div>" +
+                                    "<div id='circularG_3' class='circularG'></div>" +
+                                    "<div id='circularG_4' class='circularG'></div>" +
+                                    "<div id='circularG_5' class='circularG'></div>" +
+                                    "<div id='circularG_6' class='circularG'></div>" +
+                                    "<div id='circularG_7' class='circularG'></div>" +
+                                    "<div id='circularG_8' class='circularG'></div>" +
+                                "</div>" +
                             "</div>" +
                         "</div>");
     loaderWrapper.width(parentElement.width());
