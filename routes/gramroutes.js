@@ -353,37 +353,39 @@ var unregisterTags = function (tagNames, clientId, callback) {
             if (!tags[tagName]) {
                 eachCallback("tag not registered")
             }
-            //unregister this client from the tag
-            var registeredClients = tags[tagName].subscription.registeredClients;
-            registeredClients.splice(registeredClients.indexOf(clientId), 1);
-            // cleanup tag if no clients are registered
-            if (registeredClients.length == 0) {
-                console.log("@gramroutes.unregisterTags - no more clients registered for tag", tagName);
-                // unsubscribe
-                var subscriptionId = tags[tagName].subscription.subscriptionId;
-                if (subscriptionId) {
-                    instalib.unsubscribeTag(subscriptionId, function (err, data) {
-                        if (err) {
-                            error += "error unsubscribing "+subscriptionId+": "+err;
-                        }
-                    });
-                }
-                else {
-                    error += "no subscription Id for tag "+tagName;
-                };
-                //remove tag from tags list
-                if (!delete tags[tagName]) {
-                    error += "| error removing '"+tagName+"' from tags array";
-                };
-                if (error !== "") {
-                    eachCallback(error);
+            else {
+                //unregister this client from the tag
+                var registeredClients = tags[tagName].subscription.registeredClients;
+                registeredClients.splice(registeredClients.indexOf(clientId), 1);
+                // cleanup tag if no clients are registered
+                if (registeredClients.length == 0) {
+                    console.log("@gramroutes.unregisterTags - no more clients registered for tag", tagName);
+                    // unsubscribe
+                    var subscriptionId = tags[tagName].subscription.subscriptionId;
+                    if (subscriptionId) {
+                        instalib.unsubscribeTag(subscriptionId, function (err, data) {
+                            if (err) {
+                                error += "error unsubscribing "+subscriptionId+": "+err;
+                            }
+                        });
+                    }
+                    else {
+                        error += "no subscription Id for tag "+tagName;
+                    };
+                    //remove tag from tags list
+                    if (!delete tags[tagName]) {
+                        error += "| error removing '"+tagName+"' from tags array";
+                    };
+                    if (error !== "") {
+                        eachCallback(error);
+                    }
+                    else {
+                        eachCallback(null);
+                    };
                 }
                 else {
                     eachCallback(null);
-                };
-            }
-            else {
-                eachCallback(null);
+                }
             }
         },
         function (err) {
