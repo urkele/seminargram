@@ -126,6 +126,9 @@ function destroyPreviousQuery (callback) {
         for (var i = 0; i < intervals.length; i++) {
             clearInterval(intervals[i]);
         };
+        // stop server subscriptions
+        var tagNames = tagsCollection.pluck("tagName");
+        socket.emit('subscriptions',{handle: "unsubscribe", tags: tagNames});
         // destroy previous models
         tagsCollection.reset();
     }
