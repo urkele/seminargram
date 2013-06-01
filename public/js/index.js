@@ -182,8 +182,7 @@ function calculateSideLength (tagsCount) {
 
 function prependImages (tagName, tagImages) {
     var parentElement = $(".tagImages."+tagName);
-    for (var i = 0; i < tagImages.length; i++) {
-        tagImages[i]
+    for (var i = (tagImages.length - 1); i >= 0 ; i--) {
         var imgElement =$("<img src='"+tagImages[i]+"' alt='"+tagName+"' title='"+tagName+"'>")
         imgElement.height(0);
         $(parentElement).prepend(imgElement);
