@@ -105,12 +105,12 @@ $(document).ready(function () {
             if (e.which == 32) { //spacebar key
                 var wordsCount = str.split(illegalCharactersInHashtags).length;
                 if (wordsCount >= maxTags) {
-                    // alert("max words");
+                    displaySearchMessage("maximum "+maxTags+" words allowed");
                     $("#searchbox").val(str);
                 }
             }
             if (str.match(illegalCharactersInSentence)) {
-                // alert("only legal chars plaese");
+                displaySearchMessage("only letters and numbers please");
                 $("#searchbox").val(str.slice(0, - 1));
             }
         }
@@ -350,6 +350,16 @@ function displayLoader (parentElement, message, overlay) {
 
 function removeLoader (parentElement) {
     parentElement.find(".loaderWrapper").remove();
+}
+
+function displaySearchMessage (msg) {
+    var messagesElement = $("#messages");
+    messagesElement.html(msg);
+    TweenLite.to(messagesElement, 0.5, {autoAlpha: 1,
+        onComplete: function() {
+            TweenLite.to(messagesElement, 0.75, {autoAlpha: 0, delay:0.75});
+        }
+    });
 }
 
 

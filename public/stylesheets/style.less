@@ -145,7 +145,7 @@ body {
         -o-animation-delay:0.52s;
         animation-delay:0.52s;
     }
-
+    
     #circularG_3 {
         top:0;
         left:20px;
@@ -296,7 +296,6 @@ body {
 
     #searchWrapper {
         margin-top: 2.3%;
-        height: 2em;
         @radiusValue: 4px;
 
         #searchForm {
@@ -337,12 +336,12 @@ body {
                 .searchboxText;
                 text-indent: 8%;
                 -webkit-appearance: none;
-                float: left; 
                 width: 80%; 
                 border: solid 1px @mainColor; 
                 background-color: @mainColor;
                 -moz-border-radius: @radiusValue; 
                 -webkit-border-radius: @radiusValue;
+                text-transform: uppercase;
             }
 
             #submitButton {
@@ -359,6 +358,64 @@ body {
                 float: right;
             }
         }
+
+        #messages {
+            visibility: hidden;
+            width: 26%;
+            margin: 1px auto 0 auto;
+            text-align: center;
+            font-weight: bold;
+            background-color: @mainColor;
+            color: @invertColor;
+            -moz-border-radius: @radiusValue; 
+            -webkit-border-radius: @radiusValue;
+        }
+    }
+    
+    #seperator {
+        width: 67%;
+        margin: 0 auto;
+        
+        @dot_dimensions: 5px;
+        @dot_readius: 50%;
+        @dot_animation_name: bounce_dot;
+        @dot_animation_duration: 1.04s;
+        @dot_animation_iteration_count: infinite;
+        @dot_animation_direction: linear;
+
+        .dot {
+            position:relative;
+            display: inline-block;
+            background-color: @mainColor;
+            width:@dot_dimensions;
+            height:@dot_dimensions;
+            -moz-border-radius:@dot_readius;
+            -moz-animation-name:@dot_animation_name;
+            -moz-animation-duration:@dot_animation_duration;
+            -moz-animation-iteration-count:@dot_animation_iteration_count;
+            -moz-animation-direction:@dot_animation_direction;
+            -webkit-border-radius:@dot_readius;
+            -webkit-animation-name:@dot_animation_name;
+            -webkit-animation-duration:@dot_animation_duration;
+            -webkit-animation-iteration-count:@dot_animation_iteration_count;
+            -webkit-animation-direction:@dot_animation_direction;
+            -ms-border-radius:@dot_readius;
+            -ms-animation-name:@dot_animation_name;
+            -ms-animation-duration:@dot_animation_duration;
+            -ms-animation-iteration-count:@dot_animation_iteration_count;
+            -ms-animation-direction:@dot_animation_direction;
+            -o-border-radius:@dot_readius;
+            -o-animation-name:@dot_animation_name;
+            -o-animation-duration:@dot_animation_duration;
+            -o-animation-iteration-count:@dot_animation_iteration_count;
+            -o-animation-direction:@dot_animation_direction;
+            border-radius:@dot_readius;
+            animation-name:@dot_animation_name;
+            animation-duration:@dot_animation_duration;
+            animation-iteration-count:@dot_animation_iteration_count;
+            animation-direction:@dot_animation_direction;
+        }
+
     }
 
     #result{
