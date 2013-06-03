@@ -50,7 +50,7 @@
 @overlayColor: fadeout(#000000, 25%);
 
 body {
-    // margin: 0;
+    margin: 0;
     font: 16px "Bariol", Helvetica, Arial, sans-serif;
     overflow: hidden;
 }
@@ -271,26 +271,35 @@ body {
 }
 
 #maincontainer {
-    text-align: center;
-    margin: 10px auto;
+    // text-align: center;
+    // margin: 10px auto;
 
-    #top {
+    header {
+        //header should have the same margin-top as the #logoWrapper in order for index.js->calculateSideLength to work properly
+        margin-top: 45px;
+
+        #infoButtonWrapper {
+            //20px for a 1024*768 display = 2%
+            margin: 2% 0 0 2%;
+            // float: left;
+            position: absolute;
+            top: 0;
+        }
+
+        #logoWrapper {
+            //45px for a 1024*768 display = 4.4%
+            margin: 4.4% auto 0 auto;
+            width: 178px;
+            // position: relative;
+        }
 
         #secretControls {
-            position: relative;
+            // position: relative;
             display: none;
             float: right;
         }
-
-        #title {
-            font-family: "Bariol", Helvetica, Arial, sans-serif;
-            cursor: default;
-            color: @mainColor;
-
-            sup {
-                font-weight: bold;
-            }
-        }
+    }
+    #searchWrapper {
 
         #searchForm {
             .searchboxText;

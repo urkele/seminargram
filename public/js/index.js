@@ -116,7 +116,7 @@ $(document).ready(function () {
         }
     })
 
-    $("#title").click(function(){
+    $("#logo").click(function(){
         $("#secretControls").toggle();
     })
 
@@ -198,9 +198,10 @@ function calculateSideLength (tagsCount) {
     var padding = 0;
     var border = 0;
 
-    var topDivHeight = $("#top").outerHeight(true);
+    var headerHeight = $("header").outerHeight(true);
+    var searchWrapperHeight = $("#searchWrapper").outerHeight(true);
     var resultTitlesDivHeight = $("#resultTitles").outerHeight(true);
-    var otherDivHeight = topDivHeight + resultTitlesDivHeight;
+    var otherDivHeight = headerHeight + searchWrapperHeight+ resultTitlesDivHeight;
     var windowHeight = $(window).height();
     var maxResultHeight = windowHeight - otherDivHeight;
 

@@ -22,14 +22,19 @@
     </head>
     <body>
         <div id="maincontainer">
-            <div id="top">
+            <header>
+                <div id="infoButtonWrapper">
+                    <img src="images/info.png">
+                </div>
+                <div id="logoWrapper">
+                    <img id="logo" src="images/sultagit_logo.png">
+                </div>
                 <div id="secretControls">
                     <input id="stopSubscriptions"type="button" value="stop sub"></br>
                     <input id="speedSelector" type="range" min="0.5" max="15" step="0.5" value="5"><span>5</span> sec.
                 </div>
-                <div id="title">
-                    <%= title %><sup>beta</sup>
-                </div>
+            </header>
+            <div id="searchWrapper">
                 <div id="searchForm">
                     <input type="text" id="searchbox" placeholder="enter sentence (english only)" />
                     <input type="button" id="submitButton" name="go" value="Go">
