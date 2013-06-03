@@ -45,13 +45,12 @@
 
 //color palette variables:
 @mainColor: #D2232A;
-@secondaryColor: #FEE1E1;
 @invertColor: #ffffff;
 @overlayColor: fadeout(#000000, 25%);
 
 body {
     margin: 0;
-    font: 16px "Bariol", Helvetica, Arial, sans-serif;
+    font: 14px "Bariol", Helvetica, Arial, sans-serif;
     overflow: hidden;
 }
 // loader
@@ -259,20 +258,17 @@ body {
 }
 //-end loader
 .searchboxText {
-    text-indent:2%; 
-    font-size:1em; 
+    font-size: inherit; 
     color: @invertColor;
 }
 
-// if changes are mase to margin/padding/border of this styling, make sure to propogate them in index.js->calculateSideLength
+// if changes are made to margin/padding/border of this styling, make sure to propogate them in index.js->calculateSideLength
 .tagResultElement {
     float: left;
     margin: 0 0.5%
 }
 
 #maincontainer {
-    // text-align: center;
-    // margin: 10px auto;
 
     header {
         //header should have the same margin-top as the #logoWrapper in order for index.js->calculateSideLength to work properly
@@ -281,7 +277,6 @@ body {
         #infoButtonWrapper {
             //20px for a 1024*768 display = 2%
             margin: 2% 0 0 2%;
-            // float: left;
             position: absolute;
             top: 0;
         }
@@ -290,7 +285,6 @@ body {
             //45px for a 1024*768 display = 4.4%
             margin: 4.4% auto 0 auto;
             width: 178px;
-            // position: relative;
         }
 
         #secretControls {
@@ -299,22 +293,26 @@ body {
             float: right;
         }
     }
+
     #searchWrapper {
+        margin-top: 2.3%;
+        height: 2em;
+        @radiusValue: 4px;
 
         #searchForm {
-            .searchboxText;
             @media only screen {
                 @media (min-device-width : 1200px) {
                     width: 25%;
                 }
                 @media (min-device-width : 768px) and (max-device-width : 1024px) {
-                    width: 33%;
+                    width: 26%;
                 }
             }
-            margin: 3% auto 0;   
+            margin: 0 auto;   
 
             input {
                 font-family: "Bariol", Helvetica, Arial, sans-serif;
+                padding: 1px 0;
 
                 &:focus {
                     outline: none;
@@ -322,42 +320,43 @@ body {
 
                 //placeholder styling
                 &::-webkit-input-placeholder { /* WebKit browsers */
-                    color: @secondaryColor;
+                    color: @invertColor;
                 }
                 &:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-                    color: @secondaryColor;
+                    color: @invertColor;
                 }
                 &::-moz-placeholder { /* Mozilla Firefox 19+ */
-                    color: @secondaryColor;
+                    color: @invertColor;
                 }
                 &:-ms-input-placeholder { /* Internet Explorer 10+ */
-                    color: @secondaryColor;
+                    color: @invertColor;
                 }
             }
 
             #searchbox {
                 .searchboxText;
+                text-indent: 8%;
                 -webkit-appearance: none;
                 float: left; 
-                width: 70%; 
+                width: 80%; 
                 border: solid 1px @mainColor; 
                 background-color: @mainColor;
-                padding: 1% 0;
-                -moz-border-radius: 5px; 
-                -webkit-border-radius: 5px;
+                -moz-border-radius: @radiusValue; 
+                -webkit-border-radius: @radiusValue;
             }
 
             #submitButton {
+                .searchboxText;
                 -webkit-appearance: none;
                 cursor:pointer; 
                 color: @mainColor;
-                font-size: 1em;
-                width:15%; 
+                font-weight: bold;
+                width:16%; 
                 background-color: @invertColor;  
                 border: 1px solid @mainColor; 
-                -moz-border-radius: 5px; 
-                -webkit-border-radius: 5px;
-                padding: 1% 0;
+                -moz-border-radius: @radiusValue; 
+                -webkit-border-radius: @radiusValue;
+                float: right;
             }
         }
     }
