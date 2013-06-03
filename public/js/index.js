@@ -212,8 +212,8 @@ function calculateSideLength (tagsCount) {
 
     var sideLength = maxWidth < maxHeight ? maxWidth : maxHeight;
 
-    // currently there is a 0.5% margin from both sides. the percentage is off the wrapper's width
-    margin = wrapperWidth * 0.005 *2
+    // currently there is a 1.4% margin from both sides. the percentage is off the wrapper's width
+    margin = wrapperWidth * 0.014 *2
     var extraLength = margin+padding+border;
 
     return Math.floor(sideLength - extraLength);
@@ -361,5 +361,3 @@ function displaySearchMessage (msg) {
         }
     });
 }
-
-
