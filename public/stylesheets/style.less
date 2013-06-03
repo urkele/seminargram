@@ -272,7 +272,7 @@ body {
 
     header {
         //header should have the same margin-top as the #logoWrapper in order for index.js->calculateSideLength to work properly
-        margin-top: 45px;
+        margin-top: 4.4%;
 
         #infoButtonWrapper {
             //20px for a 1024*768 display = 2%
@@ -377,7 +377,7 @@ body {
         margin: 0 auto;
         
         @dot_dimensions: 5px;
-        @dot_readius: 50%;
+        @dot_radius: 50%;
         @dot_animation_name: bounce_dot;
         @dot_animation_duration: 1.04s;
         @dot_animation_iteration_count: infinite;
@@ -389,31 +389,31 @@ body {
             background-color: @mainColor;
             width:@dot_dimensions;
             height:@dot_dimensions;
-            -moz-border-radius:@dot_readius;
-            -moz-animation-name:@dot_animation_name;
-            -moz-animation-duration:@dot_animation_duration;
-            -moz-animation-iteration-count:@dot_animation_iteration_count;
-            -moz-animation-direction:@dot_animation_direction;
-            -webkit-border-radius:@dot_readius;
-            -webkit-animation-name:@dot_animation_name;
-            -webkit-animation-duration:@dot_animation_duration;
-            -webkit-animation-iteration-count:@dot_animation_iteration_count;
-            -webkit-animation-direction:@dot_animation_direction;
-            -ms-border-radius:@dot_readius;
-            -ms-animation-name:@dot_animation_name;
-            -ms-animation-duration:@dot_animation_duration;
-            -ms-animation-iteration-count:@dot_animation_iteration_count;
-            -ms-animation-direction:@dot_animation_direction;
-            -o-border-radius:@dot_readius;
-            -o-animation-name:@dot_animation_name;
-            -o-animation-duration:@dot_animation_duration;
-            -o-animation-iteration-count:@dot_animation_iteration_count;
-            -o-animation-direction:@dot_animation_direction;
-            border-radius:@dot_readius;
-            animation-name:@dot_animation_name;
-            animation-duration:@dot_animation_duration;
-            animation-iteration-count:@dot_animation_iteration_count;
-            animation-direction:@dot_animation_direction;
+            -moz-border-radius:@dot_radius;
+            -webkit-border-radius:@dot_radius;
+            -ms-border-radius:@dot_radius;
+            -o-border-radius:@dot_radius;
+            border-radius:@dot_radius;
+            // -moz-animation-name:@dot_animation_name;
+            // -moz-animation-duration:@dot_animation_duration;
+            // -moz-animation-iteration-count:@dot_animation_iteration_count;
+            // -moz-animation-direction:@dot_animation_direction;
+            // -webkit-animation-name:@dot_animation_name;
+            // -webkit-animation-duration:@dot_animation_duration;
+            // -webkit-animation-iteration-count:@dot_animation_iteration_count;
+            // -webkit-animation-direction:@dot_animation_direction;
+            // -ms-animation-name:@dot_animation_name;
+            // -ms-animation-duration:@dot_animation_duration;
+            // -ms-animation-iteration-count:@dot_animation_iteration_count;
+            // -ms-animation-direction:@dot_animation_direction;
+            // -o-animation-name:@dot_animation_name;
+            // -o-animation-duration:@dot_animation_duration;
+            // -o-animation-iteration-count:@dot_animation_iteration_count;
+            // -o-animation-direction:@dot_animation_direction;
+            // animation-name:@dot_animation_name;
+            // animation-duration:@dot_animation_duration;
+            // animation-iteration-count:@dot_animation_iteration_count;
+            // animation-direction:@dot_animation_direction;
         }
 
     }
