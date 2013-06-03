@@ -1,4 +1,4 @@
-body{font:16px "Lucida Grande",Helvetica,Arial,sans-serif;overflow:hidden;}
+@font-face{font-family:Bariol;src:url('../fonts/Bariol_light.otf');font-weight:normal;}@font-face{font-family:Bariol;src:url('../fonts/Bariol_Regular.otf');font-weight:bold;}body{font:16px "Bariol",Helvetica,Arial,sans-serif;overflow:hidden;}
 .loaderWrapper{z-index:1000;position:absolute;height:100%;text-align:center;}.loaderWrapper .loaderContent{position:relative;}.loaderWrapper .loaderContent .loaderMessage{color:#d1232a;position:relative;}
 .loaderWrapper .loaderContent .circularGWrapper{position:relative;width:50px;height:50px;margin:1% auto 0;}
 .loaderWrapper.loaderWrapperOverlay{background-color:rgba(0, 0, 0, 0.75);}.loaderWrapper.loaderWrapperOverlay .loaderContent{position:fixed;top:40%;}@media only screen{}@media only screen and (min-device-width:1200px){.loaderWrapper.loaderWrapperOverlay .loaderContent{left:42.5%;}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){.loaderWrapper.loaderWrapperOverlay .loaderContent{left:38%;}}
@@ -15,9 +15,9 @@ body{font:16px "Lucida Grande",Helvetica,Arial,sans-serif;overflow:hidden;}
 .searchboxText{text-indent:2%;font-size:1em;color:#ffffff;}
 .tagResultElement{float:left;margin:0 0.5%;}
 #maincontainer{text-align:center;margin:10px auto;}#maincontainer #top #secretControls{position:absolute;display:none;}
-#maincontainer #top #title{font-family:Courier, monospace;cursor:default;color:#d1232a;}#maincontainer #top #title sup{font-weight:bold;}
+#maincontainer #top #title{font-family:"Bariol",Helvetica,Arial,sans-serif;cursor:default;color:#d1232a;}#maincontainer #top #title sup{font-weight:bold;}
 #maincontainer #top #searchForm{text-indent:2%;font-size:1em;color:#ffffff;margin:3% auto 0;}@media only screen{}@media only screen and (min-device-width:1200px){#maincontainer #top #searchForm{width:25%;}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){#maincontainer #top #searchForm{width:33%;}}
-#maincontainer #top #searchForm input:focus{outline:none;}
+#maincontainer #top #searchForm input{font-family:"Bariol",Helvetica,Arial,sans-serif;}#maincontainer #top #searchForm input:focus{outline:none;}
 #maincontainer #top #searchForm input::-webkit-input-placeholder{color:#fee1e1;}
 #maincontainer #top #searchForm input:-moz-placeholder{color:#fee1e1;}
 #maincontainer #top #searchForm input::-moz-placeholder{color:#fee1e1;}

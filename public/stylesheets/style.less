@@ -1,3 +1,15 @@
+//font
+@font-face {
+    font-family: Bariol;
+    src: url('../fonts/Bariol_light.otf');
+    font-weight: normal;
+}
+@font-face {
+    font-family: Bariol;
+    src: url('../fonts/Bariol_Regular.otf');
+    font-weight: bold;   
+}
+
 //color palette variables:
 @mainColor: #D1232A;
 @secondaryColor: #FEE1E1;
@@ -7,7 +19,7 @@
 
 body {
     // margin: 0;
-    font: 16px "Lucida Grande", Helvetica, Arial, sans-serif;
+    font: 16px "Bariol", Helvetica, Arial, sans-serif;
     overflow: hidden;
 }
 // loader
@@ -238,7 +250,7 @@ body {
         }
 
         #title {
-            font-family: Courier, monospace;
+            font-family: "Bariol", Helvetica, Arial, sans-serif;
             cursor: default;
             color: @mainColor;
 
@@ -260,6 +272,7 @@ body {
             margin: 3% auto 0;   
 
             input {
+                font-family: "Bariol", Helvetica, Arial, sans-serif;
 
                 &:focus {
                     outline: none;
