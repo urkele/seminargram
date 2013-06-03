@@ -14,7 +14,7 @@
 @-moz-keyframes bounce_circularG{0%{-moz-transform:scale(1);} 100%{-moz-transform:scale(0.3);}}@-webkit-keyframes bounce_circularG{0%{-webkit-transform:scale(1);} 100%{-webkit-transform:scale(0.3);}}@-ms-keyframes bounce_circularG{0%{-ms-transform:scale(1);} 100%{-ms-transform:scale(0.3);}}@-o-keyframes bounce_circularG{0%{-o-transform:scale(1);} 100%{-o-transform:scale(0.3);}}@keyframes bounce_circularG{0%{transform:scale(1);} 100%{transform:scale(0.3);}}
 .searchboxText{text-indent:2%;font-size:1em;color:#ffffff;}
 .tagResultElement{float:left;margin:0 0.5%;}
-#maincontainer{text-align:center;margin:10px auto;}#maincontainer #top #secretControls{position:absolute;display:none;}
+#maincontainer{text-align:center;margin:10px auto;}#maincontainer #top #secretControls{position:relative;display:none;float:right;}
 #maincontainer #top #title{font-family:"Bariol",Helvetica,Arial,sans-serif;cursor:default;color:#d1232a;}#maincontainer #top #title sup{font-weight:bold;}
 #maincontainer #top #searchForm{text-indent:2%;font-size:1em;color:#ffffff;margin:3% auto 0;}@media only screen{}@media only screen and (min-device-width:1200px){#maincontainer #top #searchForm{width:25%;}}@media only screen and (min-device-width:768px) and (max-device-width:1024px){#maincontainer #top #searchForm{width:33%;}}
 #maincontainer #top #searchForm input{font-family:"Bariol",Helvetica,Arial,sans-serif;}#maincontainer #top #searchForm input:focus{outline:none;}
