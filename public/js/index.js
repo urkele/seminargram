@@ -265,7 +265,7 @@ function imageSlider (tagName) {
     var imagesLeftInQueue = hiddenImages.length;
     var lastHiddenImg = hiddenImages.last();
     var lastVisibleImg = visibleImgs.last();
-    // console.log("imageSlider - visible images - %d; queue - ", visibleImgs.length, imagesLeftInQueue);
+    // console.log("imageSlider for '%s' - visible images - %d; queue - ", tagName, visibleImgs.length, imagesLeftInQueue);
 
     //only 1 image left
     if (visibleImgs.length == 1 && !imagesLeftInQueue) {
@@ -274,10 +274,10 @@ function imageSlider (tagName) {
             TweenLite.to(lastVisibleImg, animationSpeed, {opacity: lastVisibleImgOpc - 0.1})
         }
     }
-    //working the way up to total images displayed
+    //working the way up to total images displayed or down to 1
     else if (visibleImgs.length < maxImages) {
         if (!imagesLeftInQueue) {
-            // console.log("@imageSlider - going down from %d to 1", maxImages);
+            // console.log("@imageSlider for '%s'- going down from %d to 1", tagName, maxImages);
             TweenLite.to(lastVisibleImg, animationSpeed, {top: "+=100", autoAlpha: 0,
                 onComplete: function () {
                     $(lastVisibleImg).remove();
@@ -285,12 +285,13 @@ function imageSlider (tagName) {
             });
         }
         else {
-            // console.log("@imageSlider - going up from %d to %d", visibleImgs.length, maxImages);
             slideInNewImg(lastHiddenImg, animationSpeed, visibleImgs, imgBrutoSideLength)
+            // console.log("@imageSlider for '%s'- going up from %d to %d", tagName, visibleImgs.length, maxImages);
         }
     }
+    //all images displayed - kick out the last one and bring in a new one
     else {
-        // console.log("@imageSlider - all %d images are on. meaning there are %d images visible", maxImages, visibleImgs.length);
+        // console.log("@imageSlider for '%s'- all %d images are on. meaning there are %d images visible", tagName, maxImages, visibleImgs.length);
         TweenLite.to(lastVisibleImg, animationSpeed, {top: "+=100", autoAlpha: 0,
             onComplete: function () {
                 $(lastVisibleImg).remove();
