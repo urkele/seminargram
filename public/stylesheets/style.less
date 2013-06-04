@@ -48,7 +48,7 @@
 //color palette variables:
 @mainColor: #D2232A;
 @invertColor: #ffffff;
-@overlayColor: fadeout(#000000, 50%);
+@overlayColor: fadeout(#000000, 25%);
 
 //default font settings
 @defaultFont: 14px "Bariol", Helvetica, Arial, sans-serif;
@@ -437,7 +437,14 @@ body {
 
         #messages {
             visibility: hidden;
-            width: 26%;
+            @media only screen {
+                @media (min-device-width : 1200px) {
+                    width: 20%;
+                }
+                @media (min-device-width : 768px) and (max-device-width : 1024px) {
+                    width: 26%;
+                }
+            }
             margin: 1px auto 0 auto;
             text-align: center;
             font-weight: bold;
