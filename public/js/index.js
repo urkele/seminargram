@@ -10,6 +10,8 @@ var maxImages = 3;
 var maxTags = 6;
 var illegalCharactersInHashtags = /[^\w]/;
 var illegalCharactersInSentence = /[^\w\s]/;
+// gloval variable to hold instagram errors that should be handled
+var InstagramError_APINotAllowed = "APINotAllowedError"
 
 //backbone models and collections
 var TagModel = Backbone.Model.extend({
@@ -224,10 +226,22 @@ function calculateSideLength (tagsCount) {
 
 function prependImages (tagName, tagImages) {
     var parentElement = $(".tagImages."+tagName);
-    for (var i = (tagImages.length - 1); i >= 0 ; i--) {
-        var imgElement =$("<img src='"+tagImages[i]+"' alt='"+tagName+"' title='"+tagName+"'>")
-        imgElement.height(0);
-        $(parentElement).prepend(imgElement);
+    if (typeof tagImages == "object") {
+        for (var i = (tagImages.length - 1); i >= 0 ; i--) {
+            var imgElement =$("<img src='"+tagImages[i]+"' alt='"+tagName+"' title='"+tagName+"'>")
+            imgElement.height(0);
+            $(parentElement).prepend(imgElement);
+        };
+    }
+    else {
+        var imgErrorMessage = "error getting images";
+        var tagTitleElement = $(".tagTitle."+tagName);
+        if (tagImages == InstagramError_APINotAllowed) {
+            imgErrorMessage = "this tag is forbidden"
+        };
+        var errElement = $("<span class='imgError "+tagName+"'>"+imgErrorMessage+"</span>");
+        $(parentElement).prepend(errElement);
+        tagTitleElement.addClass("erroredTagTitle");
     };
 }
 

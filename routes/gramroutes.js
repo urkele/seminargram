@@ -6,6 +6,9 @@ var async = require('async')
 //an array that hold all of the currently subscribed tags and their up to date info
 var tags = {};
 
+// gloval variable to hold instagram errors that should be handled
+var InstagramError_APINotAllowed = "APINotAllowedError"
+
 function Tag(tagName) {
     this.data = {};    
     this.data.tagName = tagName;
@@ -197,7 +200,20 @@ var getTagData = function (tagName, callback) {
     //TODO: handle API errors - APINotAllowedError
     async.parallel ({
         getTagMediaCount: function (parallelCallback) {
-            instalib.getTagMediaCount(tagName, parallelCallback)
+            instalib.getTagMediaCount(tagName, function (err, tagMediaCount) {
+                if (err) {
+                    console.log("@gramroutes.getTagMediaCount err", err);
+                    if (err == InstagramError_APINotAllowed) {
+                        parallelCallback(null, InstagramError_APINotAllowed);
+                    }
+                    else {
+                        parallelCallback(err);
+                    };
+                }
+                else {
+                    parallelCallback(null, tagMediaCount)
+                }
+            })
         },
         getTagUrlsandColor: function (parallelCallback) {
             async.series ({
@@ -206,7 +222,12 @@ var getTagData = function (tagName, callback) {
                     instalib.getRecentImagesUrl(tagName, min_tag_id, function (err, imagesUrl, min_tag_id) {
                         if (err) {
                             console.log("@gramroutes.getImagesUrlandColors err", err);
-                            seriesCallback(err);
+                            if (err == InstagramError_APINotAllowed) {
+                                seriesCallback(null, InstagramError_APINotAllowed);
+                            }
+                            else {
+                                seriesCallback(err);
+                            };
                         }
                         else {
                             async.each(imagesUrl, handleImageDominantColor, function (err) {
@@ -242,7 +263,7 @@ var getTagData = function (tagName, callback) {
             callback (err);
         }
         else {
-            // console.log ("@gramroutes.getTagData.parallel results:", results);
+            console.log ("@gramroutes.getTagData.parallel results:", results);
             callback (null, results);
         };
     })

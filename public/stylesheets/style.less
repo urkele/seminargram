@@ -522,15 +522,25 @@ body {
                 letter-spacing: 0.1em;
                 text-transform: uppercase;
                 line-height: 3em; //the same as #resultTitles in order to allow vertical alignment of the text
+
+                &.erroredTagTitle {
+                    text-decoration: line-through;
+                }
             }
         }
 
         .tagImages {
             .tagResultElement;
+            
             img {
                 display: none;
                 position: relative;
                 margin: 7% auto;
+            }
+
+            .imgError {
+                text-transform: capitalize;
+                font-weight: bold;
             }
         }
     }
