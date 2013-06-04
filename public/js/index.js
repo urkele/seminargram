@@ -180,11 +180,6 @@ function destroyPreviousQuery (callback) {
 }
 
 function makeTagElemnts (tags) {
-    // window.imageSideLength = calculateSideLength(tags.length);
-    // var tagTitleStyleElement = $("<style type='text/css'> .tagTitle{width: "+imageSideLength+"px} </style>");
-    // var tagImagesStyleElement = $("<style type='text/css'> .tagImages{width: "+imageSideLength+"px; height: 1px;} </style>");
-    // $("head").append(tagTitleStyleElement, tagImagesStyleElement);
-    
     for (var i = 0; i < tags.length; i++) {
         var tagName = tags[i];
         //create elements for the tag's title
@@ -195,33 +190,6 @@ function makeTagElemnts (tags) {
         $("#resultImages").append(tagImagesElement);
     };
     displayLoader($(".tagImages"), "", false);
-}
-
-function calculateSideLength (tagsCount) {
-    // The margin/padding/border as set in the css/less file, should be taken into account.
-    var margin = 0;
-    var padding = 0;
-    var border = 0;
-
-    var headerHeight = $("header").outerHeight(true);
-    var searchWrapperHeight = $("#searchWrapper").outerHeight(true);
-    var resultTitlesDivHeight = $("#resultTitles").outerHeight(true);
-    var otherDivHeight = headerHeight + searchWrapperHeight+ resultTitlesDivHeight;
-    var windowHeight = $(window).height();
-    var maxResultHeight = windowHeight - otherDivHeight;
-
-    var wrapperWidth = $("#maincontainer").width();
-
-    var maxWidth = Math.floor(wrapperWidth / tagsCount);
-    var maxHeight = Math.floor((maxResultHeight / maxImages)*0.9);
-
-    var sideLength = maxWidth < maxHeight ? maxWidth : maxHeight;
-
-    // currently there is a 1.4% margin from both sides. the percentage is off the wrapper's width
-    margin = wrapperWidth * 0.014 *2
-    var extraLength = margin+padding+border;
-
-    return Math.floor(sideLength - extraLength);
 }
 
 function prependImages (tagName, tagImages) {
@@ -239,9 +207,7 @@ function prependImages (tagName, tagImages) {
         if (tagImages == InstagramError_APINotAllowed) {
             imgErrorMessage = "this tag is forbidden"
         };
-        var errElement = $("<div class='imgError "+tagName+"'>"+imgErrorMessage+"</div>");
-        // errElement.width(imageSideLength);
-        // errElement.height(imageSideLength);        
+        var errElement = $("<div class='imgError "+tagName+"'>"+imgErrorMessage+"</div>");    
         $(parentElement).prepend(errElement);
         tagTitleElement.addClass("erroredTagTitle");
     };
