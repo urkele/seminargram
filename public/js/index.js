@@ -1,4 +1,3 @@
-
 if (document.title.indexOf("local") == -1) {
     var socket = io.connect("https://sultag.it",{secure: true}); //production (remote) secure connetion
     var imageRefreshInterval = 5000; //slower images

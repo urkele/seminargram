@@ -1,1 +1,4 @@
 log.log
+lib/colorthief/color-thief.js
+lib/colorthief/jquery-1.6.2.min.js
+lib/colorthief/quantize.js
