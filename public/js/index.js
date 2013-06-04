@@ -109,7 +109,7 @@ $(document).ready(function () {
                 }
             }
             if (str.match(illegalCharactersInSentence)) {
-                displaySearchMessage("only letters and numbers please");
+                displaySearchMessage("only english letters and numbers please");
                 $("#searchbox").val(str.slice(0, - 1));
             }
         }
