@@ -531,16 +531,20 @@ body {
 
         .tagImages {
             .tagResultElement;
-            
+            @resultPosition: relative;
+            @resultMargin: 7% auto;
+
             img {
                 display: none;
-                position: relative;
-                margin: 7% auto;
+                position: @resultPosition;
+                margin: @resultMargin;
             }
 
             .imgError {
                 text-transform: capitalize;
                 font-weight: bold;
+                position: @resultPosition;
+                margin: @resultMargin;
             }
         }
     }

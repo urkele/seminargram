@@ -32,4 +32,4 @@
 #maincontainer #seperator .dot{position:relative;display:inline-block;background-color:#d2232a;width:5px;height:5px;-moz-border-radius:50%;-webkit-border-radius:50%;-ms-border-radius:50%;-o-border-radius:50%;border-radius:50%;}
 #maincontainer #result{position:relative;width:100%;text-align:center;}#maincontainer #result #resultTitles{height:3em;}#maincontainer #result #resultTitles .tagTitle{display:inline-block;margin:0 1.4%;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;line-height:3em;}#maincontainer #result #resultTitles .tagTitle.erroredTagTitle{text-decoration:line-through;}
 #maincontainer #result .tagImages{display:inline-block;margin:0 1.4%;}#maincontainer #result .tagImages img{display:none;position:relative;margin:7% auto;}
-#maincontainer #result .tagImages .imgError{text-transform:capitalize;font-weight:bold;}
+#maincontainer #result .tagImages .imgError{text-transform:capitalize;font-weight:bold;position:relative;margin:7% auto;}

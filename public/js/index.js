@@ -239,7 +239,9 @@ function prependImages (tagName, tagImages) {
         if (tagImages == InstagramError_APINotAllowed) {
             imgErrorMessage = "this tag is forbidden"
         };
-        var errElement = $("<span class='imgError "+tagName+"'>"+imgErrorMessage+"</span>");
+        var errElement = $("<div class='imgError "+tagName+"'>"+imgErrorMessage+"</div>");
+        errElement.width(imageSideLength);
+        errElement.height(imageSideLength);        
         $(parentElement).prepend(errElement);
         tagTitleElement.addClass("erroredTagTitle");
     };
