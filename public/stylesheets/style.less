@@ -46,19 +46,27 @@
 //color palette variables:
 @mainColor: #D2232A;
 @invertColor: #ffffff;
-@overlayColor: fadeout(#000000, 25%);
+@overlayColor: fadeout(#000000, 50%);
+
+//default font settings
+@defaultFont: 14px "Bariol", Helvetica, Arial, sans-serif;
 
 body {
     margin: 0;
-    font: 14px "Bariol", Helvetica, Arial, sans-serif;
+    font: @defaultFont;
     overflow: hidden;
 }
-// loader
-.loaderWrapper {
+
+.popup {
     z-index: 1000;
     position: absolute;
     height: 100%;
     text-align: center;
+}
+
+// loader
+.loaderWrapper {
+    .popup;
 
     .loaderContent {
         position: relative;
@@ -257,6 +265,50 @@ body {
     }
 }
 //-end loader
+
+#infoWrapper {
+    .popup;
+    background-color: @overlayColor;
+    width: 100%;
+
+    #infoDialog {
+        width: 85%;
+        height: 85%;
+        background-color: #ffffff;
+        margin: auto;
+        position: relative;
+        top: 6%;
+        @infoDialog_radius: 5px;
+        -moz-border-radius:@infoDialog_radius;
+        -webkit-border-radius:@infoDialog_radius;
+        -ms-border-radius:@infoDialog_radius;
+        -o-border-radius:@infoDialog_radius;
+        border-radius:@infoDialog_radius;
+        @infoDialog_shadow_h: 10px;
+        @infoDialog_shadow_v: 10px;
+        @infoDialog_shadow_blur: 25px;
+        @infoDialog_shadow_spread: 0px;
+        @infoDialog_shadow_color: fadein(@overlayColor, 30%);
+        -moz-box-shadow:    @infoDialog_shadow_h @infoDialog_shadow_v @infoDialog_shadow_blur @infoDialog_shadow_spread @infoDialog_shadow_color;
+        -webkit-box-shadow: @infoDialog_shadow_h @infoDialog_shadow_v @infoDialog_shadow_blur @infoDialog_shadow_spread @infoDialog_shadow_color;
+        box-shadow:         @infoDialog_shadow_h @infoDialog_shadow_v @infoDialog_shadow_blur @infoDialog_shadow_spread @infoDialog_shadow_color;
+
+        font: @defaultFont;
+        color: @mainColor;
+        border: 2px solid @mainColor;
+
+        #closeInfo {
+            -webkit-appearance: none;
+            cursor:pointer; 
+            color: @mainColor;
+            background-color: @invertColor;  
+            border: 1px solid @mainColor; 
+            -moz-border-radius: @infoDialog_radius; 
+            -webkit-border-radius: @infoDialog_radius;
+        }
+    }
+}
+
 .searchboxText {
     font-size: inherit; 
     color: @invertColor;
@@ -279,6 +331,20 @@ body {
             margin: 2% 0 0 2%;
             position: absolute;
             top: 0;
+            width: 3.5%;
+            height: 4.6%;
+            @info_button_radius: 50%;
+            -moz-border-radius:@info_button_radius;
+            -webkit-border-radius:@info_button_radius;
+            -ms-border-radius:@info_button_radius;
+            -o-border-radius:@info_button_radius;
+            border-radius:@info_button_radius;
+            border: 1px solid @mainColor;
+            text-align: center;
+            color: @mainColor;
+            font-size: 2em;
+            cursor:pointer; 
+
         }
 
         #logoWrapper {

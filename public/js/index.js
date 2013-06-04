@@ -120,6 +120,10 @@ $(document).ready(function () {
         $("#secretControls").toggle();
     })
 
+    $("#infoButtonWrapper").click(function () {
+        displayInfo();
+    })
+
     $("#speedSelector").change(function(){
         imageRefreshInterval = $(this).val()*1000;
         $(this).next('span').html(imageRefreshInterval/1000);
@@ -359,4 +363,21 @@ function displaySearchMessage (msg) {
             TweenLite.to(messagesElement, 0.75, {autoAlpha: 0, delay:0.75});
         }
     });
+}
+
+function displayInfo () {
+    var infoWrapper = $('<div id="infoWrapper">' +
+                            '<div id="infoDialog">' +
+                                '<h1 id="infoHeader">About Sultagit</h1>' +
+                                 '<article id="infoData">The best project ever</article>' +
+                                 '<footer id="infoFooter"><input type="button" id="closeInfo" value="Close Dialog"/></footer>' +
+                            '</div>' +
+                        '</div>')
+    $('html').prepend(infoWrapper);
+    $('#closeInfo').click(function () {closeInfo()});
+}
+
+function closeInfo () {
+    var infoWrapper = $('html').find('#infoWrapper').remove();
+    TweenLite.to(infoWrapper, 0.75, {autoAlpha: 0});
 }
