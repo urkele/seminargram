@@ -32,6 +32,6 @@
 #maincontainer #result{position:relative;width:100%;text-align:center;}#maincontainer #result .tagResultElement{display:inline-block;width:11.3%;margin-right:3.32%;}#maincontainer #result .tagResultElement:last-child{margin-right:0;}
 #maincontainer #result #resultTitles{height:3em;}#maincontainer #result #resultTitles .tagTitle{display:inline-block;width:11.3%;margin-right:3.32%;font-weight:bold;letter-spacing:0.1em;text-transform:uppercase;line-height:3em;}#maincontainer #result #resultTitles .tagTitle:last-child{margin-right:0;}
 #maincontainer #result #resultTitles .tagTitle.erroredTagTitle{text-decoration:line-through;}
-#maincontainer #result .tagImages{display:inline-block;width:11.3%;margin-right:3.32%;}#maincontainer #result .tagImages:last-child{margin-right:0;}
+#maincontainer #result .tagImages{height:1px;display:inline-block;width:11.3%;margin-right:3.32%;}#maincontainer #result .tagImages:last-child{margin-right:0;}
 #maincontainer #result .tagImages img{display:none;position:relative;margin-bottom:29.3%;}
 #maincontainer #result .tagImages .imgError{text-transform:capitalize;font-weight:bold;position:relative;margin-bottom:29.3%;}
