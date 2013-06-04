@@ -316,12 +316,6 @@ body {
     color: @invertColor;
 }
 
-// if changes are made to margin/padding/border of this styling, make sure to propogate them in index.js->calculateSideLength
-.tagResultElement {
-    display: inline-block;
-    margin: 0 1.4%;
-}
-
 #maincontainer {
 
     header {
@@ -512,6 +506,15 @@ body {
         position: relative;
         width: 100%;
         text-align: center;
+        .tagResultElement {
+            display: inline-block;
+            width: 11.3%;
+            margin-right: 3.32%;
+
+            &:last-child {
+                margin-right: 0;
+            }
+        }
 
         #resultTitles {
             height: 3em;
@@ -532,19 +535,19 @@ body {
         .tagImages {
             .tagResultElement;
             @resultPosition: relative;
-            @resultMargin: 7% auto;
+            @resultMargin: 29.3%;
 
             img {
                 display: none;
                 position: @resultPosition;
-                margin: @resultMargin;
+                margin-bottom: @resultMargin;
             }
 
             .imgError {
                 text-transform: capitalize;
                 font-weight: bold;
                 position: @resultPosition;
-                margin: @resultMargin;
+                margin-bottom: @resultMargin;
             }
         }
     }

@@ -180,10 +180,10 @@ function destroyPreviousQuery (callback) {
 }
 
 function makeTagElemnts (tags) {
-    window.imageSideLength = calculateSideLength(tags.length);
-    var tagTitleStyleElement = $("<style type='text/css'> .tagTitle{width: "+imageSideLength+"px} </style>");
-    var tagImagesStyleElement = $("<style type='text/css'> .tagImages{width: "+imageSideLength+"px; height: 1px;} </style>");
-    $("head").append(tagTitleStyleElement, tagImagesStyleElement);
+    // window.imageSideLength = calculateSideLength(tags.length);
+    // var tagTitleStyleElement = $("<style type='text/css'> .tagTitle{width: "+imageSideLength+"px} </style>");
+    // var tagImagesStyleElement = $("<style type='text/css'> .tagImages{width: "+imageSideLength+"px; height: 1px;} </style>");
+    // $("head").append(tagTitleStyleElement, tagImagesStyleElement);
     
     for (var i = 0; i < tags.length; i++) {
         var tagName = tags[i];
@@ -240,8 +240,8 @@ function prependImages (tagName, tagImages) {
             imgErrorMessage = "this tag is forbidden"
         };
         var errElement = $("<div class='imgError "+tagName+"'>"+imgErrorMessage+"</div>");
-        errElement.width(imageSideLength);
-        errElement.height(imageSideLength);        
+        // errElement.width(imageSideLength);
+        // errElement.height(imageSideLength);        
         $(parentElement).prepend(errElement);
         tagTitleElement.addClass("erroredTagTitle");
     };
@@ -337,7 +337,8 @@ function imageSlider (tagName) {
 
 function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
     var startFromDistance = -50;
-    TweenLite.fromTo(img, speed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imageSideLength, display: "block"});
+    var h = img.parent().width();
+    TweenLite.fromTo(img, speed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: h, display: "block"});
 };
 
 function displayLoader (parentElement, message, overlay) {
