@@ -27,7 +27,7 @@ var TagsCollection = Backbone.Collection.extend({
 // server connected
 socket.on('connection', function (data) {
     if (data == 'connected') {
-        removeLoader($("body"));
+        removeLoader($("html"));
         console.log("connection:", data);
     }
     else {
@@ -43,39 +43,39 @@ socket.on('debug', function (data) {
 // connection lost temporarily
 socket.on('connecting', function () {
     console.log("connection lost - connecting");
-    displayLoader($("body"), "Connection lost - trying to reconnect", true);
+    displayLoader($("html"), "Connection lost - trying to reconnect", true);
 });
 socket.on('disconnect', function () {
     console.log("connection lost - disconnect");
-    displayLoader($("body"), "Connection lost - trying to reconnect", true);
+    displayLoader($("html"), "Connection lost - trying to reconnect", true);
 });
 //connection lost permenantly
 socket.on('connect_failed', function () {
     console.log("connection lost - connect_failed");
-    displayLoader($("body"), "Failed to connect - please restart the app", true);
+    displayLoader($("html"), "Failed to connect - please restart the app", true);
 });
 socket.on('error', function () {
     console.log("connection lost - error");
-    displayLoader($("body"), "Failed to connect - please restart the app", true);
+    displayLoader($("html"), "Failed to connect - please restart the app", true);
 });
 socket.on('reconnect_failed', function () {
     console.log("connection lost - reconnect_failed");
-    displayLoader($("body"), "Failed to connect - please restart the app", true);
+    displayLoader($("html"), "Failed to connect - please restart the app", true);
 });
 socket.on('reconnecting', function () {
     console.log("connection lost - reconnecting");
-    displayLoader($("body"), "Failed to connect - please restart the app", true);
+    displayLoader($("html"), "Failed to connect - please restart the app", true);
 });
 //connection back on
 socket.on('reconnect', function () {
     console.log("connection found - reconnect");
-    removeLoader($("body"));
+    removeLoader($("html"));
 });
 
 
 $(document).ready(function () {
     //start connecting to server animation
-    displayLoader($("body"), "Please Wait - Connecting to server", true);
+    displayLoader($("html"), "Please Wait - Connecting to server", true);
 
     //bind 'enter' keystroke to the submit button click handler
     $('#searchbox').keypress(function(e){
@@ -156,7 +156,7 @@ function startNewQuery (queryString) {
 }
 
 function destroyPreviousQuery (callback) {
-    console.log("@destroyPreviousQuery");
+    // console.log("@destroyPreviousQuery");
     if (typeof tagsCollection !== "undefined" && tagsCollection.length !== 0) {
         //get all inervalID from all tags and stop intervals (intervalID)
         var intervals = tagsCollection.pluck("intervalID");
@@ -260,11 +260,11 @@ socket.on('newData', function(data) {
     for (var i = 0; i < data.length; i++) {
         var tagName = data[i].tagName;
         if (tagsCollection.get(tagName)) {
-            console.log("@newData - existing tag", tagName);
+            // console.log("@newData - existing tag", tagName);
             updateTag(data[i]);
         }
         else {
-            console.log("@newData - new tag", tagName);
+            // console.log("@newData - new tag", tagName);
             newTag(data[i]);
         }
     };
@@ -323,7 +323,6 @@ function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
 
 function displayLoader (parentElement, message, overlay) {
     if (parentElement.find(".loaderWrapper").length !== 0) {
-        console.log("wrapper exists");
         return;
     }
     var loaderWrapper = $("<div class='loaderWrapper'>" +
