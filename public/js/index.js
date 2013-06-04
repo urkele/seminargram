@@ -280,13 +280,13 @@ function imageSlider (tagName) {
             // console.log("@imageSlider for '%s'- going down from %d to 1", tagName, maxImages);
             TweenLite.to(lastVisibleImg, animationSpeed, {top: "+=100", autoAlpha: 0,
                 onComplete: function () {
-                    $(lastVisibleImg).remove();
+                    lastVisibleImg.remove();
                 }
             });
         }
         else {
-            slideInNewImg(lastHiddenImg, animationSpeed, visibleImgs, imgBrutoSideLength)
             // console.log("@imageSlider for '%s'- going up from %d to %d", tagName, visibleImgs.length, maxImages);
+            slideInNewImg(lastHiddenImg, animationSpeed)
         }
     }
     //all images displayed - kick out the last one and bring in a new one
@@ -294,18 +294,18 @@ function imageSlider (tagName) {
         // console.log("@imageSlider for '%s'- all %d images are on. meaning there are %d images visible", tagName, maxImages, visibleImgs.length);
         TweenLite.to(lastVisibleImg, animationSpeed, {top: "+=100", autoAlpha: 0,
             onComplete: function () {
-                $(lastVisibleImg).remove();
+                lastVisibleImg.remove();
             },
-            onStart: slideInNewImg(lastHiddenImg, animationSpeed, visibleImgs, imgBrutoSideLength)
+            onStart: slideInNewImg(lastHiddenImg, animationSpeed)
         });
 
     };
 };
 
-function slideInNewImg (img, speed, visibleImgs, slideDownDistance) {
+function slideInNewImg (img, speed) {
     var startFromDistance = -50;
-    var h = img.parent().width();
-    TweenLite.fromTo(img, speed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: h, display: "block"});
+    var imgFinalHeight = img.parent().width();
+    TweenLite.fromTo(img, speed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
 };
 
 function displayLoader (parentElement, message, overlay) {
