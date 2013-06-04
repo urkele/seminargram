@@ -137,6 +137,7 @@ $(document).ready(function () {
 });
 
 function startNewQuery (queryString) {
+    queryString = queryString.toLowerCase();
     var tags = queryString.split(illegalCharactersInHashtags);
     //only 6 tags are allowed
     if (tags.length > maxTags) {
