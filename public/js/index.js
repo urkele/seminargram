@@ -136,6 +136,8 @@ $(document).ready(function () {
     });
 });
 
+// query handling
+
 function startNewQuery (queryString) {
     queryString = queryString.toLowerCase();
     var tags = queryString.split(illegalCharactersInHashtags);
@@ -148,14 +150,6 @@ function startNewQuery (queryString) {
     if (typeof tagsCollection == "undefined" || !tagsCollection) {
         tagsCollection = new TagsCollection;
     }
-    //register events in collection
-    /*tagsCollection.on("add",function(tag){
-        // console.log("something added to tagsCollection collection:", tag);
-    })
-    tagsCollection.on('change',function(tag){
-        //do somehitng when a tagModel is changed. can also listen to a specific propertey that is changed - 'change:data'
-        // console.log("something changed in tagsCollection collection:", tag);
-    })*/
     //get Initial data from server
     socket.emit('init', tags);
     makeTagElemnts(tags);
@@ -179,6 +173,8 @@ function destroyPreviousQuery (callback) {
     $("#result").children().empty();
     callback();
 }
+
+//manipulate DOM for images
 
 function makeTagElemnts (tags) {
     for (var i = 0; i < tags.length; i++) {
@@ -256,6 +252,8 @@ socket.on('newData', function(data) {
     };
 })
 
+// images animation
+
 function imageSlider (tagName) {
     var tagImagesElement = $(".tagImages."+tagName);
     var imgBrutoSideLength = $(tagImagesElement).find("img").outerWidth();
@@ -309,6 +307,8 @@ function slideInNewImg (img, speed) {
     TweenLite.fromTo(img, speed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
 };
 
+//loader animation
+
 function displayLoader (parentElement, message, overlay) {
     if (parentElement.find(".loaderWrapper").length !== 0) {
         return;
@@ -339,6 +339,8 @@ function removeLoader (parentElement) {
     parentElement.find(".loaderWrapper").remove();
 }
 
+// search error messages
+
 function displaySearchMessage (msg) {
     var messagesElement = $("#messages");
     messagesElement.html(msg);
@@ -348,6 +350,8 @@ function displaySearchMessage (msg) {
         }
     });
 }
+
+//info dialog
 
 function displayInfo () {
     var infoWrapper = $('<div id="infoWrapper">' +
