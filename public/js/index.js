@@ -78,6 +78,9 @@ $(document).ready(function () {
     //start connecting to server animation
     displayLoader($("html"), "Please Wait - Connecting to server", true);
 
+    //recalculate images container element's box-model accrding do screen proportions
+    claculateImageContainer();
+
     //bind 'enter' keystroke to the submit button click handler
     $('#searchbox').keypress(function(e){
             if(e.which == 13){//Enter key pressed
@@ -135,6 +138,45 @@ $(document).ready(function () {
         socket.emit('subscriptions',{handle: "stop"});
     });
 });
+
+function claculateImageContainer () {
+    var headerHeight = $("header").outerHeight(true);
+    var searchWrapperHeight = $("#searchWrapper").outerHeight(true);
+    var resultTitlesDivHeight = $("#resultTitles").outerHeight(true);
+    var seperatorDivHeight = $("#seperator").outerHeight(true);
+    var resultImagesDivWidth = $("#resultImages").width();
+
+    var otherDivHeight = headerHeight + searchWrapperHeight + resultTitlesDivHeight + seperatorDivHeight;
+    var resultImagesDivHeight = $(window).height() - otherDivHeight * 1.1; //multiply a little to compensate for bad report of elements dimentions
+
+    //these percentage values should match the ones in the css file
+    var currentWidthPct = 11.3;
+    var currentMarginPct = 3.32;
+
+    var currentWidthPx = (currentWidthPct / 100) * resultImagesDivWidth;
+    var currentMarginRightPx = (currentMarginPct / 100) * resultImagesDivWidth;
+    // var currentMarginBottom = (29.3 / 100);
+
+    if ((currentWidthPx * maxImages + currentMarginRightPx * (maxImages - 1)) > resultImagesDivHeight) {
+        //calc new values
+        var marginToWidthRatio = currentMarginPct / currentWidthPct;
+        var wPct = 1 / (maxImages + (maxImages - 1) * marginToWidthRatio);
+        var mrPct = marginToWidthRatio * wPct;
+
+        var wpx = wPct * resultImagesDivHeight;
+        var mrpx = mrPct * resultImagesDivHeight;
+
+        var newWidthPrct = (wpx / resultImagesDivWidth) * 100;
+        var newMarginRightPrct = (mrpx / resultImagesDivWidth) * 100;
+
+        //create style element
+        var tagImagesStyleElement = $('<style type="text/css">' +
+                                            '#maincontainer #result #resultTitles .tagTitle {width: '+newWidthPrct+'%; margin-right: '+newMarginRightPrct+'%;}' +
+                                            '#maincontainer #result .tagImages {width: '+newWidthPrct+'%; margin-right: '+newMarginRightPrct+'%;}' +
+                                        '</style>')
+        $('head').append(tagImagesStyleElement);
+    }
+}
 
 // query handling
 
