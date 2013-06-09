@@ -49,6 +49,7 @@
 @mainColor: #D2232A;
 @invertColor: #ffffff;
 @overlayColor: fadeout(#000000, 25%);
+@fadedMainColor: fadeout(@mainColor, 60%);
 
 //default font settings
 @defaultFont: 14px "Bariol", Helvetica, Arial, sans-serif;
@@ -313,7 +314,7 @@ body {
 
 .searchboxText {
     font-size: inherit; 
-    color: @invertColor;
+    color: @mainColor;
 }
 
 #maincontainer {
@@ -389,16 +390,20 @@ body {
 
                 //placeholder styling
                 &::-webkit-input-placeholder { /* WebKit browsers */
-                    color: @invertColor;
+                    color: @fadedMainColor;
+                    // text-transform: none;
                 }
                 &:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-                    color: @invertColor;
+                    color: @fadedMainColor;
+                    // text-transform: none;
                 }
                 &::-moz-placeholder { /* Mozilla Firefox 19+ */
-                    color: @invertColor;
+                    color: @fadedMainColor;
+                    // text-transform: none;
                 }
                 &:-ms-input-placeholder { /* Internet Explorer 10+ */
-                    color: @invertColor;
+                    color: @fadedMainColor;
+                    // text-transform: none;
                 }
             }
 
@@ -408,7 +413,7 @@ body {
                 -webkit-appearance: none;
                 width: 80%; 
                 border: solid 1px @mainColor; 
-                background-color: @mainColor;
+                background-color: @invertColor;
                 -moz-border-radius: @radiusValue; 
                 -webkit-border-radius: @radiusValue;
                 text-transform: uppercase;
@@ -418,10 +423,10 @@ body {
                 .searchboxText;
                 -webkit-appearance: none;
                 cursor:pointer; 
-                color: @mainColor;
+                color: @invertColor;
                 font-weight: bold;
                 width:16%; 
-                background-color: @invertColor;  
+                background-color: @mainColor;  
                 border: 1px solid @mainColor; 
                 -moz-border-radius: @radiusValue; 
                 -webkit-border-radius: @radiusValue;
