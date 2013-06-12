@@ -18,15 +18,15 @@ var App = Backbone.RelationalModel.extend({
         'maxTags': 6,
         'illegalCharactersInHashtags': /[^\w]/,
         'illegalCharactersInSentence': /[^\w\s]/,
-        'InstagramError_APINotAllowed': 'APINotAllowedError'ת
+        'InstagramError_APINotAllowed': 'APINotAllowedError',
     },
 
     // init the App model
     initialize: function () {
 
         // create a socket.io connection if applicable. if not - avoid 'undefined' errors
-        this.socket = (typeof io !== "undefined") ? io.connect() : null; //FIXME: need refinement to avoid 'undefined errors' when sockt.io is unavailavble.
-        this.socket2 = new SocketModel;
+        // this.socket = (typeof io !== "undefined") ? io.connect() : null; //FIXME: need refinement to avoid 'undefined errors' when sockt.io is unavailavble.
+        this.socket = new SocketModel;
         // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
         this.setAppSpeeds();
 
@@ -132,8 +132,8 @@ var ImageView = Backbone.View.extend({
             onComplete: function () {
                 thisModel.destroy();
             }
+        })
     }
-
 });
 
 
@@ -145,34 +145,35 @@ var SocketModel = Backbone.Model.extend({
     },
     initialize: function () {
         this.createSocket();
-        s = this.get('socket');
+        var s = this.get('socket');
+        var thisModel = this;
         if (!s) {
             //TODO: throw error no socket.
         }
-        socket.on('connect', function () {
-            this.connectionConnected();
+        s.on('connect', function () {
+            thisModel.connectionConnected();
         });
-        socket.on('connecting', function () {
-            this.connectionConnecting();
+        s.on('connecting', function () {
+            thisModel.connectionConnecting();
         });
-        socket.on('disconnect', function () {
-            this.connectionDisconnected();
+        s.on('disconnect', function () {
+            thisModel.connectionDisconnected();
         });
-        socket.on('connect_failed', function () {
-            this.connectionFailed();
+        s.on('connect_failed', function () {
+            thisModel.connectionFailed();
         });
-        socket.on('error', function () {
-            this.connectionFailed();
+        s.on('error', function () {
+            thisModel.connectionFailed();
             //TODO: or maybe throw an exception
         });
-        socket.on('reconnect_failed', function () {
-            this.connectionFailed();
+        s.on('reconnect_failed', function () {
+            thisModel.connectionFailed();
         });
-        socket.on('reconnect', function () {
-            this.connectionConnected();
+        s.on('reconnect', function () {
+            thisModel.connectionConnected();
         });
-        socket.on('reconnecting', function () {
-            this.connectionConnecting();
+        s.on('reconnecting', function () {
+            thisModel.connectionConnecting();
         });
     },
     createSocket: function () {
