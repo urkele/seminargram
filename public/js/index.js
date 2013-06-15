@@ -1,83 +1,22 @@
 $(function () {
-    console.log("inininin", this);
-    Backbone.Relational.store.removeModelScope(window);
-    Backbone.Relational.store.addModelScope(this);
+    // Backbone.Relational.store.removeModelScope(window);
+    // Backbone.Relational.store.addModelScope(this);
     // backbone models and collections
 
-    // define the App model
-    var App = Backbone.RelationalModel.extend({
-
-        // define the 'tags' property that hold the tags collection with a HasMany relation (ie one App model holds many Tag models in a collection call TagsCollection)
-        relations: [
-        {
-            type: Backbone.HasMany,
-            key: 'tags',
-            relatedModel: 'TagModel',
-            collectionType: 'TagsCollection',
-            reverseRelation: {
-                type: Backbone.HasOne
-            }
-        },
-        {
-            type: Backbone.HasOne,
-            key: 'socket',
-            relatedModel: 'SocketModel',
-            reverseRelation: {
-                type: Backbone.HasOne,
-                key: 'master'
-            }
-        }],
-
-        // define various app variables
+    // define the Image model
+    ImageModel = Backbone.RelationalModel.extend({
         defaults: {
-            'imageSwapInterval': 1500,
-            'maxImages': 3,
-            'maxTags': 6,
-            'illegalCharactersInHashtags': /[^\w]/,
-            'illegalCharactersInSentence': /[^\w\s]/,
-            'InstagramError_APINotAllowed': 'APINotAllowedError',
-            'status': ''
-        },
-
-        // init the App model
-        initialize: function () {
-
-            // create a socket.io connection if applicable. if not - avoid 'undefined' errors
-            // this.socket = (typeof io !== "undefined") ? io.connect() : null; //FIXME: need refinement to avoid 'undefined errors' when sockt.io is unavailavble.
-            this.socket = new SocketModel({master: this});
-            // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
-            this.setAppSpeeds();
-
-            // bind to a change event of 'imageSwapInterval' in order to reset application speed values if changed
-            this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
-
-            // create the loader view
-            this.loaderView = new LoaderView({model:this, displayOverlay: true, el: $('html')})
-        },
-
-        // trigger a 'swap' event at a fixed interval
-        setAppSpeeds: function () {
-            var imageSwapInterval = this.get('imageSwapInterval');
-            var intervalId = this.get('intervalId');
-
-            // set the animation speed to fit the image's refresh rate
-            this.set('animationSpeed', function(){imageSwapInterval > 1000 ? 1 : imageSwapInterval / 1000 * 0.50});
-
-            // clear any previous intervals that exist
-            if (intervalId) {
-                clearInterval(intervalId);
-            };
-
-            // set the interval function
-            var thisModel = this;
-            this.set('intervalId', setInterval(function () {
-                thisModel.trigger('swap');
-            }, this.get('imageSwapInterval')));
+            'position': 0
         }
     });
 
+    // define the Images collection
+    ImagesCollection = Backbone.Collection.extend({
+        model: ImageModel
+    });
+
     // define the Tag model
-    var TagModel = Backbone.RelationalModel.extend({
+    TagModel = Backbone.RelationalModel.extend({
         relations: [{
             type: Backbone.HasMany,
             key: 'images',
@@ -92,71 +31,13 @@ $(function () {
     });
 
     // define the Tags collection
-    var TagsCollection = Backbone.Collection.extend({
-        model: 'TagModel'
+    TagsCollection = Backbone.Collection.extend({
+        model: TagModel,
+        url: '/getTagsDummy'
     });
-
-    // define the Tag view
-    // TODO: var TagView
-
-    // define the Image model
-    var ImageModel = Backbone.RelationalModel.extend({
-        defaults: {
-            'position': 0
-        }
-    });
-
-    // define the Images collection
-    var ImagesCollection = Backbone.Collection.extend({
-        model: 'ImageModel'
-    });
-
-    // define the Image view - the DOM element for an image.
-    var ImageView = Backbone.View.extend({
-        tagName: '', //TODO: should be the parent element of the template fould be a function that gets the parent...
-
-        // the HTML template that the view will render. @url is the url of the image and tagName is the name of the parent Tag model
-        template: _.template($('#image-template').html()),
-
-        //not sure this is necessary
-        el: 'img',
-
-        render: function () {
-            // TODO: build the render function
-        },
-
-        initialize: function () {
-            //TODO: build the initialize function
-            //listen to a destroy event of the model and remove the element from the DOM
-        },
-
-        // animate a slide in from "nowhere" to the top image
-        slideIn: function () {
-            var animationSpeed = app.get('animationSpeed');
-            var startFromDistance = -50;
-
-            //get the width of the parent element.
-            var imgFinalHeight = this.model.get('imageOf').get('$el').width(); //FIXME: gets the model but trying to get a view property
-
-            //animate the image
-            TweenLite.fromTo(this.el, animationSpeed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
-        },
-
-        // animate a slide of the image down to the next position //FIXME: work in progress
-        slideDown: function () {
-            var animationSpeed = app.get('animationSpeed');
-            var thisModel = this.model;
-            TweenLite.to(this.el, animationSpeed, {top: "+=100", autoAlpha: 0,
-                onComplete: function () {
-                    thisModel.destroy();
-                }
-            })
-        }
-    });
-
 
     //define the Socket model
-    var SocketModel = Backbone.Model.extend({
+    SocketModel = Backbone.RelationalModel.extend({
         defaults: {
             socket: {},
         },
@@ -212,8 +93,134 @@ $(function () {
         }
     });
 
+    // define the App model
+    App = Backbone.RelationalModel.extend({
 
-    var LoaderView = Backbone.View.extend({
+        // define the 'tags' property that hold the tags collection with a HasMany relation (ie one App model holds many Tag models in a collection call TagsCollection)
+        relations: [
+        {
+            type: Backbone.HasMany,
+            key: 'tags',
+            relatedModel: 'TagModel',
+            collectionType: 'TagsCollection',
+            reverseRelation: {
+                type: Backbone.HasOne
+            }
+        },
+        {
+            type: Backbone.HasOne,
+            key: 'socket',
+            relatedModel: 'SocketModel',
+            reverseRelation: {
+                type: Backbone.HasOne,
+                key: 'master'
+            }
+        }],
+
+        // define various app variables
+        defaults: {
+            'imageSwapInterval': 1500,
+            'maxImages': 3,
+            'maxTags': 6,
+            'illegalCharactersInHashtags': /[^\w]/,
+            'illegalCharactersInSentence': /[^\w\s]/,
+            'InstagramError_APINotAllowed': 'APINotAllowedError',
+            'status': ''
+        },
+
+        // init the App model
+        initialize: function () {
+
+            // create a socket.io connection if applicable. if not - avoid 'undefined' errors
+
+            new SocketModel({master: this});
+            // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
+            this.setAppSpeeds();
+
+            // bind to a change event of 'imageSwapInterval' in order to reset application speed values if changed
+            this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
+
+            // create the loader view
+            this.loaderView = new LoaderView({model:this, displayOverlay: true, el: $('html')})
+            // new TagsCollection;
+            this.get('tags').fetch();
+        },
+
+        // trigger a 'swap' event at a fixed interval
+        setAppSpeeds: function () {
+            var imageSwapInterval = this.get('imageSwapInterval');
+            var intervalId = this.get('intervalId');
+
+            // set the animation speed to fit the image's refresh rate
+            this.set('animationSpeed', function(){imageSwapInterval > 1000 ? 1 : imageSwapInterval / 1000 * 0.50});
+
+            // clear any previous intervals that exist
+            if (intervalId) {
+                clearInterval(intervalId);
+            };
+
+            // set the interval function
+            var thisModel = this;
+            this.set('intervalId', setInterval(function () {
+                thisModel.trigger('swap');
+            }, this.get('imageSwapInterval')));
+        }
+    });
+
+
+    // define the Tag view
+    // TODO: var TagView
+
+
+
+    // define the Image view - the DOM element for an image.
+    ImageView = Backbone.View.extend({
+        tagName: '', //TODO: should be the parent element of the template fould be a function that gets the parent...
+
+        // the HTML template that the view will render. @url is the url of the image and tagName is the name of the parent Tag model
+        template: _.template($('#image-template').html()),
+
+        //not sure this is necessary
+        el: 'img',
+
+        render: function () {
+            // TODO: build the render function
+        },
+
+        initialize: function () {
+            //TODO: build the initialize function
+            //listen to a destroy event of the model and remove the element from the DOM
+        },
+
+        // animate a slide in from "nowhere" to the top image
+        slideIn: function () {
+            var animationSpeed = app.get('animationSpeed');
+            var startFromDistance = -50;
+
+            //get the width of the parent element.
+            var imgFinalHeight = this.model.get('imageOf').get('$el').width(); //FIXME: gets the model but trying to get a view property
+
+            //animate the image
+            TweenLite.fromTo(this.el, animationSpeed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
+        },
+
+        // animate a slide of the image down to the next position //FIXME: work in progress
+        slideDown: function () {
+            var animationSpeed = app.get('animationSpeed');
+            var thisModel = this.model;
+            TweenLite.to(this.el, animationSpeed, {top: "+=100", autoAlpha: 0,
+                onComplete: function () {
+                    thisModel.destroy();
+                }
+            })
+        }
+    });
+
+
+
+
+
+    LoaderView = Backbone.View.extend({
 
         loaderTemplate: _.template($('#loader-template').html()),
 
