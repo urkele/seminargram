@@ -8,11 +8,24 @@ $(function () {
     var App = Backbone.RelationalModel.extend({
 
         // define the 'tags' property that hold the tags collection with a HasMany relation (ie one App model holds many Tag models in a collection call TagsCollection)
-        relations: [{
+        relations: [
+        {
             type: Backbone.HasMany,
             key: 'tags',
             relatedModel: 'TagModel',
-            collectionType: 'TagsCollection'
+            collectionType: 'TagsCollection',
+            reverseRelation: {
+                type: Backbone.HasOne
+            }
+        },
+        {
+            type: Backbone.HasOne,
+            key: 'socket',
+            relatedModel: 'SocketModel',
+            reverseRelation: {
+                type: Backbone.HasOne,
+                key: 'master'
+            }
         }],
 
         // define various app variables
@@ -23,6 +36,7 @@ $(function () {
             'illegalCharactersInHashtags': /[^\w]/,
             'illegalCharactersInSentence': /[^\w\s]/,
             'InstagramError_APINotAllowed': 'APINotAllowedError',
+            'status': ''
         },
 
         // init the App model
@@ -30,12 +44,15 @@ $(function () {
 
             // create a socket.io connection if applicable. if not - avoid 'undefined' errors
             // this.socket = (typeof io !== "undefined") ? io.connect() : null; //FIXME: need refinement to avoid 'undefined errors' when sockt.io is unavailavble.
-            this.socket = new SocketModel;
+            this.socket = new SocketModel({master: this});
             // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
             this.setAppSpeeds();
 
             // bind to a change event of 'imageSwapInterval' in order to reset application speed values if changed
             this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
+
+            // create the loader view
+            this.loaderView = new LoaderView({model:this, displayOverlay: true, el: $('html')})
         },
 
         // trigger a 'swap' event at a fixed interval
@@ -142,7 +159,6 @@ $(function () {
     var SocketModel = Backbone.Model.extend({
         defaults: {
             socket: {},
-            status: 'disconnected'
         },
         initialize: function () {
             this.createSocket();
@@ -177,31 +193,29 @@ $(function () {
                 thisModel.connectionConnecting();
             });
 
-            var loader = new LoaderView({model:this, displayOverlay: true, parentElement: $('html')})
         },
         createSocket: function () {
             this.set('socket', io.connect());
             // io.connect(,{'max reconnection attempts': 5, reconnection limit: 3000})
         },
         connectionConnected: function () {
-            this.set('status', 'ready');
+            this.get('master').set('status', 'ready');
         },
         connectionConnecting: function () {
-            this.set('status', 'Connecting...');
+            this.get('master').set('status', 'Connecting...');
         },
         connectionDisconnected: function () {
-            this.set('status', 'Disconnected');
+            this.get('master').set('status', 'Disconnected');
         },
         connectionFailed: function () {
-            this.set('status', 'Failed to connect');
+            this.get('master').set('status', 'Failed to connect');
         }
     });
 
 
     var LoaderView = Backbone.View.extend({
 
-        className: "loaderWrapper",
-        template: _.template($('#loader-template').html()),
+        loaderTemplate: _.template($('#loader-template').html()),
 
         initialize: function () {
 
@@ -211,23 +225,23 @@ $(function () {
 
                 // if the status is anything but ready create a loader and append the message (if applicable)
                 if (this.status !== 'ready') {
-                    this.shown ? this.changeStatusMessage() : this.render();
+                    this.loaderVisible ? this.changeLoaderMessage() : this.displayLoader();
                 }
                 else {
-                    this.shown = false;
-                    this.options.parentElement.find('.loaderWrapper').remove();
+                    this.loaderVisible = false;
+                    this.$el.find('.loaderWrapper').remove();
                 };
             }, this);
         },
 
-        render: function () {
-            this.shown = true;
-            var html = this.template({status: this.status, displayOverlay: this.options.displayOverlay});
-            $(this.options.parentElement).prepend(html);
+        displayLoader: function () {
+            this.loaderVisible = true;
+            var template = this.loaderTemplate({message: this.status, displayOverlay: true});
+            this.$el.prepend(template);
         },
 
-        changeStatusMessage: function () {
-            this.options.parentElement.find('.loaderMessage').html(this.status);
+        changeLoaderMessage: function () {
+            this.$el.find('.loaderMessage').html(this.status);
         }
     });
 
