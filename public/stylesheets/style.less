@@ -65,6 +65,7 @@ body {
     position: absolute;
     height: 100%;
     text-align: center;
+    width: 100%;
 }
 
 // loader
@@ -91,17 +92,17 @@ body {
         background-color: @overlayColor;
 
         .loaderContent {
-            position: fixed;
+            // position: fixed;
             top: 40%;
-
-            @media only screen {
+            margin: 0 auto;
+            /*@media only screen {
                 @media (min-device-width : 1200px) {
                     left: 42.5%;
                 }
                 @media (min-device-width : 768px) and (max-device-width : 1024px) {
                     left: 38%;
                 }
-            }
+            }*/
         }
     }
 

@@ -145,10 +145,10 @@ module.exports = {
     },
     getIndex : function(req, res){
         if (process.env.NODE_ENV) {
-            res.render('index', { title: 'sultag.it' });
+            res.render('index', { title: 'sultag.it', open: "{{", close: "}}" });
         }
         else {
-            res.render('index', { title: 'sultag.it - local' });
+            res.render('index', { title: 'sultag.it - local', open: "{{", close: "}}" });
         }
     },
     getPoster: function (req, res) {

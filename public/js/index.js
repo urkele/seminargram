@@ -1,254 +1,246 @@
-// backbone models and collections
+$(function () {
+    console.log("inininin", this);
+    Backbone.Relational.store.removeModelScope(window);
+    Backbone.Relational.store.addModelScope(this);
+    // backbone models and collections
 
-// define the App model
-var App = Backbone.RelationalModel.extend({
+    // define the App model
+    var App = Backbone.RelationalModel.extend({
 
-    // define the 'tags' property that hold the tags collection with a HasMany relation (ie one App model holds many Tag models in a collection call TagsCollection)
-    relations: [{
-        type: Backbone.HasMany,
-        key: 'tags',
-        relatedModel: 'TagModel',
-        collectionType: 'TagsCollection'
-    }],
+        // define the 'tags' property that hold the tags collection with a HasMany relation (ie one App model holds many Tag models in a collection call TagsCollection)
+        relations: [{
+            type: Backbone.HasMany,
+            key: 'tags',
+            relatedModel: 'TagModel',
+            collectionType: 'TagsCollection'
+        }],
 
-    // define various app variables
-    defaults: {
-        'imageSwapInterval': 1500,
-        'maxImages': 3,
-        'maxTags': 6,
-        'illegalCharactersInHashtags': /[^\w]/,
-        'illegalCharactersInSentence': /[^\w\s]/,
-        'InstagramError_APINotAllowed': 'APINotAllowedError',
-    },
+        // define various app variables
+        defaults: {
+            'imageSwapInterval': 1500,
+            'maxImages': 3,
+            'maxTags': 6,
+            'illegalCharactersInHashtags': /[^\w]/,
+            'illegalCharactersInSentence': /[^\w\s]/,
+            'InstagramError_APINotAllowed': 'APINotAllowedError',
+        },
 
-    // init the App model
-    initialize: function () {
+        // init the App model
+        initialize: function () {
 
-        // create a socket.io connection if applicable. if not - avoid 'undefined' errors
-        // this.socket = (typeof io !== "undefined") ? io.connect() : null; //FIXME: need refinement to avoid 'undefined errors' when sockt.io is unavailavble.
-        this.socket = new SocketModel;
-        // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
-        this.setAppSpeeds();
+            // create a socket.io connection if applicable. if not - avoid 'undefined' errors
+            // this.socket = (typeof io !== "undefined") ? io.connect() : null; //FIXME: need refinement to avoid 'undefined errors' when sockt.io is unavailavble.
+            this.socket = new SocketModel;
+            // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
+            this.setAppSpeeds();
 
-        // bind to a change event of 'imageSwapInterval' in order to reset application speed values if changed
-        this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
-    },
+            // bind to a change event of 'imageSwapInterval' in order to reset application speed values if changed
+            this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
+        },
 
-    // trigger a 'swap' event at a fixed interval
-    setAppSpeeds: function () {
-        var imageSwapInterval = this.get('imageSwapInterval');
-        var intervalId = this.get('intervalId');
+        // trigger a 'swap' event at a fixed interval
+        setAppSpeeds: function () {
+            var imageSwapInterval = this.get('imageSwapInterval');
+            var intervalId = this.get('intervalId');
 
-        // set the animation speed to fit the image's refresh rate
-        this.set('animationSpeed', function(){imageSwapInterval > 1000 ? 1 : imageSwapInterval / 1000 * 0.50});
+            // set the animation speed to fit the image's refresh rate
+            this.set('animationSpeed', function(){imageSwapInterval > 1000 ? 1 : imageSwapInterval / 1000 * 0.50});
 
-        // clear any previous intervals that exist
-        if (intervalId) {
-            clearInterval(intervalId);
-        };
+            // clear any previous intervals that exist
+            if (intervalId) {
+                clearInterval(intervalId);
+            };
 
-        // set the interval function
-        var thisModel = this;
-        this.set('intervalId', setInterval(function () {
-            thisModel.trigger('swap');
-        }, this.get('imageSwapInterval')));
-    }
-});
-
-//define the App view
-//TODO: should handle things like connection drops
-
-// define the Tag model
-var TagModel = Backbone.RelationalModel.extend({
-    relations: [{
-        type: Backbone.HasMany,
-        key: 'images',
-        relatedModel: 'ImageModel',
-        collectionType: 'ImagesCollection',
-        reverseRelation: {
-            key: 'imageOf'
+            // set the interval function
+            var thisModel = this;
+            this.set('intervalId', setInterval(function () {
+                thisModel.trigger('swap');
+            }, this.get('imageSwapInterval')));
         }
-    }],
-    idAttribute: "tagName"
-    //TODO: something with urlRoot
-});
+    });
 
-// define the Tags collection
-var TagsCollection = Backbone.Collection.extend({
-    model: TagModel
-});
-
-// define the Tag view
-// TODO: var TagView
-
-// define the Image model
-var ImageModel = Backbone.RelationalModel.extend({
-    defaults: {
-        'position': 0
-    }
-});
-
-// define the Images collection
-var ImagesCollection = Backbone.Collection.extend({
-    model: ImageModel
-});
-
-// define the Image view - the DOM element for an image.
-var ImageView = Backbone.View.extend({
-    tagName: '', //TODO: should be the parent element of the template fould be a function that gets the parent...
-
-    // the HTML template that the view will render. @url is the url of the image and tagName is the name of the parent Tag model
-    template: _.template('<img src="<%= url %>" alt="<%= tagName %>" title="<%= tagName %>">'),
-
-    //not sure this is necessary
-    el: 'img',
-
-    render: function () {
-        // TODO: build the render function
-    },
-
-    initialize: function () {
-        //TODO: build the initialize function
-        //listen to a destroy event of the model and remove the element from the DOM
-    },
-
-    // animate a slide in from "nowhere" to the top image
-    slideIn: function () {
-        var animationSpeed = app.get('animationSpeed');
-        var startFromDistance = -50;
-
-        //get the width of the parent element.
-        var imgFinalHeight = this.model.get('imageOf').get('$el').width(); //FIXME: gets the model but trying to get a view property
-
-        //animate the image
-        TweenLite.fromTo(this.el, animationSpeed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
-    },
-
-    // animate a slide of the image down to the next position //FIXME: work in progress
-    slideDown: function () {
-        var animationSpeed = app.get('animationSpeed');
-        var thisModel = this.model;
-        TweenLite.to(this.el, animationSpeed, {top: "+=100", autoAlpha: 0,
-            onComplete: function () {
-                thisModel.destroy();
+    // define the Tag model
+    var TagModel = Backbone.RelationalModel.extend({
+        relations: [{
+            type: Backbone.HasMany,
+            key: 'images',
+            relatedModel: 'ImageModel',
+            collectionType: 'ImagesCollection',
+            reverseRelation: {
+                key: 'imageOf'
             }
-        })
-    }
-});
+        }],
+        idAttribute: "tagName"
+        //TODO: something with urlRoot
+    });
 
+    // define the Tags collection
+    var TagsCollection = Backbone.Collection.extend({
+        model: 'TagModel'
+    });
 
-//define the Socket model
-var SocketModel = Backbone.Model.extend({
-    defaults: {
-        socket: {},
-        status: 'disconnected'
-    },
-    initialize: function () {
-        this.createSocket();
-        var s = this.get('socket');
-        var thisModel = this;
-        if (!s) {
-            //TODO: throw error no socket.
+    // define the Tag view
+    // TODO: var TagView
+
+    // define the Image model
+    var ImageModel = Backbone.RelationalModel.extend({
+        defaults: {
+            'position': 0
         }
-        s.on('connect', function () {
-            thisModel.connectionConnected();
-        });
-        s.on('connecting', function () {
-            thisModel.connectionConnecting();
-        });
-        s.on('disconnect', function () {
-            thisModel.connectionDisconnected();
-        });
-        s.on('connect_failed', function () {
-            thisModel.connectionFailed();
-        });
-        s.on('error', function () {
-            thisModel.connectionFailed();
-            //TODO: or maybe throw an exception
-        });
-        s.on('reconnect_failed', function () {
-            thisModel.connectionFailed();
-        });
-        s.on('reconnect', function () {
-            thisModel.connectionConnected();
-        });
-        s.on('reconnecting', function () {
-            thisModel.connectionConnecting();
-        });
-    },
-    createSocket: function () {
-        this.set('socket', io.connect());
-        // io.connect(,{'max reconnection attempts': 5, reconnection limit: 3000})
-    },
-    connectionConnected: function () {
-        this.set('status', 'connected');
-    },
-    connectionConnecting: function () {
-        this.set('status', 'connecting');
-    },
-    connectionDisconnected: function () {
-        this.set('status', 'disconnected');
-    },
-    connectionFailed: function () {
-        this.set('status', 'failed');
-    }
-});
+    });
 
-// kickoff the app
-var app = new App;
+    // define the Images collection
+    var ImagesCollection = Backbone.Collection.extend({
+        model: 'ImageModel'
+    });
 
-// server connected
-app.socket.on('connection', function (data) {
-    if (data == 'connected') {
-        removeLoader($("html"));
-        console.log("connection:", data);
-    }
-    else {
-        console.log("something wrong with the socket.io connection");
-    };
-});
+    // define the Image view - the DOM element for an image.
+    var ImageView = Backbone.View.extend({
+        tagName: '', //TODO: should be the parent element of the template fould be a function that gets the parent...
 
-app.socket.on('debug', function (data) {
-    console.log("message from server:", data);
-})
+        // the HTML template that the view will render. @url is the url of the image and tagName is the name of the parent Tag model
+        template: _.template($('#image-template').html()),
 
-//server connection status
-// connection lost temporarily
-app.socket.on('connecting', function () {
-    console.log("connection lost - connecting");
-    displayLoader($("html"), "Connection lost - trying to reconnect", true);
-});
-app.socket.on('disconnect', function () {
-    console.log("connection lost - disconnect");
-    displayLoader($("html"), "Connection lost - trying to reconnect", true);
-});
-//connection lost permenantly
-app.socket.on('connect_failed', function () {
-    console.log("connection lost - connect_failed");
-    displayLoader($("html"), "Failed to connect - please restart the app", true);
-});
-app.socket.on('error', function () {
-    console.log("connection lost - error");
-    displayLoader($("html"), "Failed to connect - please restart the app", true);
-});
-app.socket.on('reconnect_failed', function () {
-    console.log("connection lost - reconnect_failed");
-    displayLoader($("html"), "Failed to connect - please restart the app", true);
-});
-app.socket.on('reconnecting', function () {
-    console.log("connection lost - reconnecting");
-    displayLoader($("html"), "Failed to connect - please restart the app", true);
-});
-//connection back on
-app.socket.on('reconnect', function () {
-    console.log("connection found - reconnect");
-    removeLoader($("html"));
-});
+        //not sure this is necessary
+        el: 'img',
+
+        render: function () {
+            // TODO: build the render function
+        },
+
+        initialize: function () {
+            //TODO: build the initialize function
+            //listen to a destroy event of the model and remove the element from the DOM
+        },
+
+        // animate a slide in from "nowhere" to the top image
+        slideIn: function () {
+            var animationSpeed = app.get('animationSpeed');
+            var startFromDistance = -50;
+
+            //get the width of the parent element.
+            var imgFinalHeight = this.model.get('imageOf').get('$el').width(); //FIXME: gets the model but trying to get a view property
+
+            //animate the image
+            TweenLite.fromTo(this.el, animationSpeed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
+        },
+
+        // animate a slide of the image down to the next position //FIXME: work in progress
+        slideDown: function () {
+            var animationSpeed = app.get('animationSpeed');
+            var thisModel = this.model;
+            TweenLite.to(this.el, animationSpeed, {top: "+=100", autoAlpha: 0,
+                onComplete: function () {
+                    thisModel.destroy();
+                }
+            })
+        }
+    });
 
 
-$(document).ready(function () {
+    //define the Socket model
+    var SocketModel = Backbone.Model.extend({
+        defaults: {
+            socket: {},
+            status: 'disconnected'
+        },
+        initialize: function () {
+            this.createSocket();
+            var s = this.get('socket');
+            var thisModel = this;
+            if (!s) {
+                //TODO: throw error no socket.
+            }
+            s.on('connect', function () {
+                thisModel.connectionConnected();
+            });
+            s.on('connecting', function () {
+                thisModel.connectionConnecting();
+            });
+            s.on('disconnect', function () {
+                thisModel.connectionDisconnected();
+            });
+            s.on('connect_failed', function () {
+                thisModel.connectionFailed();
+            });
+            s.on('error', function () {
+                thisModel.connectionFailed();
+                //TODO: or maybe throw an exception
+            });
+            s.on('reconnect_failed', function () {
+                thisModel.connectionFailed();
+            });
+            s.on('reconnect', function () {
+                thisModel.connectionConnected();
+            });
+            s.on('reconnecting', function () {
+                thisModel.connectionConnecting();
+            });
+
+            var loader = new LoaderView({model:this, displayOverlay: true, parentElement: $('html')})
+        },
+        createSocket: function () {
+            this.set('socket', io.connect());
+            // io.connect(,{'max reconnection attempts': 5, reconnection limit: 3000})
+        },
+        connectionConnected: function () {
+            this.set('status', 'ready');
+        },
+        connectionConnecting: function () {
+            this.set('status', 'Connecting...');
+        },
+        connectionDisconnected: function () {
+            this.set('status', 'Disconnected');
+        },
+        connectionFailed: function () {
+            this.set('status', 'Failed to connect');
+        }
+    });
+
+
+    var LoaderView = Backbone.View.extend({
+
+        className: "loaderWrapper",
+        template: _.template($('#loader-template').html()),
+
+        initialize: function () {
+
+            // listen to status change in the model.
+            this.model.on('change:status', function() {
+                this.status = this.model.get('status');
+
+                // if the status is anything but ready create a loader and append the message (if applicable)
+                if (this.status !== 'ready') {
+                    this.shown ? this.changeStatusMessage() : this.render();
+                }
+                else {
+                    this.shown = false;
+                    this.options.parentElement.find('.loaderWrapper').remove();
+                };
+            }, this);
+        },
+
+        render: function () {
+            this.shown = true;
+            var html = this.template({status: this.status, displayOverlay: this.options.displayOverlay});
+            $(this.options.parentElement).prepend(html);
+        },
+
+        changeStatusMessage: function () {
+            this.options.parentElement.find('.loaderMessage').html(this.status);
+        }
+    });
+
+    // kickoff the app
+    window.app = new App;
+
+
+
+
+
+/*
     //start connecting to server animation
-    displayLoader($("html"), "Please Wait - Connecting to server", true);
+    // displayLoader($("html"), "Please Wait - Connecting to server", true);
 
     //recalculate images container element's box-model accrding do screen proportions
     claculateImageContainer();
@@ -307,10 +299,10 @@ $(document).ready(function () {
 
     $("#stopSubscriptions").click(function(){
         console.log("sendstop");
-        app.socket.emit('subscriptions',{handle: "stop"});
-    });
-});
-
+        // app.socket.emit('subscriptions',{handle: "stop"});
+    });*/
+}); //-- end $(document).ready()
+/*
 function claculateImageContainer () {
     var headerHeight = $("header").outerHeight(true);
     var searchWrapperHeight = $("#searchWrapper").outerHeight(true);
@@ -365,7 +357,7 @@ function startNewQuery (queryString) {
         tagsCollection = new TagsCollection;
     }
     //get Initial data from server
-    app.socket.emit('init', tags);
+    // app.socket.emit('init', tags);
     makeTagElemnts(tags);
 }
 
@@ -379,7 +371,7 @@ function destroyPreviousQuery (callback) {
         };
         // stop server subscriptions
         var tagNames = tagsCollection.pluck("tagName");
-        app.socket.emit('subscriptions',{handle: "unsubscribe", tags: tagNames});
+        // app.socket.emit('subscriptions',{handle: "unsubscribe", tags: tagNames});
         // destroy previous models
         tagsCollection.reset();
     }
@@ -400,7 +392,7 @@ function makeTagElemnts (tags) {
         var tagImagesElement = $("<div class='"+tagName+" tagImages'>");
         $("#resultImages").append(tagImagesElement);
     };
-    displayLoader($(".tagImages"), "", false);
+    // displayLoader($(".tagImages"), "", false);
 }
 
 function prependImages (tagName, tagImages) {
@@ -428,7 +420,7 @@ function newTag (data) {
     tagsCollection.add(data,{merge: true});
     var tagName = data.tagName;
     var tagImages = data.images;
-    removeLoader($(".tagImages."+tagName));
+    // removeLoader($(".tagImages."+tagName));
     prependImages(tagName, tagImages);
     var intervalID = setInterval(function () {imageSlider(tagName)},imageRefreshInterval);
     tagsCollection.get(tagName).set({intervalID: intervalID});
@@ -442,7 +434,7 @@ function updateTag (data) {
 }
 
 // recived data from server
-app.socket.on('newData', function(data) {
+/* app.socket.on('newData', function(data) {
     // in case only 1 object is returned, it does not have a "length" property, therefor we wrap it in an array
     if (typeof data.length == "undefined") {
         var _data = data;
@@ -464,10 +456,10 @@ app.socket.on('newData', function(data) {
             newTag(data[i]);
         }
     };
-})
-
+ })
+*/
 // images animation
-
+/*
 function imageSlider (tagName) {
     var tagImagesElement = $(".tagImages."+tagName);
     var imgBrutoSideLength = $(tagImagesElement).find("img").outerWidth();
@@ -521,37 +513,7 @@ function slideInNewImg (img, speed) {
     TweenLite.fromTo(img, speed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
 };
 
-//loader animation
 
-function displayLoader (parentElement, message, overlay) {
-    if (parentElement.find(".loaderWrapper").length !== 0) {
-        return;
-    }
-    var loaderWrapper = $("<div class='loaderWrapper'>" +
-                            "<div class='loaderContent'>" +
-                                "<div class='loaderMessage'>"+message+"</div>" +
-                                "<div class='circularGWrapper'>" +
-                                    "<div id='circularG_1' class='circularG'></div>" +
-                                    "<div id='circularG_2' class='circularG'></div>" +
-                                    "<div id='circularG_3' class='circularG'></div>" +
-                                    "<div id='circularG_4' class='circularG'></div>" +
-                                    "<div id='circularG_5' class='circularG'></div>" +
-                                    "<div id='circularG_6' class='circularG'></div>" +
-                                    "<div id='circularG_7' class='circularG'></div>" +
-                                    "<div id='circularG_8' class='circularG'></div>" +
-                                "</div>" +
-                            "</div>" +
-                        "</div>");
-    loaderWrapper.width(parentElement.width());
-    if (overlay) {
-        loaderWrapper.addClass("loaderWrapperOverlay");
-    }
-    parentElement.prepend(loaderWrapper);
-}
-
-function removeLoader (parentElement) {
-    parentElement.find(".loaderWrapper").remove();
-}
 
 // search error messages
 
@@ -583,3 +545,5 @@ function closeInfo () {
     var infoWrapper = $('html').find('#infoWrapper').remove();
     TweenLite.to(infoWrapper, 0.75, {autoAlpha: 0});
 }
+
+*/
