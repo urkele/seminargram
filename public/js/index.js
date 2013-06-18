@@ -1,27 +1,33 @@
+var Sultagit = {
+    Models: {},
+    Views: {},
+    Collections: {}
+}
 $(function () {
     // Backbone.Relational.store.removeModelScope(window);
     // Backbone.Relational.store.addModelScope(this);
     // backbone models and collections
 
     // define the Image model
-    ImageModel = Backbone.RelationalModel.extend({
+    Sultagit.Models.Image = Backbone.RelationalModel.extend({
         defaults: {
-            'position': 0
+            'position': 0,
+            'url': ""
         }
     });
 
     // define the Images collection
-    ImagesCollection = Backbone.Collection.extend({
-        model: ImageModel
+    Sultagit.Collections.Images = Backbone.Collection.extend({
+        model: Sultagit.Models.Image
     });
 
     // define the Tag model
-    TagModel = Backbone.RelationalModel.extend({
+    Sultagit.Models.Tag = Backbone.RelationalModel.extend({
         relations: [{
             type: Backbone.HasMany,
             key: 'images',
-            relatedModel: 'ImageModel',
-            collectionType: 'ImagesCollection',
+            relatedModel: 'Sultagit.Models.Image',
+            collectionType: 'Sultagit.Collections.Images',
             reverseRelation: {
                 key: 'imageOf'
             }
@@ -31,13 +37,13 @@ $(function () {
     });
 
     // define the Tags collection
-    TagsCollection = Backbone.Collection.extend({
-        model: TagModel,
+    Sultagit.Collections.Tags = Backbone.Collection.extend({
+        model: Sultagit.Models.Tag,
         url: '/getTagsDummy'
     });
 
     //define the Socket model
-    SocketModel = Backbone.RelationalModel.extend({
+    Sultagit.Models.Socket = Backbone.RelationalModel.extend({
         defaults: {
             socket: {},
         },
@@ -94,15 +100,15 @@ $(function () {
     });
 
     // define the App model
-    App = Backbone.RelationalModel.extend({
+    Sultagit.Models.App = Backbone.RelationalModel.extend({
 
-        // define the 'tags' property that hold the tags collection with a HasMany relation (ie one App model holds many Tag models in a collection call TagsCollection)
+        // define the 'tags' property that hold the tags collection with a HasMany relation (ie one App model holds many Tag models in a collection called Tags)
         relations: [
         {
             type: Backbone.HasMany,
             key: 'tags',
-            relatedModel: 'TagModel',
-            collectionType: 'TagsCollection',
+            relatedModel: 'Sultagit.Models.Tag',
+            collectionType: 'Sultagit.Collections.Tags',
             reverseRelation: {
                 type: Backbone.HasOne
             }
@@ -110,7 +116,7 @@ $(function () {
         {
             type: Backbone.HasOne,
             key: 'socket',
-            relatedModel: 'SocketModel',
+            relatedModel: 'Sultagit.Models.Socket',
             reverseRelation: {
                 type: Backbone.HasOne,
                 key: 'master'
@@ -122,8 +128,8 @@ $(function () {
             'imageSwapInterval': 1500,
             'maxImages': 3,
             'maxTags': 6,
-            'illegalCharactersInHashtags': /[^\w]/,
-            'illegalCharactersInSentence': /[^\w\s]/,
+            'illegalHashtagChars': /[^\w]/,
+            'illegalSentenceChars': /[^\w\s]/,
             'InstagramError_APINotAllowed': 'APINotAllowedError',
             'status': ''
         },
@@ -133,16 +139,23 @@ $(function () {
 
             // create a socket.io connection if applicable. if not - avoid 'undefined' errors
 
-            new SocketModel({master: this});
+            new Sultagit.Models.Socket({master: this});
+
             // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
             this.setAppSpeeds();
 
             // bind to a change event of 'imageSwapInterval' in order to reset application speed values if changed
             this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
 
+            //bind to change event of 'query' in order to trigger a new query sequence
+            this.on('change:query', function () {console.log("chaged query"); this.queryCleanup(); this.startNewQuery()})
+
+            // create the search form view
+            this.searchFormView = new Sultagit.Views.SearchView({model: this})
             // create the loader view
-            this.loaderView = new LoaderView({model:this, displayOverlay: true, el: $('html')})
-            // new TagsCollection;
+            this.loaderView = new Sultagit.Views.LoaderView({model: this, displayOverlay: true, el: $('html')})
+
+            // new Tags Collection;
             this.get('tags').fetch();
         },
 
@@ -164,18 +177,49 @@ $(function () {
             this.set('intervalId', setInterval(function () {
                 thisModel.trigger('swap');
             }, this.get('imageSwapInterval')));
+        },
+
+        queryCleanup: function () {
+            console.log("cleanning old query stuff");
+            //Server requests should be canceled.
+            //Displayed results (if any) should be cleared.
+            //Intervals cleared.
+            //Models and views destroyed.
+        },
+
+        startNewQuery: function () {
+            //Populate the ‘Tag titles’ section with the array’s elements.
+            _.each(this.get('query'),function (tag) {
+                console.log("creating title view",tag);
+                new Sultagit.Views.TagTitleView({'title': tag});
+            })
         }
     });
 
 
-    // define the Tag view
-    // TODO: var TagView
+    // define the Tag title view
+    Sultagit.Views.TagTitleView = Backbone.View.extend({
+        el: $("#resultTitles"),
+        className: 'tagTitle',
+        tagName: 'li',
+
+        initialize: function () {
+            this.options.title;
+            console.log("title init", this.options.title);
+            this.render();
+        },
+        render: function () {
+            console.log("title render",this.options.title);
+            this.$el.append(this.options.title)
+        }
+
+    });
 
 
 
     // define the Image view - the DOM element for an image.
-    ImageView = Backbone.View.extend({
-        tagName: '', //TODO: should be the parent element of the template fould be a function that gets the parent...
+    Sultagit.Views.ImageView = Backbone.View.extend({
+        //tagName: '', //TODO: should be the parent element of the template fould be a function that gets the parent...
 
         // the HTML template that the view will render. @url is the url of the image and tagName is the name of the parent Tag model
         template: _.template($('#image-template').html()),
@@ -216,11 +260,80 @@ $(function () {
         }
     });
 
+    // define the search view
+    Sultagit.Views.SearchView = Backbone.View.extend({
+        el: $("#searchWrapper"),
+        // id: 'searchForm',
+        template: _.template($('#searchForm-template').html()),
+        // tagName: 'div',
+        events: {
+            "click #submitButton": "validateInput",
+            "keyup #submitButton": "validateInput",
+            "keyup #searchbox": "validateInput"
+
+        },
+
+        initialize: function() {
+            this.maxTags = this.model.get('maxTags');
+            this.illegalHashtagChars = this.model.get('illegalHashtagChars');
+            this.illegalSentenceChars = this.model.get('illegalSentenceChars');
+            this.render();
+        },
+
+        render: function () {
+            this.$el.html(this.template())
+        },
+
+        setQuery: function (words) {
+            words = _.compact(words);
+            if (words.length > this.maxTags) {
+                words.length = this.maxTags;
+            }
+            console.log("setQuery '%o'", words);
+            //test dummy array - remove when done developing
+            words = ['picture', 'your', 'words'];
+            this.model.set('query', words);
+        },
+
+        validateInput: function(e) {
+            var searchBoxEl = this.$el.find('#searchbox');
+
+            // create an array of words without empty values
+            var words = _.compact(searchBoxEl.val().trim().split(this.illegalHashtagChars));
+            
+            //if its an 'enter' key or a mouse click
+            if(e.which == 13 || e.which == 1){
+                e.target.blur();
+                this.setQuery(words);
+            }
+            else if (e.which == 32){
+                if (words.length >= this.maxTags) {
+                    this.showErrorMessage("maximum "+this.maxTags+" words allowed")
+                    words.length=this.maxTags;
+                    searchBoxEl.val(words.join(" "));
+                }
+            }
+            else if (searchBoxEl.val().match(this.illegalSentenceChars)){
+                this.showErrorMessage("only english letters and numbers please");
+                searchBoxEl.val(words.join(" "));
+            }
+        },
+
+        showErrorMessage: function (msg) {
+            var messagesElement = this.$el.find("#messages");
+            messagesElement.html(msg);
+            TweenLite.to(messagesElement, 0.5, {autoAlpha: 1,
+                onComplete: function() {
+                    TweenLite.to(messagesElement, 0.75, {autoAlpha: 0, delay:0.75});
+                }
+            });
+        }
+
+    });
 
 
-
-
-    LoaderView = Backbone.View.extend({
+    // define the loader view
+    Sultagit.Views.LoaderView = Backbone.View.extend({
 
         loaderTemplate: _.template($('#loader-template').html()),
 
@@ -253,11 +366,7 @@ $(function () {
     });
 
     // kickoff the app
-    window.app = new App;
-
-
-
-
+    window.app = new Sultagit.Models.App;
 
 /*
     //start connecting to server animation
@@ -292,13 +401,13 @@ $(function () {
         if (e.which !== 13) { //return key
             var str = $("#searchbox").val().trim();
             if (e.which == 32) { //spacebar key
-                var wordsCount = str.split(illegalCharactersInHashtags).length;
+                var wordsCount = str.split(illegalHashtagChars).length;
                 if (wordsCount >= maxTags) {
                     displaySearchMessage("maximum "+maxTags+" words allowed");
                     $("#searchbox").val(str);
                 }
             }
-            if (str.match(illegalCharactersInSentence)) {
+            if (str.match(illegalSentenceChars)) {
                 displaySearchMessage("only english letters and numbers please");
                 $("#searchbox").val(str.slice(0, - 1));
             }
@@ -367,7 +476,7 @@ function claculateImageContainer () {
 
 function startNewQuery (queryString) {
     queryString = queryString.toLowerCase();
-    var tags = queryString.split(illegalCharactersInHashtags);
+    var tags = queryString.split(illegalHashtagChars);
     //only 6 tags are allowed
     if (tags.length > maxTags) {
         tags.length = maxTags;
