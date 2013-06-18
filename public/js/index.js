@@ -131,7 +131,8 @@ $(function () {
             'illegalHashtagChars': /[^\w]/,
             'illegalSentenceChars': /[^\w\s]/,
             'InstagramError_APINotAllowed': 'APINotAllowedError',
-            'status': ''
+            'status': '',
+            'resultDimensions': []
         },
 
         // init the App model
@@ -148,15 +149,20 @@ $(function () {
             this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
 
             //bind to change event of 'query' in order to trigger a new query sequence
-            this.on('change:query', function () {console.log("chaged query"); this.queryCleanup(); this.startNewQuery()})
+            this.on('change:query', function () {this.queryCleanup(); this.startNewQuery()})
 
             // create the search form view
             this.searchFormView = new Sultagit.Views.SearchView({model: this})
             // create the loader view
             this.loaderView = new Sultagit.Views.LoaderView({model: this, displayOverlay: true, el: $('html')})
 
-            // new Tags Collection;
-            this.get('tags').fetch();
+
+            //caculate the width of a result container and its right margin
+            this.claculateImageContainer();
+
+            // create the result styling view
+            new Sultagit.Views.ResultStylingView({model:this});
+
         },
 
         // trigger a 'swap' event at a fixed interval
@@ -179,8 +185,43 @@ $(function () {
             }, this.get('imageSwapInterval')));
         },
 
+        // a function that calculates the maximum width and right margin for a containar of a single result (ie a 'tag title' or a 'tag images' element)
+        // this is done in order to make the images fit incase a screen with an aspect ration different than an iPad (3/4) is used.
+        claculateImageContainer: function () {
+            var maxImages = this.get('maxImages');
+
+            var headerHeight = $("header").outerHeight(true);
+            var searchWrapperHeight = $("#searchWrapper").outerHeight(true);
+            var resultTitlesDivHeight = $("#resultTitles").outerHeight(true);
+            var seperatorDivHeight = $("#seperator").outerHeight(true);
+            var resultImagesDivWidth = $("#resultImages").width();
+
+            var otherDivHeight = headerHeight + searchWrapperHeight + resultTitlesDivHeight + seperatorDivHeight;
+            var resultImagesDivHeight = $(window).height() - otherDivHeight * 1.1; //multiply a little to compensate for bad report of elements dimentions
+
+            //these percentage values should match the ones in the css file
+            var currentWidthPct = 11.3;
+            var currentMarginPct = 3.32;
+
+            var currentWidthPx = (currentWidthPct / 100) * resultImagesDivWidth;
+            var currentMarginRightPx = (currentMarginPct / 100) * resultImagesDivWidth;
+            // var currentMarginBottom = (29.3 / 100);
+
+            if ((currentWidthPx * maxImages + currentMarginRightPx * (maxImages - 1)) > resultImagesDivHeight) {
+                //calc new values
+                var marginToWidthRatio = currentMarginPct / currentWidthPct;
+                var wPct = 1 / (maxImages + (maxImages - 1) * marginToWidthRatio);
+                var mrPct = marginToWidthRatio * wPct;
+
+                var wpx = wPct * resultImagesDivHeight;
+                var mrpx = mrPct * resultImagesDivHeight;
+
+                this.set('resultDimensions', [(wpx / resultImagesDivWidth) * 100, (mrpx / resultImagesDivWidth) * 100]); // [the new Width in percentages, the new Margin-Right in percentages]
+            }
+        },
+
         queryCleanup: function () {
-            console.log("cleanning old query stuff");
+            // console.log("cleanning old query stuff");
             //Server requests should be canceled.
             //Displayed results (if any) should be cleared.
             //Intervals cleared.
@@ -190,32 +231,43 @@ $(function () {
         startNewQuery: function () {
             //Populate the ‘Tag titles’ section with the array’s elements.
             _.each(this.get('query'),function (tag) {
-                console.log("creating title view",tag);
                 new Sultagit.Views.TagTitleView({'title': tag});
-            })
+                this.get('tags').add({tagName: tag});
+            }, this);
+
+            // fetch new data into the 'tags' collection
+            // this.get('tags').fetch();
         }
     });
 
+    //define a new result-container styling view
+    Sultagit.Views.ResultStylingView = Backbone.View.extend({
+        template: _.template('<style type="text/css">' +
+                                '#maincontainer #result #resultTitles .tagTitle {width: <%= resultDimensions[0] %>%; margin-right: <%= resultDimensions[1] %>%;}' +
+                                '#maincontainer #result .tagImages {width: <%= resultDimensions[0] %>%; margin-right: <%= resultDimensions[1] %>%;}' +
+                            '</style>'),
+        initialize: function () {
+            this.model.on('change:resultDimensions', this.render());
+        },
+        render: function () {
+            $('head').append(this.template(this.model.toJSON()));
+        }
+    });
 
     // define the Tag title view
     Sultagit.Views.TagTitleView = Backbone.View.extend({
-        el: $("#resultTitles"),
+        // el: $("#resultTitles"),
         className: 'tagTitle',
-        tagName: 'li',
+        // tagName: 'li',
 
         initialize: function () {
-            this.options.title;
-            console.log("title init", this.options.title);
             this.render();
         },
         render: function () {
-            console.log("title render",this.options.title);
-            this.$el.append(this.options.title)
+            $("#resultTitles").append(this.el);
+            this.$el.html(this.options.title);
         }
-
     });
-
-
 
     // define the Image view - the DOM element for an image.
     Sultagit.Views.ImageView = Backbone.View.extend({

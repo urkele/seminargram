@@ -37,6 +37,7 @@ app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);
 app.get('/gettags',gramroutes.gettags);
 app.get('/getTagsDummy',function (req,res) {
+    console.log("@getTagsDummy req", req);
     var jsn = [
         {
             'tagName': 'picture',
