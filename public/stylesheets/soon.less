@@ -55,7 +55,7 @@
 .hebrewFont {
     font: 20px "Alef", Arial, sans-serif;
 
-    // portrait Smartphones
+    // Smartphones
     @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
         font-size: 17px;
     }
@@ -88,12 +88,23 @@ header {
     background-color: fadeout(@backgroundColor, 20%);
     width: 100%;
 
+    // landscape Smartphones
+    @media only screen and (min-device-width : 320px) and (max-device-width : 480px) and (orientation : landscape) {
+        position: inherit;
+        padding-top: 10px;
+        padding-bottom: 0px;
+    }
+
     img {
         width: 178px;
 
         // Smartphones
         @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
             width: 118px;
+        }
+        // landscape Smartphones
+        @media only screen and (min-device-width : 320px) and (max-device-width : 480px) and (orientation : landscape) {
+            width: 75px;
         }
     }
 }
@@ -113,9 +124,13 @@ header {
     &:first-of-type {
         margin-top: 60px;
     
-    //  Smartphones
-    @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+        //  Smartphones
+        @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
            margin-top: 15%;
+        }
+        // landscape Smartphones
+        @media only screen and (min-device-width : 320px) and (max-device-width : 480px) and (orientation : landscape) {
+           margin-top: 0;
         }
     }
 
@@ -126,18 +141,22 @@ header {
         @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
            margin-bottom: 15%;
         }
+        // landscape Smartphones
+        @media only screen and (min-device-width : 320px) and (max-device-width : 480px) and (orientation : landscape) {
+           margin-bottom: 11%;
+        }
     }
 }
 
 article {
     width: 600px;
 
-    // portrait Smartphones
-    @media only screen and (max-width : 320px) {
+    //  Smartphones
+    @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
         width: 280px;
     }
     // landscape Smartphones
-    @media only screen and (min-width : 321px) {
+    @media only screen and (min-device-width : 320px) and (max-device-width : 480px) and (orientation : landscape) {
         width: 360px
     }
 
@@ -160,12 +179,12 @@ footer {
         padding-top: 10px;
     }
 
-    // portrait Smartphones
-    @media only screen and (max-width : 320px) {
+    //  Smartphones
+    @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
         font-size: 65%;
     }
     // landscape Smartphones
-    @media only screen and (min-width : 321px) {
+    @media only screen and (min-device-width : 320px) and (max-device-width : 480px) and (orientation : landscape) {
         font-size: 50%;
     }
 }
