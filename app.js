@@ -30,7 +30,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', gramroutes.getIndex);
+app.get('/', gramroutes.getSoon);
 app.get('/subscriptions', gramroutes.handshakeSubscription);
 app.post('/subscriptions', gramroutes.gotSubscription);
 app.post('/fakesubscriptions', gramroutes.gotSubscription);

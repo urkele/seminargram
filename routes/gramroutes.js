@@ -156,6 +156,15 @@ module.exports = {
     },
     gettags: function (req, res) {
         res.send(tags);
+    },
+    getSoon : function(req, res){
+        var ua = req.headers['user-agent'];
+        if (ua.indexOf('Android') !== -1 || ua.indexOf('iPhone') !== -1 || ua.indexOf('iPad') !== -1) {
+            res.render('soon', {is_mobile: true})
+        }
+        else {
+            res.render('soon', {is_mobile: false});
+        }
     }
 };
 
