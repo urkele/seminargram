@@ -12,7 +12,7 @@ $(function () {
     Sultagit.Models.Image = Backbone.RelationalModel.extend({
         defaults: {
             'position': 0,
-            'url': ""
+            'src': ""
         }
     });
 
@@ -32,14 +32,13 @@ $(function () {
                 key: 'imageOf'
             }
         }],
-        idAttribute: "tagName"
-        //TODO: something with urlRoot
+        idAttribute: "tagName",
+        urlRoot: '/getTagsDummy'
     });
 
     // define the Tags collection
     Sultagit.Collections.Tags = Backbone.Collection.extend({
-        model: Sultagit.Models.Tag,
-        url: '/getTagsDummy'
+        model: Sultagit.Models.Tag
     });
 
     //define the Socket model
@@ -229,14 +228,16 @@ $(function () {
         },
 
         startNewQuery: function () {
-            //Populate the ‘Tag titles’ section with the array’s elements.
             _.each(this.get('query'),function (tag) {
+                // populate the ‘Tag titles’ section with the array’s elements.
                 new Sultagit.Views.TagTitleView({'title': tag});
-                this.get('tags').add({tagName: tag});
-            }, this);
 
-            // fetch new data into the 'tags' collection
-            // this.get('tags').fetch();
+                // instatiate the tagModel and add it to the 'tags' collection
+                this.get('tags').add({tagName: tag});
+
+                // fetch the tagModel's data from the server (instatiating the 'imageModel' and fetching its data on the way)
+                this.get('tags').get(tag).fetch();
+            }, this);
         }
     });
 
