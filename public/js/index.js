@@ -4,10 +4,11 @@ var Sultagit = {
     Collections: {}
 }
 $(function () {
-    // Backbone.Relational.store.removeModelScope(window);
-    // Backbone.Relational.store.addModelScope(this);
-    // backbone models and collections
-
+    
+    /**
+    /* backbone models and collections
+    **/
+    
     // define the Image model
     Sultagit.Models.Image = Backbone.RelationalModel.extend({
         defaults: {
@@ -33,7 +34,13 @@ $(function () {
             }
         }],
         idAttribute: "tagName",
-        urlRoot: '/getTagsDummy'
+        urlRoot: '/getTagsDummy',
+
+        initialize: function () {
+            // populate the ‘Tag titles’ section with the array’s elements.
+            this.set('titleView' , new Sultagit.Views.TagTitleView({'title': this.get('tagName')}));
+            this.set('imagesView', new Sultagit.Views.TagImagesView({model: this}));
+        }
     });
 
     // define the Tags collection
@@ -109,7 +116,8 @@ $(function () {
             relatedModel: 'Sultagit.Models.Tag',
             collectionType: 'Sultagit.Collections.Tags',
             reverseRelation: {
-                type: Backbone.HasOne
+                type: Backbone.HasOne,
+                key: 'application'
             }
         },
         {
@@ -138,7 +146,6 @@ $(function () {
         initialize: function () {
 
             // create a socket.io connection if applicable. if not - avoid 'undefined' errors
-
             new Sultagit.Models.Socket({master: this});
 
             // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
@@ -147,14 +154,14 @@ $(function () {
             // bind to a change event of 'imageSwapInterval' in order to reset application speed values if changed
             this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
 
-            //bind to change event of 'query' in order to trigger a new query sequence
+            // bind to change event of 'query' in order to trigger a new query sequence
             this.on('change:query', function () {this.queryCleanup(); this.startNewQuery()})
 
             // create the search form view
             this.searchFormView = new Sultagit.Views.SearchView({model: this})
+
             // create the loader view
             this.loaderView = new Sultagit.Views.LoaderView({model: this, displayOverlay: true, el: $('html')})
-
 
             //caculate the width of a result container and its right margin
             this.claculateImageContainer();
@@ -165,7 +172,9 @@ $(function () {
         },
 
         // trigger a 'swap' event at a fixed interval
+        
         setAppSpeeds: function () {
+
             var imageSwapInterval = this.get('imageSwapInterval');
             var intervalId = this.get('intervalId');
 
@@ -186,6 +195,7 @@ $(function () {
 
         // a function that calculates the maximum width and right margin for a containar of a single result (ie a 'tag title' or a 'tag images' element)
         // this is done in order to make the images fit incase a screen with an aspect ration different than an iPad (3/4) is used.
+        
         claculateImageContainer: function () {
             var maxImages = this.get('maxImages');
 
@@ -204,7 +214,6 @@ $(function () {
 
             var currentWidthPx = (currentWidthPct / 100) * resultImagesDivWidth;
             var currentMarginRightPx = (currentMarginPct / 100) * resultImagesDivWidth;
-            // var currentMarginBottom = (29.3 / 100);
 
             if ((currentWidthPx * maxImages + currentMarginRightPx * (maxImages - 1)) > resultImagesDivHeight) {
                 //calc new values
@@ -225,12 +234,12 @@ $(function () {
             //Displayed results (if any) should be cleared.
             //Intervals cleared.
             //Models and views destroyed.
+
         },
 
         startNewQuery: function () {
             _.each(this.get('query'),function (tag) {
-                // populate the ‘Tag titles’ section with the array’s elements.
-                new Sultagit.Views.TagTitleView({'title': tag});
+
 
                 // instatiate the tagModel and add it to the 'tags' collection
                 this.get('tags').add({tagName: tag});
@@ -241,32 +250,64 @@ $(function () {
         }
     });
 
+    /**
+    /* backbone views
+    **/
+
     //define a new result-container styling view
     Sultagit.Views.ResultStylingView = Backbone.View.extend({
+
         template: _.template('<style type="text/css">' +
                                 '#maincontainer #result #resultTitles .tagTitle {width: <%= resultDimensions[0] %>%; margin-right: <%= resultDimensions[1] %>%;}' +
                                 '#maincontainer #result .tagImages {width: <%= resultDimensions[0] %>%; margin-right: <%= resultDimensions[1] %>%;}' +
                             '</style>'),
+
         initialize: function () {
             this.model.on('change:resultDimensions', this.render());
         },
+
         render: function () {
             $('head').append(this.template(this.model.toJSON()));
         }
+
     });
 
     // define the Tag title view
     Sultagit.Views.TagTitleView = Backbone.View.extend({
+
         // el: $("#resultTitles"),
-        className: 'tagTitle',
+        className: function () {return 'tagTitle '+this.options.title},
         // tagName: 'li',
 
         initialize: function () {
             this.render();
         },
+
         render: function () {
             $("#resultTitles").append(this.el);
             this.$el.html(this.options.title);
+        }
+
+    });
+
+    // define the Tag images view - the DOM element that hold all the images for a tag
+    Sultagit.Views.TagImagesView = Backbone.View.extend({
+
+        // el: $("#resultImages"),
+        className: function () {return 'tagImages '+this.model.get('tagName')},
+        // tagName: 'li',
+
+        initialize: function () {
+            this.render();
+            this.model.on('add:images', this.instantiateImageView, this);
+        },
+
+        render: function () {
+            $("#resultImages").append(this.el);
+        },
+
+        instantiateImageView: function (imageModel) {
+            imageModel.set('imageView', new Sultagit.Views.ImageView({model: imageModel, el: this.el, tagName: this.model.get('tagName')}));
         }
     });
 
@@ -277,16 +318,30 @@ $(function () {
         // the HTML template that the view will render. @url is the url of the image and tagName is the name of the parent Tag model
         template: _.template($('#image-template').html()),
 
-        //not sure this is necessary
-        el: 'img',
+        initialize: function () {
+            this.html = this.template({src: this.model.get('src'), tagName: this.tagName});
+            this.model.get('imageOf').get('application').on('swap', this.swapper, this);
+            // this.render();
+            //listen to a destroy event of the model and remove the element from the DOM
+        },
+
+        swapper: function () {
+            var maxImages = this.model.get('imageOf').get('application').get('maxImages');
+            var index = this.model.collection.indexOf(this.model);
+            if (index == 0){
+                console.log("%d image of %s", index, this.model.get('imageOf').get('tagName'));
+            }
+            else if (index < maxImages){
+                console.log("%d image of %s that's smaller than %d", index, this.model.get('imageOf').get('tagName'), maxImages);
+            }
+            else if (index == maxImages) {
+                console.log("%d image of %s that is %d", index, this.model.get('imageOf').get('tagName'), maxImages);
+            }
+        },
 
         render: function () {
             // TODO: build the render function
-        },
-
-        initialize: function () {
-            //TODO: build the initialize function
-            //listen to a destroy event of the model and remove the element from the DOM
+            this.$el.prepend(this.html);
         },
 
         // animate a slide in from "nowhere" to the top image
