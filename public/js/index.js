@@ -175,7 +175,9 @@ $(function () {
             this.on('change:query', function () {this.queryCleanup(); this.startNewQuery()})
 
             // create the search form view
-            this.searchFormView = new Sultagit.Views.SearchView({model: this})
+            new Sultagit.Views.SearchView({model: this});
+            new Sultagit.Views.SearchError({model: this});
+
 
             // create the loader view
             this.loaderView = new Sultagit.Views.LoaderView({model: this, displayOverlay: true, el: $('html')})
@@ -397,12 +399,11 @@ $(function () {
         }
     });
 
+
     // define the search view
     Sultagit.Views.SearchView = Backbone.View.extend({
-        el: $("#searchWrapper"),
-        // id: 'searchForm',
-        template: _.template($('#searchForm-template').html()),
-        // tagName: 'div',
+        el: $("#searchForm"),
+
         events: {
             "click #submitButton": "validateInput",
             "keyup #submitButton": "validateInput",
@@ -414,13 +415,7 @@ $(function () {
             this.maxTags = this.model.get('maxTags');
             this.illegalHashtagChars = this.model.get('illegalHashtagChars');
             this.illegalSentenceChars = this.model.get('illegalSentenceChars');
-            this.render();
         },
-
-        render: function () {
-            this.$el.html(this.template())
-        },
-
         setQuery: function (words) {
             words = _.compact(words);
             if (words.length > this.maxTags) {
@@ -438,36 +433,52 @@ $(function () {
             // create an array of words without empty values
             var words = _.compact(searchBoxEl.val().trim().split(this.illegalHashtagChars));
             
-            //if its an 'enter' key or a mouse click
+            // if its an 'enter' key or a mouse click
             if(e.which == 13 || e.which == 1){
                 e.target.blur();
                 this.setQuery(words);
             }
             else if (e.which == 32){
                 if (words.length >= this.maxTags) {
-                    this.showErrorMessage("maximum "+this.maxTags+" words allowed")
+                    this.model.trigger('maxSearchError');
                     words.length=this.maxTags;
                     searchBoxEl.val(words.join(" "));
                 }
             }
             else if (searchBoxEl.val().match(this.illegalSentenceChars)){
-                this.showErrorMessage("only english letters and numbers please");
+                this.model.trigger('illegalSearchError');
                 searchBoxEl.val(words.join(" "));
             }
         },
+    });
+
+    // define the Search Error view
+    Sultagit.Views.SearchError = Backbone.View.extend({
+        el: $('#searchError'),
+
+        initialize: function () {
+            this.listenTo(this.model, 'maxSearchError', this.showMaxSearchError);
+            this.listenTo(this.model, 'illegalSearchError', this.showIllegalSearchError);
+        },
+
+        showMaxSearchError: function () {
+            this.showErrorMessage("maximum "+this.model.get('maxTags')+" words allowed");
+        },
+
+        showIllegalSearchError: function () {
+            this.showErrorMessage("only english letters and numbers please")
+        },
 
         showErrorMessage: function (msg) {
-            var messagesElement = this.$el.find("#messages");
-            messagesElement.html(msg);
-            TweenLite.to(messagesElement, 0.5, {autoAlpha: 1,
+            this.$el.html(msg);
+            thisEl = this.$el;
+            TweenLite.to(this.$el, 0.5, {autoAlpha: 1,
                 onComplete: function() {
-                    TweenLite.to(messagesElement, 0.75, {autoAlpha: 0, delay:0.75});
+                    TweenLite.to(thisEl, 0.75, {autoAlpha: 0, delay:0.75});
                 }
             });
         }
-
     });
-
 
     // define the loader view
     Sultagit.Views.LoaderView = Backbone.View.extend({
@@ -726,7 +737,7 @@ function updateTag (data) {
  })
 */
 // images animation
-
+/*
 function imageSlider (tagName) {
     var tagImagesElement = $(".tagImages."+tagName);
     var imgBrutoSideLength = $(tagImagesElement).find("img").outerWidth();
