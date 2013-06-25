@@ -30,7 +30,7 @@
     <body>
         <div id="maincontainer">
             <header>
-                <div id="infoButtonWrapper">
+                <div id="infoButton">
                     ?
                 </div>
                 <div id="logoWrapper">
@@ -60,10 +60,6 @@
         </div>
 
         <!-- Templates -->
-        <script type="text/template" id="image-template">
-            <img src="<%= src %>" alt="<%= tagName %>" title="<%= tagName %>">
-        </script>
-
         <script type="text/template" id="loader-template">
             <div class='loaderWrapper <% print(displayOverlay ? "loaderWrapperOverlay" : "") %>'>
                 <div class='loaderContent'>
@@ -79,6 +75,18 @@
                         <div id='circularG_8' class='circularG'></div>
                     </div>
                 </div>
+            </div>
+        </script>
+
+        <script type="text/template" id="info-template">
+            <div id="infoDialog">
+                <header id="infoHeader"><%= title %></header>
+                <article id="infoData">
+                    <%= text %>
+                </article>
+                <footer id="infoFooter">
+                    <input type="button" id="closeInfo" value="Close Dialog"/>
+                </footer>
             </div>
         </script>
     </body>
