@@ -14,6 +14,23 @@ $(function () {
         defaults: {
             'position': 0,
             'src': ""
+        },
+
+        initialize: function () {
+            this.on('change:position', this.changeNext)
+        },
+
+        //this method changes the 'position' property of the model that is infront of this model in the collectio (ie this.index -1)
+        changeNext: function () {
+            if (this.get('position') > 0) { //ignore cases when position is '0' (ie model initialization)
+                var thisIndex = this.collection.indexOf(this);
+                var previousModel = this.collection.at(thisIndex - 1);
+
+                if (previousModel) {
+                    var prevPos = previousModel.get('position');
+                    previousModel.set('position', (prevPos + 1));
+                }
+            }
         }
     });
 
@@ -48,7 +65,7 @@ $(function () {
         model: Sultagit.Models.Tag
     });
 
-    //define the Socket model
+    // define the Socket model
     Sultagit.Models.Socket = Backbone.RelationalModel.extend({
         defaults: {
             socket: {},
@@ -254,7 +271,7 @@ $(function () {
     /* backbone views
     **/
 
-    //define a new result-container styling view
+    // define a new result-container styling view
     Sultagit.Views.ResultStylingView = Backbone.View.extend({
 
         template: _.template('<style type="text/css">' +
@@ -293,9 +310,7 @@ $(function () {
     // define the Tag images view - the DOM element that hold all the images for a tag
     Sultagit.Views.TagImagesView = Backbone.View.extend({
 
-        // el: $("#resultImages"),
         className: function () {return 'tagImages '+this.model.get('tagName')},
-        // tagName: 'li',
 
         initialize: function () {
             this.render();
@@ -317,28 +332,20 @@ $(function () {
             var leaderPosition = leader.get('position');
             var animationSpeed = this.model.collection.application.get('animationSpeed');
 
-            if (leaderPosition == 1 && !queue.length) {
-                // last image. queue is just this one.
-                // fade out.
-            }
-            else if (leaderPosition < this.model.collection.application.get('maxImages')) {
-                if (!queue.length) {
-                    // no images left in queue. going down.
-                    // slide out leader
-                    leader.get('imageView').slideOut(animationSpeed);
-                }
-                else {
-                    // going up. slide in last hidden and slide down all visible
-                    _.first(queue).get('imageView').slideIn(animationSpeed);
+            if (queue.length > 0) {
+                _.first(queue).trigger('slideIn');
+                if (leaderPosition == this.model.collection.application.get('maxImages')) {
+                    leader.destroy();
                 }
             }
             else {
-                // all images displayed and more should come in
-                // slide out leader and slide in last hidenn
-                leader.get('imageView').slideOut(animationSpeed);
-                _.first(queue).get('imageView').slideIn(animationSpeed);
+                if (leaderPosition > 1) {
+                    leader.destroy();
+                }
+                else {
+                    leader.trigger('fadeOut'); 
+                }
             }
-                
         }
     });
 
@@ -354,15 +361,14 @@ $(function () {
             this.$el.attr('src', this.model.get('src'));
             this.$el.attr('alt', this.options.tag);
             this.$el.attr('title', this.options.tag);
-            this.model.on('destroy', this.remove());
-            var nextModel = this.model.collection.at((this.model.collection.indexOf(this.model))-1);
-            if (nextModel) {
-                this.model.on('change:position', nextModel.get('imageView').slideDown(), this);
-            }
+            this.listenTo(this.model, 'destroy', this.slideOut);
+            this.listenTo(this.model, 'slideIn', this.slideIn);
+            this.listenTo(this.model, 'fadeOut', this.fadeOut);
+            this.animationSpeed = this.model.get('imageOf').get('application').get('animationSpeed');
         },
 
         // animate a slide in from "nowhere" to the top image
-        slideIn: function (animationSpeed) {
+        slideIn: function () {
             this.options.parent.prepend(this.el);
             var startFromDistance = -50;
 
@@ -370,20 +376,24 @@ $(function () {
             var imgFinalHeight = this.options.parent.width();
 
             //animate the image
-            TweenLite.fromTo(this.$el, animationSpeed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
+            TweenLite.fromTo(this.$el, this.animationSpeed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
             this.model.set('position', (this.model.get('position') + 1));
         },
 
-        // no animation required - the element above pushes down. just adjust the position.
-        slideDown: function () {
-            this.model.set('position', (this.model.get('position') + 1));
-        },
-
-        slideOut: function (animationSpeed) {
-            TweenLite.to(this.$el, animationSpeed, {top: "+=100", autoAlpha: 0,
+        slideOut: function () {
+            var _this = this;
+            TweenLite.to(this.$el, this.animationSpeed, {top: "+=100", autoAlpha: 0,
             onComplete: function () {
-                this.model.destroy();
+                _this.remove();
+                _this.unbind();
             }});
+        },
+
+        fadeOut: function () {
+            var opacity = this.$el.css("opacity");
+            if(opacity >= 0.1){
+                TweenLite.to(this.$el, this.animationSpeed, {opacity: opacity - 0.1})
+            }
         }
     });
 
