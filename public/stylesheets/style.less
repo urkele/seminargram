@@ -21,29 +21,27 @@
     font-style: normal;
 }
 
-/*
 @font-face {
-    font-family: 'bariol';
-    src: url('../fonts/bariol_thin-webfont.eot');
-    src: url('../fonts/bariol_thin-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/bariol_thin-webfont.woff') format('woff'),
-         url('../fonts/bariol_thin-webfont.ttf') format('truetype'),
-         url('../fonts/bariol_thin-webfont.svg#bariolthin') format('svg');
-    font-weight: 250;
+    font-family: 'Alef';
+    src: url('../fonts/Alef-bold.eot');
+    src: url('../fonts/Alef-bold.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Alef-bold.woff') format('woff'),
+         url('../fonts/Alef-bold.ttf') format('truetype'),
+         url('../fonts/Alef-bold.svg#alefbold') format('svg');
+    font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
-    font-family: '../fonts/bariol_light';
-    src: url('../fonts/bariol_light-webfont.eot');
-    src: url('../fonts/bariol_light-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../fonts/bariol_light-webfont.woff') format('woff'),
-         url('../fonts/bariol_light-webfont.ttf') format('truetype'),
-         url('../fonts/bariol_light-webfont.svg#bariol_lightlight') format('svg');
-    font-weight: 300;
+    font-family: 'Alef';
+    src: url('../fonts/Alef-regular.eot');
+    src: url('../fonts/Alef-regular.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/Alef-regular.woff') format('woff'),
+         url('../fonts/Alef-regular.ttf') format('truetype'),
+         url('../fonts/Alef-regular.svg#alefregular') format('svg');
+    font-weight: normal;
     font-style: normal;
 }
-*/
 
 //color palette variables:
 @mainColor: #D2232A;
@@ -53,11 +51,23 @@
 
 //default font settings
 @defaultFont: 14px "Bariol", Helvetica, Arial, sans-serif;
+.hebrew {
+    font-family: "Alef", Arial, sans-serif;
+    direction: rtl;
+}
+.english {
+    font-family: "Bariol", Helvetica, Arial, sans-serif;
+    direction: ltr;
+}
 
 body {
     margin: 0;
     font: @defaultFont;
     overflow: hidden;
+}
+
+a {
+    color: @mainColor;
 }
 
 .popup {
@@ -270,7 +280,27 @@ body {
 }
 //-end loader
 
-#infoWrapper {
+#smartphoneMessage {
+    .popup;
+    background-color: #ffffff;
+    width: 100%;
+    color: @mainColor;
+
+    article {
+        font-size: 18px;
+        text-align: center;
+        width: 80%;
+        margin: 0 auto;
+
+        p {
+            margin: 0.5em 0;
+        }
+    }
+    
+
+}
+
+#infoWrapper{
     .popup;
     background-color: @overlayColor;
     width: 100%;
@@ -301,6 +331,31 @@ body {
         color: @mainColor;
         border: 2px solid @mainColor;
 
+        h1 {
+            font-size: 2.5em;
+        }
+
+        #infoData {
+            font-size: 18px;
+            text-align: justify;
+            width: 80%;
+            margin: 0 auto;
+
+            p {
+                margin: 0.5em 0;
+            }
+
+            // Desktops and laptops //
+            @media only screen and (min-width : 1224px) {
+                width: 39%;
+                font-size: 20px;
+
+                p {
+                    margin: 1em 0;
+                }
+            }
+        }
+
         #closeInfo {
             -webkit-appearance: none;
             cursor:pointer; 
@@ -309,6 +364,18 @@ body {
             border: 1px solid @mainColor; 
             -moz-border-radius: @infoDialog_radius; 
             -webkit-border-radius: @infoDialog_radius;
+            position: absolute;
+            bottom: 10px;
+            margin: 0 auto;
+            width: 100px;
+            height: 33px;
+            left: 44%;
+            @media only screen and (min-width : 1224px) {
+                left: 47%;
+            }
+            
+
+            
         }
     }
 }
