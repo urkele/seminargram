@@ -172,7 +172,8 @@ $(function () {
             'illegalSentenceChars': /[^\w\s]/,
             'InstagramError_APINotAllowed': 'APINotAllowedError',
             'status': '',
-            'resultDimensions': []
+            'resultDimensions': [],
+            'loaderWrapperOverlay' : true
         },
 
         // init the App model
@@ -210,7 +211,7 @@ $(function () {
 
 
             // create the loader view
-            this.loaderView = new Sultagit.Views.LoaderView({model: this, displayOverlay: true, el: $('html')})
+            this.loaderView = new Sultagit.Views.LoaderView({model: this, parent: $('html')})
 
             //caculate the width of a result container and its right margin
             this.claculateImageContainer();
@@ -515,7 +516,9 @@ $(function () {
     // define the loader view
     Sultagit.Views.LoaderView = Backbone.View.extend({
 
-        loaderTemplate: _.template($('#loader-template').html()),
+        className: function () {return 'loaderWrapper' + (this.model.get('loaderWrapperOverlay') ? ' loaderWrapperOverlay' : '')},
+
+        template: _.template($('#loader-template').html()),
 
         initialize: function () {
 
@@ -525,19 +528,20 @@ $(function () {
 
                 // if the status is anything but ready create a loader and append the message (if applicable)
                 if (this.status !== 'ready') {
-                    this.loaderVisible ? this.changeLoaderMessage() : this.displayLoader();
+                    this.loaderVisible ? this.changeLoaderMessage() : this.render();
                 }
                 else {
                     this.loaderVisible = false;
-                    this.$el.find('.loaderWrapper').remove();
+                    this.remove();
                 };
             }, this);
         },
 
-        displayLoader: function () {
+        render: function () {
             this.loaderVisible = true;
-            var template = this.loaderTemplate({message: this.status, displayOverlay: true});
-            this.$el.prepend(template);
+            this.$el.html(this.template({status: this.status}))
+            // var template = 
+            this.options.parent.prepend(this.$el);
         },
 
         changeLoaderMessage: function () {
