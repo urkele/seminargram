@@ -41,6 +41,10 @@ $(function () {
 
     // define the Tag model
     Sultagit.Models.Tag = Backbone.RelationalModel.extend({
+        defaults: {
+            status: ""
+        },
+
         relations: [{
             type: Backbone.HasMany,
             key: 'images',
@@ -50,7 +54,9 @@ $(function () {
                 key: 'imageOf'
             }
         }],
+
         idAttribute: "tagName",
+
         urlRoot: '/getTagsDummy',
 
         initialize: function () {
@@ -303,7 +309,14 @@ $(function () {
                 this.get('tags').add({tagName: tag});
 
                 // fetch the tagModel's data from the server (instatiating the 'imageModel' and fetching its data on the way)
-                this.get('tags').get(tag).fetch();
+                this.get('tags').get(tag).fetch({
+                    success: function (model, response, options) {
+                        model.set('status', 'ready');
+                    },
+                    error: function (model, response, options) {
+                        model.set('status', 'error getting data');
+                    }
+                });
             }, this);
         }
     });
@@ -353,6 +366,7 @@ $(function () {
         className: function () {return 'tagImages '+this.model.get('tagName')},
 
         initialize: function () {
+            new Sultagit.Views.LoaderView({model: this.model, parent: this.$el})
             this.render();
             this.model.on('add:images', this.instantiateImageView, this);
             this.model.collection.application.on('swap', this.swapper, this);
