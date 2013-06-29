@@ -57,7 +57,7 @@ $(function () {
 
         idAttribute: "tagName",
 
-        urlRoot: '/getTagsDummy',
+        urlRoot: '/getTags',
 
         initialize: function () {
             this.listenTo(this.collection, 'reset', this.destroy)

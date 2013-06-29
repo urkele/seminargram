@@ -4,6 +4,16 @@ var Backbone = require('backbone'),
 
 var Sultagit = Backbone.RelationalModel.extend({
 
+    initialize: function () {
+        this.set('igClientBasic', new IGClient.Basic());
+        this.set('igClientLive', new IGClient.Live());
+        this.cons()
+    },
+
+    cons: function () {
+        // console.log("cons", this);
+    },
+
     getIndex: function (req, res) {
         var live = (req.signedCookies.sultagitlive == 'live');
         var title = process.env.NODE_ENV ? 'sultag.it' : 'sultag.it - local';
@@ -12,7 +22,12 @@ var Sultagit = Backbone.RelationalModel.extend({
     },
 
     getTags: function (req, res) {
+        console.log('@sultagit.getTags - app', app);
+        var igClient = req.signedCookies.sultagitlive !== 'live' ? this.app.get('igClientBasic') : this.get('igClientLive') ;
 
+        igClient.getRecentUrls(req.params.tagName, null, function(err, imagesUrls, min_tag_id){
+            console.log('@sultagit.getTags - gotUrls', imagesUrls);
+        });
     },
 
     getDummy: function (req, res) {

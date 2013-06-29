@@ -6,7 +6,8 @@
 var express = require('express')
     , http = require('http')
     , path = require('path')
-    , sultagitRoute = require('./routes/sultagitRoute.js')
+    // , sultagitRoute = require('./routes/sultagitRoute.js')
+    , Sultagit = require('./models/Sultagit.js').Sultagit
     , gramroutes = require('./routes/gramroutes.js');
 
 var app = express()
@@ -34,7 +35,9 @@ var basicAuth = express.basicAuth(function(username, password) {
   return (username === "sultagit" && password === "123456");
 }, 'Please provide credentials');
 
-app.get('/', sultagitRoute.getIndex);
+var sultagit = new Sultagit;
+
+app.get('/', sultagit.getIndex);
 app.get('/live', basicAuth, function(req, res) {
     res.cookie('sultagitlive', 'live', { signed: true });
     res.redirect('/');
@@ -43,8 +46,8 @@ app.get('/subscriptions', gramroutes.handshakeSubscription);
 app.post('/subscriptions', gramroutes.gotSubscription);
 app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);
-app.get('/gettags',gramroutes.gettags);
-app.get('/getTagsDummy/:tagName', sultagitRoute.getDummy)
+app.get('/getTags/:tagName',sultagit.getTags);
+app.get('/getTagsDummy/:tagName', sultagit.getDummy)
 
 app.use(express.static(path.join(__dirname, 'public')));
 
