@@ -190,8 +190,8 @@ $(function () {
                 return
             }
 
-            // create a socket.io connection if applicable. if not - avoid 'undefined' errors
-            new Sultagit.Models.Socket({master: this});
+            // load the socket model and view if it should be loaded
+            this.maybeLoadSocket();
 
             // set the Swap Interval of the app and the animation speed //TODO: do only when query is sent to server.
             this.setAppSpeeds();
@@ -216,8 +216,7 @@ $(function () {
             new Sultagit.Views.infoButtonView({model: this});
 
 
-            // create the loader view
-            this.loaderView = new Sultagit.Views.LoaderView({model: this, parent: $('html')})
+
 
             //caculate the width of a result container and its right margin
             this.claculateImageContainer();
@@ -225,6 +224,23 @@ $(function () {
             // create the result styling view
             new Sultagit.Views.ResultStylingView({model:this});
 
+        },
+
+        // if socket.io is defined, instatiate the appropriate model and view
+        maybeLoadSocket: function () {
+            _this = this;
+            $("script").each(function() {
+                if (this.src.indexOf('socket.io') !== -1) {
+
+                    // create a socket.io connection
+                    new Sultagit.Models.Socket({master: _this});
+
+                    // create the loader view
+                    _this.loaderView = new Sultagit.Views.LoaderView({model: _this, parent: $('html')})
+
+                    return
+                }
+            });
         },
 
         // this function will test if this is a smartphone device - note - does not detect tablets on purpose

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>{{= title }}</title>
+        <title>[%= title %]</title>
         <link rel='stylesheet' href='/stylesheets/style.css' />
         <!-- <link rel='stylesheet' media="only screen and (min-device-width : 1200px)" href='/stylesheets/style.css' /> -->
         <!-- <link rel="stylesheet" media="only screen and (min-device-width : 768px) and (max-device-width : 1024px)" href="/stylesheets/ipad.css" /><!-- ipad styling -->
         <!-- favicon -->
         <link rel="shortcut icon" type="image/png" href="images/favicon.ico">
-        <script src="/socket.io/socket.io.js"></script>
+        [% if(live) { %] <script src="/socket.io/socket.io.js"></script> [% } %]
         <script src="js/jquery-1.9.1.min.js"></script>
         <!-- backbone.js-->
         <script src="js/underscore-min.js"></script>

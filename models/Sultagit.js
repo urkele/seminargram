@@ -5,12 +5,10 @@ var Backbone = require('backbone'),
 var Sultagit = Backbone.RelationalModel.extend({
 
     getIndex: function (req, res) {
-        if (process.env.NODE_ENV) {
-            res.render('index', { title: 'sultag.it', open: "{{", close: "}}" });
-        }
-        else {
-            res.render('index', { title: 'sultag.it - local', open: "{{", close: "}}" });
-        }
+        var live = (req.signedCookies.sultagitlive == 'live');
+        var title = process.env.NODE_ENV ? 'sultag.it' : 'sultag.it - local';
+
+        res.render('index', {open: "[%", close: "%]", title: title, live: live});
     },
 
     getTags: function (req, res) {
