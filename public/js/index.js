@@ -468,9 +468,9 @@ $(function () {
             if (words.length > this.maxTags) {
                 words.length = this.maxTags;
             }
-            console.log("setQuery '%o'", words);
             //test dummy array - remove when done developing
             words = ['picture', 'your', 'words'];
+            console.log("setQuery '%o'", words);
             this.model.set('query', words);
         },
 
@@ -650,31 +650,10 @@ $(function () {
 
 // query handling
 /*
-function startNewQuery (queryString) {
-    queryString = queryString.toLowerCase();
-    var tags = queryString.split(illegalHashtagChars);
-    //only 6 tags are allowed
-    if (tags.length > maxTags) {
-        tags.length = maxTags;
-    }
-    console.log("@startNewQuery - sending query",tags);
-    // create the tagsCollection if it doesn't exist
-    if (typeof tagsCollection == "undefined" || !tagsCollection) {
-        tagsCollection = new TagsCollection;
-    }
-    //get Initial data from server
-    // app.socket.emit('init', tags);
-    makeTagElemnts(tags);
-}
-
 function destroyPreviousQuery (callback) {
     // console.log("@destroyPreviousQuery");
     if (typeof tagsCollection !== "undefined" && tagsCollection.length !== 0) {
-        //get all inervalID from all tags and stop intervals (intervalID)
-        var intervals = tagsCollection.pluck("intervalID");
-        for (var i = 0; i < intervals.length; i++) {
-            clearInterval(intervals[i]);
-        };
+
         // stop server subscriptions
         var tagNames = tagsCollection.pluck("tagName");
         // app.socket.emit('subscriptions',{handle: "unsubscribe", tags: tagNames});
@@ -752,26 +731,4 @@ function updateTag (data) {
         }
     };
  })
-*/
-
-/*
-//info dialog
-
-function displayInfo () {
-    var infoWrapper = $('<div id="infoWrapper">' +
-                            '<div id="infoDialog">' +
-                                '<h1 id="infoHeader">About Sultagit</h1>' +
-                                 '<article id="infoData">The best project ever</article>' +
-                                 '<footer id="infoFooter"><input type="button" id="closeInfo" value="Close Dialog"/></footer>' +
-                            '</div>' +
-                        '</div>')
-    $('html').prepend(infoWrapper);
-    $('#closeInfo').click(function () {closeInfo()});
-}
-
-function closeInfo () {
-    var infoWrapper = $('html').find('#infoWrapper').remove();
-    TweenLite.to(infoWrapper, 0.75, {autoAlpha: 0});
-}
-
 */
