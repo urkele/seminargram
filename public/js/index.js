@@ -17,7 +17,7 @@ $(function () {
         },
 
         initialize: function () {
-            this.on('change:position', this.changeNext)
+            this.on('change:position', this.changeNext);
         },
 
         //this method changes the 'position' property of the model that is infront of this model in the collectio (ie this.index -1)
@@ -60,8 +60,9 @@ $(function () {
         urlRoot: '/getTagsDummy',
 
         initialize: function () {
+            this.listenTo(this.collection, 'reset', this.destroy)
             // populate the ‘Tag titles’ section with the array’s elements.
-            this.set('titleView' , new Sultagit.Views.TagTitleView({'title': this.get('tagName')}));
+            this.set('titleView' , new Sultagit.Views.TagTitleView({model: this}));
             this.set('imagesView', new Sultagit.Views.TagImagesView({model: this}));
         }
     });
@@ -179,7 +180,8 @@ $(function () {
             'InstagramError_APINotAllowed': 'APINotAllowedError',
             'status': '',
             'resultDimensions': [],
-            'loaderWrapperOverlay' : true
+            'loaderWrapperOverlay' : true,
+            'fetchXhrs': []
         },
 
         // init the App model
@@ -200,7 +202,7 @@ $(function () {
             this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
 
             // bind to change event of 'query' in order to trigger a new query sequence
-            this.on('change:query', function () {this.queryCleanup(); this.startNewQuery()});
+            this.on('query', function(words) {this.queryCleanup(); this.startNewQuery(words)});
 
             // bind to the showInfo event to show the info view
             this.on('showInfo', function () {
@@ -309,23 +311,27 @@ $(function () {
         },
 
         queryCleanup: function () {
-            // console.log("cleanning old query stuff");
-            //Server requests should be canceled.
-            //Displayed results (if any) should be cleared.
-            //Intervals cleared.
-            //Models and views destroyed.
 
+            // Cancel pending server requests
+            _.each(this.get('fetchXhrs'), function (fetchXhr, index, fetchXhrs) {
+                if (fetchXhr.readyState > 0 && fetchXhr.readyState < 4) {
+                    fetchXhr.abort();
+                };
+                fetchXhrs.splice(index, 1);
+            })
+
+            // reset the 'tags' collection (should trigger the destruction of all child (and grandchild etc..) elements)
+            this.get('tags').reset();
         },
 
-        startNewQuery: function () {
-            _.each(this.get('query'),function (tag) {
-
+        startNewQuery: function (words) {
+            _.each(words, function (tag) {
 
                 // instatiate the tagModel and add it to the 'tags' collection
                 this.get('tags').add({tagName: tag});
 
                 // fetch the tagModel's data from the server (instatiating the 'imageModel' and fetching its data on the way)
-                this.get('tags').get(tag).fetch({
+                var fetchXhr = this.get('tags').get(tag).fetch({
                     success: function (model, response, options) {
                         model.set('status', 'ready');
                     },
@@ -333,6 +339,7 @@ $(function () {
                         model.set('status', 'error getting data');
                     }
                 });
+                this.get('fetchXhrs').push(fetchXhr);
             }, this);
         }
     });
@@ -362,18 +369,23 @@ $(function () {
     Sultagit.Views.TagTitleView = Backbone.View.extend({
 
         // el: $("#resultTitles"),
-        className: function () {return 'tagTitle '+this.options.title},
+        className: function () {return 'tagTitle '+this.model.get('tagName')},
         // tagName: 'li',
 
         initialize: function () {
+            this.listenTo(this.model, 'destroy', this.destroy)
             this.render();
         },
 
         render: function () {
             $("#resultTitles").append(this.el);
-            this.$el.html(this.options.title);
-        }
+            this.$el.html(this.model.get('tagName'));
+        },
 
+        destroy: function () {
+            this.remove();
+            this.unbind();
+        }
     });
 
     // define the Tag images view - the DOM element that hold all the images for a tag
@@ -384,8 +396,9 @@ $(function () {
         initialize: function () {
             new Sultagit.Views.LoaderView({model: this.model, parent: this.$el})
             this.render();
-            this.model.on('add:images', this.instantiateImageView, this);
-            this.model.collection.application.on('swap', this.swapper, this);
+            this.listenTo(this.model, 'add:images', this.instantiateImageView);
+            this.listenTo(this.model.collection.application, 'swap', this.swapper);
+            this.listenTo(this.model, 'destroy', this.destroy);
         },
 
         render: function () {
@@ -397,6 +410,9 @@ $(function () {
         },
 
         swapper: function () {
+            if (this.model.get('images').length <= 0) {
+                return
+            }
             var leader = this.model.get('images').at(0);
             var queue = this.model.get('images').where({position: 0});
             var leaderPosition = leader.get('position');
@@ -416,6 +432,11 @@ $(function () {
                     leader.trigger('fadeOut'); 
                 }
             }
+        },
+
+        destroy: function () {
+            this.remove();
+            this.unbind();
         }
     });
 
@@ -463,7 +484,6 @@ $(function () {
         }
     });
 
-
     // define the search view
     Sultagit.Views.SearchView = Backbone.View.extend({
         el: $("#searchForm"),
@@ -484,10 +504,8 @@ $(function () {
             if (words.length > this.maxTags) {
                 words.length = this.maxTags;
             }
-            //test dummy array - remove when done developing
-            words = ['picture', 'your', 'words'];
             console.log("setQuery '%o'", words);
-            this.model.set('query', words);
+            this.model.trigger('query', words);
         },
 
         validateInput: function(e) {
@@ -664,23 +682,7 @@ $(function () {
     });
 */
 
-// query handling
-/*
-function destroyPreviousQuery (callback) {
-    // console.log("@destroyPreviousQuery");
-    if (typeof tagsCollection !== "undefined" && tagsCollection.length !== 0) {
 
-        // stop server subscriptions
-        var tagNames = tagsCollection.pluck("tagName");
-        // app.socket.emit('subscriptions',{handle: "unsubscribe", tags: tagNames});
-        // destroy previous models
-        tagsCollection.reset();
-    }
-    // empty current images
-    $("#result").children().empty();
-    callback();
-}
-*/
 
 //manipulate DOM for images
 /*
