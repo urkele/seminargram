@@ -21,13 +21,11 @@ var Sultagit = Backbone.RelationalModel.extend({
         res.render('index', {open: "[%", close: "%]", title: title, live: live});
     },
 
-    getTags: function (req, res) {
-        console.log('@sultagit.getTags - app', app);
-        var igClient = req.signedCookies.sultagitlive !== 'live' ? this.app.get('igClientBasic') : this.get('igClientLive') ;
+    getTags: function (cookie, tagName, callback) {
+        // console.log('@sultagit.getTags - app', this);
+        var igClient = (cookie !== 'live') ? this.get('igClientBasic') : this.get('igClientLive') ;
 
-        igClient.getRecentUrls(req.params.tagName, null, function(err, imagesUrls, min_tag_id){
-            console.log('@sultagit.getTags - gotUrls', imagesUrls);
-        });
+        igClient.getRecentUrls(tagName, null, callback);
     },
 
     getDummy: function (req, res) {

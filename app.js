@@ -46,7 +46,13 @@ app.get('/subscriptions', gramroutes.handshakeSubscription);
 app.post('/subscriptions', gramroutes.gotSubscription);
 app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);
-app.get('/getTags/:tagName',sultagit.getTags);
+app.get('/getTags/:tagName', function (req, res) {
+    var tg = req.params.tagName
+    sultagit.getTags(req.signedCookies.sultagitlive, tg, function(err, imagesUrls, min_tag_id) {
+        console.log('@sultagit.getTags - gotUrls', imagesUrls);
+    });
+    res.send(200);
+});
 app.get('/getTagsDummy/:tagName', sultagit.getDummy)
 
 app.use(express.static(path.join(__dirname, 'public')));
