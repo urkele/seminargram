@@ -48,10 +48,10 @@ app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);
 app.get('/getTags/:tagName', function (req, res) {
     var tg = req.params.tagName
-    sultagit.getTags(req.signedCookies.sultagitlive, tg, function(err, imagesUrls, min_tag_id) {
-        console.log('@sultagit.getTags - gotUrls', imagesUrls);
+    sultagit.getTags((req.signedCookies.sultagitlive == 'live'), tg, function(tag) {
+        console.log('@sultagit.getTags - gotTag', tag);
+        res.send(tag);
     });
-    res.send(200);
 });
 app.get('/getTagsDummy/:tagName', sultagit.getDummy)
 

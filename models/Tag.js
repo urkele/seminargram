@@ -3,6 +3,11 @@ var Backbone = require('backbone'),
 
 
 var Tag = Backbone.RelationalModel.extend({
+    defaults: {
+        tagName: ""
+    },
+
+    idAttribute: "tagName"
 })
 
 module.exports.Tag = Tag;

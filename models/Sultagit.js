@@ -1,6 +1,8 @@
 var Backbone = require('backbone'),
+    _ = require('underscore'),
     BacboneRleational = require('backbone-relational'),
-    IGClient = require('./IGClient.js');
+    IGClient = require('./IGClient.js'),
+    Tag = require('./Tag.js').Tag;
 
 var Sultagit = Backbone.RelationalModel.extend({
 
@@ -21,11 +23,24 @@ var Sultagit = Backbone.RelationalModel.extend({
         res.render('index', {open: "[%", close: "%]", title: title, live: live});
     },
 
-    getTags: function (cookie, tagName, callback) {
-        // console.log('@sultagit.getTags - app', this);
-        var igClient = (cookie !== 'live') ? this.get('igClientBasic') : this.get('igClientLive') ;
-
-        igClient.getRecentUrls(tagName, null, callback);
+    getTags: function (isLive, tagName, callback) {
+        var igClient = isLive ? this.get('igClientLive') : this.get('igClientBasic');
+        var tag = new Tag({tagName: tagName});
+        igClient.getRecentUrls(tagName, null, function (err, imagesUrls, min_tag_id) {
+            if (err) {
+                tag.set('error', err);
+            }
+            else {
+                var images = _.map(imagesUrls, function (url) {
+                    return {'src': url};
+                })
+                tag.set('images', images);
+            }   
+            callback(tag.toJSON());
+            if (!isLive) {
+                // tag.destroy();
+            }
+        });
     },
 
     getDummy: function (req, res) {

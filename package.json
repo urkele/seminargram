@@ -21,7 +21,8 @@
     "instagram-node-lib": "0.1.1",
     "async": "0.2.7",
     "backbone": "1.0.0",
-    "backbone-relational": "0.8.5"
+    "backbone-relational": "0.8.5",
+    "underscore": "1.4.4"
   },
   "subdomain": "seminargram",
   "domains": [

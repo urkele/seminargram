@@ -20,6 +20,7 @@ var IGCLientBasic = Backbone.Model.extend({
     },
 
     getRecentUrls: function (tagName, min_tag_id, callback) {
+        var resolution = this.get('resolution');
         var options = {
             name: tagName,
             error: function (errorMessage, errorObject, caller) {
