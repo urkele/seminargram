@@ -25,7 +25,7 @@ var IGCLientBasic = Backbone.Model.extend({
             name: tagName,
             error: function (errorMessage, errorObject, caller) {
                 console.log("@IGClient.getRecentUrls - getting recent for tag '%s' returned an error", tagName, errorMessage, errorObject);
-                callback(errorMessage);
+                callback({errorMessage: errorMessage, errorObject: errorObject});
             },
             complete: function (data, pagination) {
                 var min_tag_id = null;

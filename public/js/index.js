@@ -42,7 +42,8 @@ $(function () {
     // define the Tag model
     Sultagit.Models.Tag = Backbone.RelationalModel.extend({
         defaults: {
-            status: ""
+            status: "",
+            igKnownErrors: ['APINotAllowedError']
         },
 
         relations: [{
@@ -177,7 +178,6 @@ $(function () {
             'maxTags': 6,
             'illegalHashtagChars': /[^\w]/,
             'illegalSentenceChars': /[^\w\s]/,
-            'InstagramError_APINotAllowed': 'APINotAllowedError',
             'status': '',
             'resultDimensions': [],
             'loaderWrapperOverlay' : true,
@@ -216,9 +216,6 @@ $(function () {
 
             //crete the info button view
             new Sultagit.Views.infoButtonView({model: this});
-
-
-
 
             //caculate the width of a result container and its right margin
             this.claculateImageContainer();
@@ -368,18 +365,21 @@ $(function () {
     // define the Tag title view
     Sultagit.Views.TagTitleView = Backbone.View.extend({
 
-        // el: $("#resultTitles"),
         className: function () {return 'tagTitle '+this.model.get('tagName')},
-        // tagName: 'li',
 
         initialize: function () {
-            this.listenTo(this.model, 'destroy', this.destroy)
+            this.listenTo(this.model, 'destroy', this.destroy);
+            this.listenTo(this.model, 'change:error', this.strikeThrough);
             this.render();
         },
 
         render: function () {
             $("#resultTitles").append(this.el);
             this.$el.html(this.model.get('tagName'));
+        },
+
+        strikeThrough: function (m) {
+            this.$el.addClass('erroredTagTitle');
         },
 
         destroy: function () {
@@ -399,6 +399,7 @@ $(function () {
             this.listenTo(this.model, 'add:images', this.instantiateImageView);
             this.listenTo(this.model.collection.application, 'swap', this.swapper);
             this.listenTo(this.model, 'destroy', this.destroy);
+            this.listenTo(this.model, 'change:error', this.displayError);
         },
 
         render: function () {
@@ -407,6 +408,20 @@ $(function () {
 
         instantiateImageView: function (imageModel) {
             imageModel.set('imageView', new Sultagit.Views.ImageView({model: imageModel, parent: this.$el, tag: this.model.get('tagName')}));
+        },
+
+        displayError: function (m) {
+            var errEl = $('<div class="imgError"></div>')
+            var msg = 'unknown error';
+            var err = m.get('error');
+            if (m.get('igKnownErrors').indexOf(err.errorMessage) !== -1) {
+                msg = err.errorObject;
+            }
+            else {
+                console.log("error getting tags for %s: %o", m.get('tagName'), err);
+            };
+            errEl.text(msg);
+            this.$el.html(errEl);
         },
 
         swapper: function () {
@@ -681,33 +696,7 @@ $(function () {
         // app.socket.emit('subscriptions',{handle: "stop"});
     });
 */
-
-
-
-//manipulate DOM for images
 /*
-
-function prependImages (tagName, tagImages) {
-    var parentElement = $(".tagImages."+tagName);
-    if (typeof tagImages == "object") {
-        for (var i = (tagImages.length - 1); i >= 0 ; i--) {
-            var imgElement =$("<img src='"+tagImages[i]+"' alt='"+tagName+"' title='"+tagName+"'>")
-            imgElement.height(0);
-            $(parentElement).prepend(imgElement);
-        };
-    }
-    else {
-        var imgErrorMessage = "error getting images";
-        var tagTitleElement = $(".tagTitle."+tagName);
-        if (tagImages == InstagramError_APINotAllowed) {
-            imgErrorMessage = "this tag is forbidden"
-        };
-        var errElement = $("<div class='imgError "+tagName+"'>"+imgErrorMessage+"</div>");    
-        $(parentElement).prepend(errElement);
-        tagTitleElement.addClass("erroredTagTitle");
-    };
-}
-
 function newTag (data) {
     tagsCollection.add(data,{merge: true});
     var tagName = data.tagName;
