@@ -1,22 +1,21 @@
 var Backbone = require('backbone'),
-    Instagram = require('instagram-node-lib');
+    Instagram = require('instagram-node-lib'),
+    Dispatcher = require('./Dispatcher.js').Dispatcher;
 
 var IGCLientBasic = Backbone.Model.extend({
     defaults: {
-        client_id: '83b37f581755407a9536df3aab8b9366',
-        client_secret: '79385db4ea4241c1a23a7d4dd94eeb10',
-        callback_url: 'http://seminargram.jit.su/subscriptions',
+        client_id: '7f49a6767ca74605ab417538486c5a94',
+        client_secret: '8c726fa0a72f48ae9cb83e0fbc0160bd',
         resolution: 'low_resolution'
     },
 
     initialize: function() {
-/*        console.log('Polling - client_id', this.get('client_id'));
-        console.log('Polling - client_secret', this.get('client_secret'));
-        console.log('Polling - callback_url', this.get('callback_url'));
-        console.log('Polling - resolution', this.get('resolution'));*/
         Instagram.set('client_id', this.get('client_id'));
         Instagram.set('client_secret', this.get('client_secret'));
-        // Instagram.set('callback_url', this.get('callback_url'));
+        this.set('dispatcher', new Dispatcher);
+        if (this.get('callback_url')) {
+            Instagram.set('callback_url', this.get('callback_url'));
+        };
     },
 
     getRecentUrls: function (tagName, min_tag_id, callback) {
@@ -47,16 +46,16 @@ var IGCLientBasic = Backbone.Model.extend({
         if (min_tag_id) {
             options.min_tag_id = min_tag_id;
         }
-        // igRequestsDispatcher.schedule(Instagram.tags.recent, Instagram.tags, options);
-        Instagram.tags.recent(options);
+        this.get('dispatcher').schedule(Instagram.tags.recent, options, Instagram.tags);
+        // Instagram.tags.recent(options);
     },
 })
 
 var IGCLientLive = IGCLientBasic.extend({
     defaults: {
-        client_id: 'ab9c4ad6b1ca4a7b9b0b037494004307',
-        client_secret: '38ab89bec6864c0ca45d716e2943c8da',
-        callback_url: 'http://sultag.it/subscriptions',
+        client_id: '1c45259b0bae4ff58de047c07960286b',
+        client_secret: '476d84bd632f4dc0b119257b8db9811c',
+        callback_url: 'http://sultagit-8178.onmodulus.net/subscriptions',
         resolution: IGCLientBasic.prototype.defaults.resolution
     },
 

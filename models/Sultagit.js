@@ -9,11 +9,6 @@ var Sultagit = Backbone.RelationalModel.extend({
     initialize: function () {
         this.set('igClientBasic', new IGClient.Basic());
         this.set('igClientLive', new IGClient.Live());
-        this.cons()
-    },
-
-    cons: function () {
-        // console.log("cons", this);
     },
 
     getIndex: function (req, res) {
