@@ -1,8 +1,8 @@
 // Based on: http://www.matteoagosti.com/blog/2013/01/22/rate-limiting-function-calls-in-javascript/
 var Backbone = require('backbone'),
-    BacboneRleational = require('backbone-relational');
+    BackboneRelational = require('backbone-relational');
 
-var Dispatcher = Backbone.Model.extend({
+var Dispatcher = Backbone.RelationalModel.extend({
     defaults: {
         maxOps: 5000,
         interval: (60 * 1.01) * 60 * 1000, // mins (+1% to be safe) * secs * ms //test values (0.25 * 1.01) * 60 * 1000,

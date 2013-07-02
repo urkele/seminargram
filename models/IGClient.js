@@ -1,8 +1,9 @@
 var Backbone = require('backbone'),
+    BackboneRelational = require('backbone-relational'),
     Instagram = require('instagram-node-lib'),
     Dispatcher = require('./Dispatcher.js').Dispatcher;
 
-var IGCLientBasic = Backbone.Model.extend({
+var IGCLientBasic = Backbone.RelationalModel.extend({
     defaults: {
         client_id: '7f49a6767ca74605ab417538486c5a94',
         client_secret: '8c726fa0a72f48ae9cb83e0fbc0160bd',
@@ -12,7 +13,7 @@ var IGCLientBasic = Backbone.Model.extend({
     initialize: function() {
         Instagram.set('client_id', this.get('client_id'));
         Instagram.set('client_secret', this.get('client_secret'));
-        this.set('dispatcher', new Dispatcher);
+        this.set('dispatcher', new Dispatcher());
         if (this.get('callback_url')) {
             Instagram.set('callback_url', this.get('callback_url'));
         }
@@ -28,19 +29,21 @@ var IGCLientBasic = Backbone.Model.extend({
             },
             complete: function (data, pagination) {
                 var min_tag_id = null;
-                var imagesUrls = [];
+                var imagesData = [];
                 for (var i = 0; i < data.length; i++) {
+                    imagesData[i] = {};
                     if (data[i].images[resolution].url) {
-                        imagesUrls[i] = data[i].images[resolution].url;
+                        imagesData[i].src = data[i].images[resolution].url;
                     }
                     else {
-                        imagesUrls[i] = data[i].images[resolution];
+                        imagesData[i].src = data[i].images[resolution];
                     }
+                    imagesData[i].id = data[i].id;
                 }
                 if (pagination && pagination.min_tag_id) {
                     min_tag_id = pagination.min_tag_id;
                 }
-                callback(null, imagesUrls, min_tag_id);
+                callback(null, imagesData, min_tag_id);
             }
         };
         if (min_tag_id) {

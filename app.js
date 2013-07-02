@@ -7,7 +7,7 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     // , sultagitRoute = require('./routes/sultagitRoute.js')
-    Sultagit = require('./models/Sultagit.js').Sultagit,
+    Sultagit = require('./models/Sultagit.js'),
     gramroutes = require('./routes/gramroutes.js');
 
 var app = express(),
@@ -35,24 +35,53 @@ var basicAuth = express.basicAuth(function(username, password) {
   return (username === "sultagit" && password === "123456");
 }, 'Please provide credentials');
 
-var sultagit = new Sultagit;
+var sultagitBasic = new Sultagit.Basic(),
+    sultagitLive = new Sultagit.Live();
 
-app.get('/', sultagit.getIndex);
+/* define routes */
+
+// index
+app.get('/', function (req, res) {
+    var isLive = (req.signedCookies.sultagitlive == 'live');
+    var title = process.env.NODE_ENV ? 'sultag.it' : 'sultag.it - local';
+
+    res.render('index', {open: "[%", close: "%]", title: title, live: isLive});
+});
+
+// live
 app.get('/live', basicAuth, function(req, res) {
-    res.cookie('sultagitlive', 'live', { signed: true });
+    res.cookie('sultagitlive', 'live', {signed: true});
     res.redirect('/');
 });
+
+// getTags endpoint
+app.get('/getTags/:tagName', function (req, res) {
+    var isLive = (req.signedCookies.sultagitlive == 'live');
+    var sultagit = isLive ? sultagitLive : sultagitBasic;
+
+    sultagit.getTags(req.params.tagName, function(tag) {
+        console.log('@app.js.getTags - gotTag', tag);
+        res.send(tag);
+    });
+});
+
+//getTags Delete
+app.delete('/getTags/:tagName', function (req, res) {
+    var isLive = (req.signedCookies.sultagitlive == 'live');
+    // var sultagit = isLive ? sultagitLive : sultagitBasic;
+    res.send(304);
+});
+
+// dummy delete for images
+app.delete('/', function (req, res) {
+    res.send(204);
+});
+
 app.get('/subscriptions', gramroutes.handshakeSubscription);
 app.post('/subscriptions', gramroutes.gotSubscription);
 app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);
-app.get('/getTags/:tagName', function (req, res) {
-    var tn = req.params.tagName;
-    sultagit.getTags((req.signedCookies.sultagitlive == 'live'), tn, function(tag) {
-        console.log('@sultagit.getTags - gotTag', tag);
-        res.send(tag);
-    });
-});
+
 // app.get('/getTagsDummy/:tagName', sultagit.getDummy)
 
 app.use(express.static(path.join(__dirname, 'public')));

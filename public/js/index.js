@@ -1,3 +1,5 @@
+//TODO: handle sentence with repeating words
+
 var Sultagit = {
     Models: {},
     Views: {},
@@ -15,6 +17,8 @@ $(function () {
             'position': 0,
             'src': ""
         },
+
+        urlRoot: '#',
 
         initialize: function () {
             this.on('change:position', this.changeNext);
