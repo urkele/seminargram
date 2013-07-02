@@ -36,7 +36,7 @@ var Dispatcher = Backbone.Model.extend({
             else {
                 if (fn) {
                     important ? this.get('queue').unshift(fnObj) : this.get('queue').push(fnObj);
-                };
+                }
                 this.set('numOps', this.get('numOps') + 1);
                 var o = this.get('queue').shift();
                 var func = o.fn;
@@ -49,7 +49,7 @@ var Dispatcher = Backbone.Model.extend({
         else {
             if (fn) {
                 important ? this.get('queue').unshift(fnObj) : this.get('queue').push(fnObj);
-            };
+            }
 
             setTimeout(function() {
                 _this.schedule();

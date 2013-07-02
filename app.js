@@ -3,15 +3,15 @@
  * Module dependencies.
  */
 
-var express = require('express')
-    , http = require('http')
-    , path = require('path')
+var express = require('express'),
+    http = require('http'),
+    path = require('path'),
     // , sultagitRoute = require('./routes/sultagitRoute.js')
-    , Sultagit = require('./models/Sultagit.js').Sultagit
-    , gramroutes = require('./routes/gramroutes.js');
+    Sultagit = require('./models/Sultagit.js').Sultagit,
+    gramroutes = require('./routes/gramroutes.js');
 
-var app = express()
-    , server = http.createServer(app);
+var app = express(),
+    server = http.createServer(app);
 
 app.configure(function(){
     app.set('port', process.env.PORT || 3000);
@@ -24,7 +24,7 @@ app.configure(function(){
     app.use(express.cookieParser('pictureyourwords2013'));
     app.use(express.session());
     app.use(app.router);
-    app.use(require('less-middleware')({ src: __dirname + '/public' }));   
+    app.use(require('less-middleware')({ src: __dirname + '/public' }));
 });
 
 app.configure('development', function(){
@@ -47,13 +47,13 @@ app.post('/subscriptions', gramroutes.gotSubscription);
 app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);
 app.get('/getTags/:tagName', function (req, res) {
-    var tn = req.params.tagName
+    var tn = req.params.tagName;
     sultagit.getTags((req.signedCookies.sultagitlive == 'live'), tn, function(tag) {
         console.log('@sultagit.getTags - gotTag', tag);
         res.send(tag);
     });
 });
-app.get('/getTagsDummy/:tagName', sultagit.getDummy)
+// app.get('/getTagsDummy/:tagName', sultagit.getDummy)
 
 app.use(express.static(path.join(__dirname, 'public')));
 

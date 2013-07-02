@@ -15,7 +15,7 @@ var IGCLientBasic = Backbone.Model.extend({
         this.set('dispatcher', new Dispatcher);
         if (this.get('callback_url')) {
             Instagram.set('callback_url', this.get('callback_url'));
-        };
+        }
     },
 
     getRecentUrls: function (tagName, min_tag_id, callback) {
@@ -34,9 +34,9 @@ var IGCLientBasic = Backbone.Model.extend({
                         imagesUrls[i] = data[i].images[resolution].url;
                     }
                     else {
-                        imagesUrls[i] = data[i].images[resolution]
+                        imagesUrls[i] = data[i].images[resolution];
                     }
-                };
+                }
                 if (pagination && pagination.min_tag_id) {
                     min_tag_id = pagination.min_tag_id;
                 }
@@ -47,8 +47,8 @@ var IGCLientBasic = Backbone.Model.extend({
             options.min_tag_id = min_tag_id;
         }
         this.get('dispatcher').schedule(Instagram.tags.recent, options, Instagram.tags, false);
-    },
-})
+    }
+});
 
 var IGCLientLive = IGCLientBasic.extend({
     defaults: {
@@ -61,7 +61,7 @@ var IGCLientLive = IGCLientBasic.extend({
     initialize: function() {
         IGCLientBasic.prototype.initialize.apply(this);
     }
-})
+});
 
 module.exports.Basic = IGCLientBasic;
 module.exports.Live = IGCLientLive;

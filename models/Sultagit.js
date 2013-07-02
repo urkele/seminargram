@@ -28,15 +28,15 @@ var Sultagit = Backbone.RelationalModel.extend({
             else {
                 var images = _.map(imagesUrls, function (url) {
                     return {'src': url};
-                })
+                });
                 tag.set('images', images);
-            }   
+            }
             callback(tag.toJSON());
             if (!isLive) {
                 // tag.destroy();
             }
         });
-    },
+    }
 /*
     getDummy: function (req, res) {
         if (req.signedCookies.sultagitlive == 'live') {
