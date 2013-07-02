@@ -118,15 +118,19 @@ $(function () {
         },
         connectionConnected: function () {
             this.get('master').set('status', 'ready');
+            console.log("socket connected");
         },
         connectionConnecting: function () {
             this.get('master').set('status', 'Connecting...');
+            console.log("socket connecting");
         },
         connectionDisconnected: function () {
             this.get('master').set('status', 'Disconnected');
+            console.log("socket disconnected");
         },
         connectionFailed: function () {
             this.get('master').set('status', 'Failed to connect');
+            console.log("socket failed");
         }
     });
 

@@ -47,8 +47,8 @@ app.post('/subscriptions', gramroutes.gotSubscription);
 app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);
 app.get('/getTags/:tagName', function (req, res) {
-    var tg = req.params.tagName
-    sultagit.getTags((req.signedCookies.sultagitlive == 'live'), tg, function(tag) {
+    var tn = req.params.tagName
+    sultagit.getTags((req.signedCookies.sultagitlive == 'live'), tn, function(tag) {
         console.log('@sultagit.getTags - gotTag', tag);
         res.send(tag);
     });

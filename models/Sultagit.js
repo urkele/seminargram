@@ -37,7 +37,7 @@ var Sultagit = Backbone.RelationalModel.extend({
             }
         });
     },
-
+/*
     getDummy: function (req, res) {
         if (req.signedCookies.sultagitlive == 'live') {
             console.log('live authenticated');
@@ -119,6 +119,7 @@ var Sultagit = Backbone.RelationalModel.extend({
         };
         res.json(jsn[req.params.tagName]);
     }
+    */
 });
 
 module.exports.Sultagit = Sultagit;
