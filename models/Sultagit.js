@@ -26,14 +26,15 @@ var SultagitBasic = Backbone.RelationalModel.extend({
     getTags: function (tagName, callback) {
         this.get('tags').add({tagName: tagName}, {merge: true});
         var tag = this.get('tags').get(tagName);
-        this.get('igClient').getRecentUrls(tagName, tag.min_tag_id ? tag.min_tag_id : null, function (err, imagesData, min_tag_id) {
+        this.get('igClient').getRecentUrls(tagName, null, function (err, imagesData, min_tag_id) {
             if (err) {
                 tag.set('error', err);
             }
             else {
-                tag.min_tag_id = min_tag_id;
-                tag.get('images').add(imagesData);
+                // tag.min_tag_id = min_tag_id;
+                tag.get('images').reset(imagesData);
             }
+            console.log('there are %d images in tag "%s"', tag.get('images').length, tag.get('tagName'));
             callback(tag.toJSON());
         });
     }
