@@ -68,7 +68,7 @@ app.get('/getTags/:tagName', function (req, res) {
     });
 });
 
-//getTags Delete
+// getTags Delete
 app.delete('/getTags/:tagName', function (req, res) {
     var isLive = (req.signedCookies.sultagitlive == 'live');
     // var sultagit = isLive ? sultagitLive : sultagitBasic;
@@ -85,10 +85,14 @@ app.get('/subscriptions', function (req, res) {
     sultagitLive.subscriptionHandshake(req, res);
 });
 
-app.post('/subscriptions', gramroutes.gotSubscription);
-app.post('/fakesubscriptions', gramroutes.gotSubscription);
-app.get('/poster', gramroutes.getPoster);
+// get updated data
+app.post('/subscriptions', function (req, res) {
+    res.send(200);
+    sultagitLive.update(req.body);
+});
 
+// app.post('/fakesubscriptions', gramroutes.gotSubscription);
+// app.get('/poster', gramroutes.getPoster);
 // app.get('/getTagsDummy/:tagName', sultagit.getDummy)
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -96,7 +100,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 server.listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));
+
     //when app starts unsubscribe from all exisiting instagram subscriptions
-    gramroutes.unsubscribeAll();
+    sultagitLive.unsubscribe(true, null);
 });
+
 gramroutes.createSocket(server);

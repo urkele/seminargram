@@ -24,17 +24,16 @@ var SultagitBasic = Backbone.RelationalModel.extend({
     },
 
     getTags: function (tagName, callback) {
-        this.get('tags').add({tagName: tagName}, {merge: true});
+        this.get('tags').add({tagName: tagName}, {merge: true}); //not sure I need merge. we can skip adding if exists
         var tag = this.get('tags').get(tagName);
         this.get('igClient').getRecentUrls(tagName, null, function (err, imagesData, min_tag_id) {
             if (err) {
                 tag.set('error', err);
             }
             else {
-                // tag.min_tag_id = min_tag_id;
-                tag.get('images').reset(imagesData);
+                tag.min_tag_id = min_tag_id;
+                tag.get('images').add(imagesData, {silent: true});
             }
-            console.log('there are %d images in tag "%s"', tag.get('images').length, tag.get('tagName'));
             callback(tag.toJSON());
         });
     }
@@ -45,21 +44,64 @@ var SultagitLive = SultagitBasic.extend({
         this.set('igClient', new IGClient.Live());
     },
 
+    getTags: function (tagName, callback) {
+        if (this.get('tags').get(tagName)) {
+            // don't need to get images. just add client to room and send back the data in the model.
+            callback(this.get('tags').get(tagName).toJSON());
+        }
+        else {
+            SultagitBasic.prototype.getTags.call(this, tagName, callback);
+        }
+    },
+
+    update: function (payload) {
+        _.each(payload, function(element, index, payload) {
+            var tagName = element.object_id;
+            var tag = this.get('tags').get(tagName);
+            this.get('igClient').getRecentUrls(tagName, tag.get('min_tag_id'), function (err, imagesData, min_tag_id) {
+            if (err) {
+                tag.set('error', err);
+            }
+            else {
+                console.log('@updated %d images in tag %s', imagesData.length, tagName);
+                tag.min_tag_id = min_tag_id;
+                tag.get('images').add(imagesData);
+            }
+        });
+
+        }, this);
+    },
+
     subscribe: function (tagName) {
         var tag = this.get('tags').get(tagName);
-        console.log('@SultagitLive.subscribe - subscriptionId', tag.get('subscriptionId'));
         if (!tag.get('subscriptionId')) {
-        this.get('igClient').subscribe(tagName, function (err, subscriptionId) {
+            this.get('igClient').subscribe(tagName, function (err, subscriptionId) {
                 if (!err) {
-                    console.log('@SultagitLive.subscribe - got subscriptionId', subscriptionId);
                     tag.set('subscriptionId', subscriptionId);
                 }
-        });
+            });
         }
     },
 
     subscriptionHandshake: function (req, res) {
         this.get('igClient').handshake(req, res);
+    },
+
+    unsubscribe: function (isAll, tagName) {
+        if (isAll) {
+            this.get('igClient').unsubscribeAll();
+        }
+        else {
+            if (tagName) {
+                subscriptionId = this.get('tags').get(tagName).get('subscriptionId');
+                if (subscriptionId) {
+                    this.get('igClient').unsubscribe(subscriptionId);
+                }
+                else {
+                    console.log('tag "%s" has no subscriptionId', tagName);
+                }
+            }
+        }
     }
 });
 

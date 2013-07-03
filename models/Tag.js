@@ -4,6 +4,8 @@ var Backbone = require('backbone'),
     Images = require('../collections/Images.js').Images;
 
 var Tag = Backbone.RelationalModel.extend({
+    idAttribute: "tagName",
+
     defaults: {
         tagName: ""
     },
@@ -19,7 +21,6 @@ var Tag = Backbone.RelationalModel.extend({
         }
     }],
 
-    idAttribute: "tagName"
 });
 
 module.exports.Tag = Tag;
