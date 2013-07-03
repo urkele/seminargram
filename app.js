@@ -63,7 +63,7 @@ app.get('/getTags/:tagName', function (req, res) {
         console.log('@app.js.getTags - gotTag', tag);
         res.send(tag);
         if (isLive) {
-            sultagitLive.subscribe(req.params.tagName);
+            sultagitLive.subscribe(req.params.tagName, req.socket);
         }
     });
 });

@@ -65,16 +65,14 @@ var SultagitLive = SultagitBasic.extend({
                 tag.set('error', err);
             }
             else {
-                console.log('@updated %d images in tag %s', imagesData.length, tagName);
                 tag.min_tag_id = min_tag_id;
                 tag.get('images').add(imagesData);
             }
         });
-
         }, this);
     },
 
-    subscribe: function (tagName) {
+    subscribe: function (tagName, socket) {
         var tag = this.get('tags').get(tagName);
         if (!tag.get('subscriptionId')) {
             this.get('igClient').subscribe(tagName, function (err, subscriptionId) {
@@ -83,6 +81,9 @@ var SultagitLive = SultagitBasic.extend({
                 }
             });
         }
+
+        //register client to the tags' room
+        this.get('io').joinRoom(socket, tagName);
     },
 
     subscriptionHandshake: function (req, res) {

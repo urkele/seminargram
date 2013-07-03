@@ -19,8 +19,7 @@ var Tag = Backbone.RelationalModel.extend({
             key: 'imageOf',
             includeInJSON: false
         }
-    }],
-
+    }]
 });
 
 module.exports.Tag = Tag;

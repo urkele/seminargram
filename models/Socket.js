@@ -10,6 +10,11 @@ var Socket = Backbone.RelationalModel.extend({
             io.set('flash policy server', false);
             io.set('log level', 1); // set socket.io logging level to 'warn'
         });
+    },
+
+    joinRoom: function (socket, room) {
+        var s = this.get('io').sockets.socket(socket);
+        s.join(room);
     }
 });
 
