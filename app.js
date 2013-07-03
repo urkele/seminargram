@@ -36,7 +36,7 @@ var basicAuth = express.basicAuth(function(username, password) {
 }, 'Please provide credentials');
 
 var sultagitBasic = new Sultagit.Basic(),
-    sultagitLive = new Sultagit.Live();
+    sultagitLive = new Sultagit.Live(server);
 
 /* define routes */
 
@@ -91,12 +91,7 @@ app.post('/subscriptions', function (req, res) {
     sultagitLive.update(req.body);
 });
 
-// app.post('/fakesubscriptions', gramroutes.gotSubscription);
-// app.get('/poster', gramroutes.getPoster);
-// app.get('/getTagsDummy/:tagName', sultagit.getDummy)
-
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 server.listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));
@@ -104,5 +99,3 @@ server.listen(app.get('port'), function(){
     //when app starts unsubscribe from all exisiting instagram subscriptions
     sultagitLive.unsubscribe(true, null);
 });
-
-gramroutes.createSocket(server);

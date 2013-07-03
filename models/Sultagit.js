@@ -2,6 +2,7 @@ var Backbone = require('backbone'),
     _ = require('underscore'),
     BackboneRelational = require('backbone-relational'),
     IGClient = require('./IGClient.js'),
+    Socket = require('./Socket.js').Socket,
     Tag = require('./Tag.js').Tag,
     Tags = require('../collections/Tags.js').Tags;
 
@@ -40,8 +41,9 @@ var SultagitBasic = Backbone.RelationalModel.extend({
 });
 
 var SultagitLive = SultagitBasic.extend({
-    initialize: function () {
+    initialize: function (server) {
         this.set('igClient', new IGClient.Live());
+        this.set('io', new Socket(server));
     },
 
     getTags: function (tagName, callback) {
