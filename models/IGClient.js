@@ -63,6 +63,27 @@ var IGCLientLive = IGCLientBasic.extend({
 
     initialize: function() {
         IGCLientBasic.prototype.initialize.apply(this);
+    },
+
+    subscribe: function (tagName, callback) {
+        var options = {
+            object_id: tagName,
+            verify_token: 'token_' + tagName,
+            error: function (errorMessage, errorObject, caller) {
+                console.log ("@IGClient.subscribeTag - subscribing tag '%s' returned an error", tagName, errorMessage, errorObject);
+                callback({errorMessage: errorMessage, errorObject: errorObject});
+            },
+            complete: function (subscription) {
+                subscriptionId = subscription.id;
+                callback(null, subscriptionId);
+            }
+        };
+        this.get('dispatcher').schedule(Instagram.tags.subscribe, options, Instagram.tags, false);
+    },
+
+    handshake: function (req, res) {
+        Instagram.subscriptions.handshake(req, res, function (verifyToken) {
+        });
     }
 });
 

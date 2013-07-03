@@ -62,6 +62,9 @@ app.get('/getTags/:tagName', function (req, res) {
     sultagit.getTags(req.params.tagName, function(tag) {
         console.log('@app.js.getTags - gotTag', tag);
         res.send(tag);
+        if (isLive) {
+            sultagitLive.subscribe(req.params.tagName);
+        }
     });
 });
 
@@ -77,7 +80,11 @@ app.delete('/', function (req, res) {
     res.send(204);
 });
 
-app.get('/subscriptions', gramroutes.handshakeSubscription);
+// handle subscription handshake
+app.get('/subscriptions', function (req, res) {
+    sultagitLive.subscriptionHandshake(req, res);
+});
+
 app.post('/subscriptions', gramroutes.gotSubscription);
 app.post('/fakesubscriptions', gramroutes.gotSubscription);
 app.get('/poster', gramroutes.getPoster);

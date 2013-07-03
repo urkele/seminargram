@@ -43,6 +43,23 @@ var SultagitBasic = Backbone.RelationalModel.extend({
 var SultagitLive = SultagitBasic.extend({
     initialize: function () {
         this.set('igClient', new IGClient.Live());
+    },
+
+    subscribe: function (tagName) {
+        var tag = this.get('tags').get(tagName);
+        console.log('@SultagitLive.subscribe - subscriptionId', tag.get('subscriptionId'));
+        if (!tag.get('subscriptionId')) {
+        this.get('igClient').subscribe(tagName, function (err, subscriptionId) {
+                if (!err) {
+                    console.log('@SultagitLive.subscribe - got subscriptionId', subscriptionId);
+                    tag.set('subscriptionId', subscriptionId);
+                }
+        });
+        }
+    },
+
+    subscriptionHandshake: function (req, res) {
+        this.get('igClient').handshake(req, res);
     }
 });
 
