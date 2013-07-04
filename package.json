@@ -1,34 +1,34 @@
 {
-  "name": "seminargram",
-  "version": "0.0.1-124",
-  "author": "Uri Leshem <urke.leshem@gmail.com>",
-  "private": true,
-  "scripts": {
-    "start": "node app.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/urkele/seminargram.git"
-  },
-  "keywords": [
-    "instagram"
-  ],
-  "dependencies": {
-    "express": "3.1.0",
-    "ejs": "0.8.3",
-    "less-middleware": "0.1.11",
-    "socket.io": "0.9.14",
-    "instagram-node-lib": "0.1.1",
-    "backbone": "1.0.0",
-    "backbone-relational": "0.8.5",
-    "underscore": "1.4.4"
-  },
-  "subdomain": "seminargram",
-  "domains": [
-    "sultag.it",
-    "www.sultag.it"
-  ],
-  "engines": {
-    "node": "0.8.x"
-  }
+    "name": "sultag.it",
+    "version": "0.0.2",
+    "author": "Uri Leshem <urke.leshem@gmail.com>",
+    "private": true,
+    "scripts": {
+        "start": "node app.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/urkele/seminargram.git"
+    },
+    "keywords": [
+        "instagram"
+    ],
+    "description": "sultag.it is a web-application that tranlates literal sentnces into visual ones based on Instagram hashtags",
+    "homepage": "http:/sultag.it",
+    "bugs": {
+        "email" : "urke.leshem@gmail.com"
+    },
+    "dependencies": {
+        "express": "3.1.0",
+        "ejs": "0.8.3",
+        "less-middleware": "0.1.11",
+        "socket.io": "0.9.14",
+        "instagram-node-lib": "0.1.1",
+        "backbone": "1.0.0",
+        "backbone-relational": "0.8.5",
+        "underscore": "1.4.4"
+    },
+    "engines": {
+        "node": "0.8.x"
+    }
 }
