@@ -18,8 +18,6 @@ $(function () {
             'src': ""
         },
 
-        urlRoot: '#',
-
         initialize: function () {
             this.on('change:position', this.changeNext);
         },
@@ -35,6 +33,11 @@ $(function () {
                     previousModel.set('position', (prevPos + 1));
                 }
             }
+        },
+
+        destroy: function () {
+            this.collection.remove(this);
+            this.trigger('remove');
         }
     });
 
@@ -490,7 +493,7 @@ $(function () {
             this.$el.attr('src', this.model.get('src'));
             this.$el.attr('alt', this.options.tag);
             this.$el.attr('title', this.options.tag);
-            this.listenTo(this.model, 'destroy', this.slideOut);
+            this.listenTo(this.model, 'remove', this.slideOut);
             this.listenTo(this.model, 'slideIn', this.slideIn);
             this.listenTo(this.model, 'fadeOut', this.fadeOut);
             this.animationSpeed = this.model.get('imageOf').get('application').get('animationSpeed');
@@ -699,7 +702,7 @@ $(function () {
     });
 
     // kickoff the app
-    window.app = new Sultagit.Models.App;
+    window.app = new Sultagit.Models.App();
 
 });
 /*
