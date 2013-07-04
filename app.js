@@ -46,7 +46,17 @@ app.get('/', function(req, res) {
 
 app.get('/sultagit', basicAuth, function (req, res) {
     var isLive = (req.signedCookies.sultagitlive == 'live');
-    var title = (process.env.NODE_ENV == 'production') ? 'sultag.it' : 'sultag.it - local';
+    switch (process.env.NODE_ENV) {
+        case 'production':
+            title = 'sultag.it';
+            break;
+        case 'development':
+            title = 'sultag.it - dev';
+            break;
+         default:
+             title = 'sultag.it - local';
+             break;
+    }
 
     res.render('index', {open: "[%", close: "%]", title: title, live: isLive});
 });
@@ -98,7 +108,18 @@ app.post('/subscriptions', function (req, res) {
 
 app.get('/soon', function (req, res) {
     var ua = req.headers['user-agent'];
-    var title = (process.env.NODE_ENV == 'production') ? 'sultag.it' : 'sultag.it - local';
+    var title = 'sultag.it - ';
+    switch (process.env.NODE_ENV) {
+        case 'production':
+            title = 'sultag.it';
+            break;
+        case 'development':
+            title = 'sultag.it - dev';
+            break;
+         default:
+             title = 'sultag.it - local';
+             break;
+    }
     if (ua.indexOf('Android') !== -1 || ua.indexOf('iPhone') !== -1 || ua.indexOf('iPad') !== -1) {
         res.render('soon', {open: "[%", close: "%]", title: title, is_mobile: true});
     }
