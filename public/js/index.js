@@ -536,7 +536,8 @@ $(function () {
         events: {
             "click #submitButton": "validateInput",
             "keyup #submitButton": "validateInput",
-            "keyup #searchbox": "validateInput"
+            "keyup #searchbox": "validateInput",
+            "focus #searchbox": "clearBox"
         },
 
         initialize: function() {
@@ -544,6 +545,11 @@ $(function () {
             this.illegalHashtagChars = this.model.get('illegalHashtagChars');
             this.illegalSentenceChars = this.model.get('illegalSentenceChars');
         },
+
+        clearBox: function (e) {
+            $(e.target).val('');
+        },
+
         setQuery: function (words) {
             words = _.compact(words);
             if (words.length > this.maxTags) {
@@ -563,6 +569,7 @@ $(function () {
                 e.target.blur();
                 this.setQuery(words);
             }
+            // if its a 'space' key
             else if (e.which == 32){
                 if (words.length >= this.maxTags) {
                     this.model.trigger('maxSearchError');
