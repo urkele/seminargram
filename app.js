@@ -30,7 +30,7 @@ app.configure('development', function(){
 });
 
 var basicAuth = express.basicAuth(function(username, password) {
-  return (username === "sultagit" && password === "123456");
+  return (username === "sultagit" && password === "hazulit");
 }, 'Please provide credentials');
 
 var sultagitBasic = new Sultagit.Basic(),
@@ -39,7 +39,12 @@ var sultagitBasic = new Sultagit.Basic(),
 /* define routes */
 
 // index
-app.get('/', function (req, res) {
+
+app.get('/', function(req, res) {
+    res.redirect('/soon');
+});
+
+app.get('/sultagit', basicAuth, function (req, res) {
     var isLive = (req.signedCookies.sultagitlive == 'live');
     var title = process.env.NODE_ENV ? 'sultag.it' : 'sultag.it - local';
 
@@ -49,7 +54,7 @@ app.get('/', function (req, res) {
 // live
 app.get('/live', basicAuth, function(req, res) {
     res.cookie('sultagitlive', 'live', {signed: true});
-    res.redirect('/');
+    res.redirect('/sultagit');
 });
 
 // getTags endpoint
@@ -89,6 +94,16 @@ app.get('/subscriptions', function (req, res) {
 app.post('/subscriptions', function (req, res) {
     res.send(200);
     sultagitLive.update(req.body);
+});
+
+app.get('/soon', function (req, res) {
+    var ua = req.headers['user-agent'];
+    if (ua.indexOf('Android') !== -1 || ua.indexOf('iPhone') !== -1 || ua.indexOf('iPad') !== -1) {
+        res.render('soon', {is_mobile: true});
+    }
+    else {
+        res.render('soon', {is_mobile: false});
+    }
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
