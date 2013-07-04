@@ -6,9 +6,7 @@
 var express = require('express'),
     http = require('http'),
     path = require('path'),
-    // , sultagitRoute = require('./routes/sultagitRoute.js')
-    Sultagit = require('./models/Sultagit.js'),
-    gramroutes = require('./routes/gramroutes.js');
+    Sultagit = require('./models/Sultagit.js');
 
 var app = express(),
     server = http.createServer(app);
