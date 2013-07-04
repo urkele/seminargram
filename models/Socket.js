@@ -18,6 +18,11 @@ var Socket = Backbone.RelationalModel.extend({
     joinRoom: function (sid, room) {
         var s = this.get('io').sockets.socket(sid);
         s.join(room);
+    },
+
+    emitToRoom: function (room, eventName, data) {
+        var io = this.get('io');
+        io.sockets.in(room).emit(eventName, data);
     }
 });
 

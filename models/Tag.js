@@ -19,7 +19,17 @@ var Tag = Backbone.RelationalModel.extend({
             key: 'imageOf',
             includeInJSON: false
         }
-    }]
+    }],
+
+    initialize: function () {
+        this.listenTo(this.get('images'), 'add', function (img) {
+            var data = {};
+            var tagName = this.get('tagName');
+            data.images = img.toJSON();
+            data.tagName = tagName;
+            this.get('server').get('io').emitToRoom(tagName, 'newImage', data);
+        });
+    }
 });
 
 module.exports.Tag = Tag;

@@ -85,6 +85,7 @@ $(function () {
         initialize: function () {
             this.createSocket();
             var s = this.get('socket');
+            this.listenTo(this, 'change:sid', this.socketCookie);
             var thisModel = this;
             if (!s) {
                 //TODO: throw error no socket.
@@ -109,12 +110,14 @@ $(function () {
                 thisModel.connectionFailed();
             });
             s.on('reconnect', function () {
-                thisModel.connectionConnected();
+                thisModel.connectionConnected(s.socket.sessionid);
             });
             s.on('reconnecting', function () {
                 thisModel.connectionConnecting();
             });
-
+            s.on('newImage', function (data) {
+                thisModel.get('master').trigger('newImage', data);
+            });
         },
         createSocket: function () {
             this.set('socket', io.connect());
@@ -122,8 +125,8 @@ $(function () {
         },
         connectionConnected: function (sid) {
             this.get('master').set('status', 'ready');
-            console.log("socket connected", sid);
-            $.cookie('socketid', sid);
+            console.log("socket connected");
+            this.set('sid', sid);
         },
         connectionConnecting: function () {
             this.get('master').set('status', 'Connecting...');
@@ -136,6 +139,14 @@ $(function () {
         connectionFailed: function () {
             this.get('master').set('status', 'Failed to connect');
             console.log("socket failed");
+        },
+        socketCookie: function () {
+            var sid = this.get('socket').socket.sessionid;
+            if (sid !== $.cookie('sultagitSocketId')) {
+                $.removeCookie('sultagitSocketId');
+                $.cookie.raw = true;
+                var r = $.cookie('sultagitSocketId', sid);
+            }
         }
     });
 
@@ -218,6 +229,9 @@ $(function () {
                 var infoModel = new Sultagit.Models.Info();
                 new Sultagit.Views.infoView({model: infoModel});
             });
+
+            // bind to the 'newImage' to add the new images to the relevant models
+            this.on('newImage', this.addNewImages);
 
             // create the search form view
             new Sultagit.Views.SearchView({model: this});
@@ -347,6 +361,10 @@ $(function () {
                 });
                 this.get('fetchXhrs').push(fetchXhr);
             }, this);
+        },
+
+        addNewImages: function (data) {
+            this.get('tags').add(data, {merge: true});
         }
     });
 

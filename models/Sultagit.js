@@ -60,15 +60,19 @@ var SultagitLive = SultagitBasic.extend({
         _.each(payload, function(element, index, payload) {
             var tagName = element.object_id;
             var tag = this.get('tags').get(tagName);
-            this.get('igClient').getRecentUrls(tagName, tag.get('min_tag_id'), function (err, imagesData, min_tag_id) {
-            if (err) {
-                tag.set('error', err);
+            if (!tag) {
+                console.log('@update - couldn\'t find tag', tagName);
+                return;
             }
-            else {
-                tag.min_tag_id = min_tag_id;
-                tag.get('images').add(imagesData);
-            }
-        });
+            this.get('igClient').getRecentUrls(tagName, tag.min_tag_id ? tag.min_tag_id : null, function (err, imagesData, min_tag_id) {
+                if (err) {
+                    tag.set('error', err);
+                }
+                else {
+                    tag.min_tag_id = min_tag_id;
+                    tag.get('images').add(imagesData);
+                }
+            });
         }, this);
     },
 
