@@ -69,13 +69,15 @@ app.get('/getTags/:tagName', function (req, res) {
 // getTags Delete
 app.delete('/getTags/:tagName', function (req, res) {
     var isLive = (req.signedCookies.sultagitlive == 'live');
-    // var sultagit = isLive ? sultagitLive : sultagitBasic;
-    res.send(304);
-});
-
-// dummy delete for images
-app.delete('/', function (req, res) {
+    var sultagit = isLive ? sultagitLive : sultagitBasic;
+    sultagit.removeTags(req.params.tagName, function (err) {
+        if (err) {
+            res.send(404, err);
+        }
+        else {
     res.send(204);
+        }
+    }, isLive ? req.cookies.sultagitSocketId : null);
 });
 
 // handle subscription handshake

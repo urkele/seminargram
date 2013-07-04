@@ -20,9 +20,30 @@ var Socket = Backbone.RelationalModel.extend({
         s.join(room);
     },
 
+    leaveRoom: function (sid, room) {
+        var s = this.get('io').sockets.socket(sid);
+        s.leave(room);
+    },
+
     emitToRoom: function (room, eventName, data) {
         var io = this.get('io');
         io.sockets.in(room).emit(eventName, data);
+    },
+
+    listRooms: function () {
+        var io = this.get('io');
+        return io.sockets.manager.rooms;
+    },
+
+    listRoomClients: function (room) {
+        var rooms = this.listRooms();
+        room = '/' + room;
+        if (rooms[room]) {
+            return rooms[room];
+        }
+        else {
+            return [];
+        }
     }
 });
 

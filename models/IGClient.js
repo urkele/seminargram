@@ -86,6 +86,26 @@ var IGCLientLive = IGCLientBasic.extend({
         });
     },
 
+    unsubscribe: function (subscriptionId, callback) {
+        console.log("@IGClient.unsubscribe - unsubscribing id:", subscriptionId);
+        var options = {
+            id: subscriptionId,
+            error: function (errorMessage, errorObject, caller) {
+                console.log ("@IGClient.unsubscribe - unsubscribe id '%s' returned an error", subscriptionId, errorMessage, errorObject);
+                callback({errorMessage: errorMessage, errorObject: errorObject});
+            },
+            complete: function (data) {
+                if (data !== null) {
+                    callback({errorMessage: 'failed to unsubscribe id '+subscriptionId+' data is not null', errorObject: data});
+                }
+                else {
+                    callback(null);
+                }
+            }
+        };
+        this.get('dispatcher').schedule(Instagram.tags.unsubscribe, options, Instagram.tags, true);
+    },
+
     unsubscribeAll: function () {
         console.log("@IGClient.unsubscribeAll");
         var options = {
