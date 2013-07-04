@@ -90,7 +90,7 @@ $(function () {
                 //TODO: throw error no socket.
             }
             s.on('connect', function () {
-                thisModel.connectionConnected();
+                thisModel.connectionConnected(s.socket.sessionid);
             });
             s.on('connecting', function () {
                 thisModel.connectionConnecting();
@@ -120,9 +120,10 @@ $(function () {
             this.set('socket', io.connect());
             // io.connect(,{'max reconnection attempts': 5, reconnection limit: 3000})
         },
-        connectionConnected: function () {
+        connectionConnected: function (sid) {
             this.get('master').set('status', 'ready');
-            console.log("socket connected");
+            console.log("socket connected", sid);
+            $.cookie('socketid', sid);
         },
         connectionConnecting: function () {
             this.get('master').set('status', 'Connecting...');

@@ -15,8 +15,8 @@ var Socket = Backbone.RelationalModel.extend({
         });
     },
 
-    joinRoom: function (socket, room) {
-        var s = this.get('io').sockets.socket(socket);
+    joinRoom: function (sid, room) {
+        var s = this.get('io').sockets.socket(sid);
         s.join(room);
     }
 });

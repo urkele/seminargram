@@ -72,7 +72,7 @@ var SultagitLive = SultagitBasic.extend({
         }, this);
     },
 
-    subscribe: function (tagName, socket) {
+    subscribe: function (tagName, sid) {
         var tag = this.get('tags').get(tagName);
         if (!tag.get('subscriptionId')) {
             this.get('igClient').subscribe(tagName, function (err, subscriptionId) {
@@ -83,7 +83,7 @@ var SultagitLive = SultagitBasic.extend({
         }
 
         //register client to the tags' room
-        this.get('io').joinRoom(socket, tagName);
+        this.get('io').joinRoom(sid, tagName);
     },
 
     subscriptionHandshake: function (req, res) {
