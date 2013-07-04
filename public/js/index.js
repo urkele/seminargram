@@ -546,7 +546,6 @@ $(function () {
             if (words.length > this.maxTags) {
                 words.length = this.maxTags;
             }
-            console.log("setQuery '%o'", words);
             this.model.trigger('query', words);
         },
 
@@ -722,47 +721,4 @@ $(function () {
         console.log("sendstop");
         // app.socket.emit('subscriptions',{handle: "stop"});
     });
-*/
-/*
-function newTag (data) {
-    tagsCollection.add(data,{merge: true});
-    var tagName = data.tagName;
-    var tagImages = data.images;
-    // removeLoader($(".tagImages."+tagName));
-    prependImages(tagName, tagImages);
-    var intervalID = setInterval(function () {imageSlider(tagName)},imageRefreshInterval);
-    tagsCollection.get(tagName).set({intervalID: intervalID});
-}
-
-function updateTag (data) {
-    var tagName = data.tagName;
-    var tagNewImage = data.images;
-    // console.log("@updateTag for", tagName);
-    prependImages(tagName, tagNewImage);
-}
-
-// recived data from server
-/* app.socket.on('newData', function(data) {
-    // in case only 1 object is returned, it does not have a "length" property, therefor we wrap it in an array
-    if (typeof data.length == "undefined") {
-        var _data = data;
-        var data = [_data];
-    }
-    console.log("@newData recieved",data);
-    if (tagsCollection.length == 0) { // if this is all initial data
-        // handle search box graphics
-        $("#searchbox").val("");
-    }
-    for (var i = 0; i < data.length; i++) {
-        var tagName = data[i].tagName;
-        if (tagsCollection.get(tagName)) {
-            // console.log("@newData - existing tag", tagName);
-            updateTag(data[i]);
-        }
-        else {
-            // console.log("@newData - new tag", tagName);
-            newTag(data[i]);
-        }
-    };
- })
 */

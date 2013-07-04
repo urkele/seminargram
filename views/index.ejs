@@ -2,24 +2,26 @@
 <html>
     <head>
         <title>[%= title %]</title>
-        <link rel='stylesheet' href='/stylesheets/style.css' />
-        <!-- <link rel='stylesheet' media="only screen and (min-device-width : 1200px)" href='/stylesheets/style.css' /> -->
-        <!-- <link rel="stylesheet" media="only screen and (min-device-width : 768px) and (max-device-width : 1024px)" href="/stylesheets/ipad.css" /><!-- ipad styling -->
-        <!-- favicon -->
-        <link rel="shortcut icon" type="image/png" href="images/favicon.ico">
+        
+        <!-- Load JavaScripts -->
+
         [% if(live) { %] <script src="/socket.io/socket.io.js"></script> [% } %]
-        <script src="js/jquery-1.9.1.min.js"></script>
+        <!-- jQuery and plugins -->
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.3.1/jquery.cookie.min.js"></script>
         <!-- backbone.js-->
-        <script src="js/underscore-min.js"></script>
-        <script src="js/backbone-min.js"></script>
-        <script src="js/backbone-relational.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/backbone-relational/0.8.5/backbone-relational.min.js"></script>
         <!-- GSAP -->
-        <script src="js/CSSPlugin.min.js"></script>
-        <script src="js/TweenLite.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.9.6/plugins/CSSPlugin.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.9.6/TweenLite.min.js"></script>
 
         <script src="js/index.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+        <!-- Apple related -->
+
         <!-- enable iOS standalone mode -->
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <!-- iOS icons -->
@@ -27,6 +29,10 @@
         <link rel="apple-touch-icon" sizes="72x72" href="images/touch-icon-ipad-72.png" />
         <link rel="apple-touch-icon" sizes="114x114" href="images/touch-icon-iphone-retina-114.png" />
         <link rel="apple-touch-icon" sizes="144x144" href="images/touch-icon-ipad-retina-144.png" />
+
+        <!-- Load Styling -->
+
+        <link rel='stylesheet' href='/stylesheets/style.css' />
     </head>
     <body>
         <div id="maincontainer">
