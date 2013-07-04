@@ -97,5 +97,5 @@ server.listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));
 
     //when app starts unsubscribe from all exisiting instagram subscriptions
-    sultagitLive.unsubscribe(true, null);
+    sultagitLive.unsubscribeAll();
 });

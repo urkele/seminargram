@@ -106,21 +106,8 @@ var SultagitLive = SultagitBasic.extend({
         this.get('igClient').handshake(req, res);
     },
 
-    unsubscribe: function (isAll, tagName) {
-        if (isAll) {
-            this.get('igClient').unsubscribeAll();
-        }
-        else {
-            if (tagName) {
-                var subscriptionId = this.get('tags').get(tagName).get('subscriptionId');
-                if (subscriptionId) {
-                    this.get('igClient').unsubscribe(subscriptionId);
-                }
-                else {
-                    console.log('tag "%s" has no subscriptionId', tagName);
-                }
-            }
-        }
+    unsubscribeAll: function () {
+        this.get('igClient').unsubscribeAll();
     },
 
     removeTags: function (tagName, callback, sid) {
