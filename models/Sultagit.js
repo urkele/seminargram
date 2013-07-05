@@ -25,18 +25,28 @@ var SultagitBasic = Backbone.RelationalModel.extend({
     },
 
     getTags: function (tagName, callback) {
-        this.get('tags').add({tagName: tagName}, {merge: true}); //not sure I need merge. we can skip adding if exists
-        var tag = this.get('tags').get(tagName);
-        this.get('igClient').getRecentUrls(tagName, null, function (err, imagesData, min_tag_id) {
-            if (err) {
-                tag.set('error', err);
-            }
-            else {
-                tag.min_tag_id = min_tag_id;
-                tag.get('images').add(imagesData, {silent: true});
-            }
-            callback(tag.toJSON());
+        var _this = this;
+        this.unusedTagsCleanup(function () {
+            _this.get('tags').add({tagName: tagName}, {merge: true}); //not sure I need merge. we can skip adding if exists
+            var tag = _this.get('tags').get(tagName);
+            _this.get('igClient').getRecentUrls(tagName, null, function (err, imagesData, min_tag_id) {
+                if (err) {
+                    tag.set('error', err);
+                }
+                else {
+                    tag.min_tag_id = min_tag_id;
+                    tag.get('images').add(imagesData, {silent: true});
+                }
+                callback(tag.toJSON());
+                tag.set('sent', true);
+            });
         });
+    },
+
+    unusedTagsCleanup: function (callback) {
+        tagsToRemove = this.get('tags').where({sent: true});
+        this.get('tags').remove(tagsToRemove);
+        callback();
     },
 
     removeTags: function (tagName, callback) {

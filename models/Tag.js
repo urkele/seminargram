@@ -7,7 +7,8 @@ var Tag = Backbone.RelationalModel.extend({
     idAttribute: "tagName",
 
     defaults: {
-        tagName: ""
+        tagName: "",
+        sent: false
     },
 
     relations: [{
