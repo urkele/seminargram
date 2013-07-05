@@ -22,13 +22,15 @@ var Tag = Backbone.RelationalModel.extend({
     }],
 
     initialize: function () {
-        this.listenTo(this.get('images'), 'add', function (img) {
-            var data = {};
-            var tagName = this.get('tagName');
-            data.images = img.toJSON();
-            data.tagName = tagName;
-            this.get('server').get('io').emitToRoom(tagName, 'newImage', data);
-        });
+        this.listenTo(this.get('images'), 'add', this.updateClients);
+    },
+
+    updateClients: function (img) {
+        var data = {};
+        var tagName = this.get('tagName');
+        data.images = img.toJSON();
+        data.tagName = tagName;
+        this.get('server').get('io').emitToRoom(tagName, 'newImage', data);
     }
 });
 
