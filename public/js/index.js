@@ -50,7 +50,7 @@ $(function () {
     Sultagit.Models.Tag = Backbone.RelationalModel.extend({
         defaults: {
             status: "",
-            igKnownErrors: ['APINotAllowedError']
+            knownErrors: ['APINotAllowedError', 'tagsLimitReached']
         },
 
         relations: [{
@@ -444,7 +444,7 @@ $(function () {
             var errEl = $('<div class="imgError"></div>');
             var msg = 'unknown error';
             var err = m.get('error');
-            if (m.get('igKnownErrors').indexOf(err.errorMessage) !== -1) {
+            if (m.get('knownErrors').indexOf(err.errorMessage) !== -1) {
                 msg = err.errorObject;
             }
             else {

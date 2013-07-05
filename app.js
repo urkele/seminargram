@@ -79,7 +79,7 @@ app.get('/getTags/:tagName', function (req, res) {
     sultagit.getTags(req.params.tagName, function(tag) {
         console.log('@app.js.getTags - gotTag', tag);
         res.send(tag);
-        if (isLive) {
+        if (isLive && !tag.error) {
             sultagitLive.subscribe(req.params.tagName, req.cookies.sultagitSocketId);
         }
     });

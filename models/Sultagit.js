@@ -56,13 +56,18 @@ var SultagitBasic = Backbone.RelationalModel.extend({
         var data = {};
         data.tags = this.get('tags').toJSON();
         if (this.get('io')){
-            data.rooms = this.get('io').listRooms();            
+            data.rooms = this.get('io').listRooms();
         }
         callback(data);
     }
 });
 
 var SultagitLive = SultagitBasic.extend({
+
+    defaults: {
+        tagsLimit: (process.env.NODE_ENV == 'production') ? 30 : 2
+    },
+
     initialize: function (server) {
         this.set('igClient', new IGClient.Live());
         this.set('io', new Socket(server));
@@ -74,8 +79,20 @@ var SultagitLive = SultagitBasic.extend({
             callback(this.get('tags').get(tagName).toJSON());
         }
         else {
+            if (this.reachedTagsLimit()) {
+                var err = {
+                    errorMessage: 'tagsLimitReached',
+                    errorObject: 'Tags Limit ('+ this.get('tagsLimit') + ') Reached.\nTry again later'
+                };
+                callback({tagName: tagName, error: err});
+                return;
+            }
             SultagitBasic.prototype.getTags.call(this, tagName, callback);
         }
+    },
+
+    reachedTagsLimit: function () {
+        return this.get('tags').length < this.get('tagsLimit') ? false : true;
     },
 
     update: function (payload) {
