@@ -307,7 +307,7 @@ $(function () {
             var headerHeight = $("header").outerHeight(true);
             var searchWrapperHeight = $("#searchWrapper").outerHeight(true);
             var resultTitlesDivHeight = $("#resultTitles").outerHeight(true);
-            var seperatorDivHeight = $("#seperator").outerHeight(true);
+            var seperatorDivHeight = $(".separator").outerHeight(true);
             var resultImagesDivWidth = $("#resultImages").width();
 
             var otherDivHeight = headerHeight + searchWrapperHeight + resultTitlesDivHeight + seperatorDivHeight;
