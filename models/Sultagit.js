@@ -49,6 +49,16 @@ var SultagitBasic = Backbone.RelationalModel.extend({
             this.get('tags').remove(tag);
             callback(null);
         }
+    },
+
+    //development
+    getData: function (callback) {
+        var data = {};
+        data.tags = this.get('tags').toJSON();
+        if (this.get('io')){
+            data.rooms = this.get('io').listRooms();            
+        }
+        callback(data);
     }
 });
 

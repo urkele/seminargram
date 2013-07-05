@@ -40,11 +40,16 @@ var sultagitBasic = new Sultagit.Basic(),
 
 // index
 
-app.get('/', function(req, res) {
+/*app.get('/', function(req, res) {
     res.redirect('/soon');
-});
+});*/
 
-app.get('/sultagit', basicAuth, function (req, res) {
+app.get('/',
+    function (req, res) {
+    if (process.env.NODE_ENV == 'production') {
+        res.redirect('/soon');
+        return;
+    }
     var isLive = (req.signedCookies.sultagitlive == 'live');
     switch (process.env.NODE_ENV) {
         case 'production':
@@ -57,14 +62,13 @@ app.get('/sultagit', basicAuth, function (req, res) {
              title = 'sultag.it - local';
              break;
     }
-
     res.render('index', {open: "[%", close: "%]", title: title, live: isLive});
 });
 
 // live
 app.get('/live', basicAuth, function(req, res) {
     res.cookie('sultagitlive', 'live', {signed: true});
-    res.redirect('/sultagit');
+    res.redirect('/');
 });
 
 // getTags endpoint
@@ -90,7 +94,7 @@ app.delete('/getTags/:tagName', function (req, res) {
             res.send(404, err);
         }
         else {
-    res.send(204);
+            res.send(204);
         }
     }, isLive ? req.cookies.sultagitSocketId : null);
 });
@@ -127,6 +131,26 @@ app.get('/soon', function (req, res) {
         res.render('soon', {open: "[%", close: "%]", title: title, is_mobile: false});
     }
 });
+
+if (process.env.NODE_ENV !== 'production') {
+    // development backdoors
+    app.get('/fakesub', function (req, res) {
+        res.send(200);
+        var ob = [{object_id: 'sun'}];
+        sultagitLive.update(ob);
+    });
+
+    app.get('/getData', function (req, res) {
+        var data = {};
+        sultagitBasic.getData(function (d) {
+            data.basic = d;
+        });
+        sultagitLive.getData(function (d) {
+            data.live = d;
+        });
+        res.send(data);
+    });
+}
 
 app.use(express.static(path.join(__dirname, 'public')));
 
