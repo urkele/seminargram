@@ -23,7 +23,7 @@ var Tag = Backbone.RelationalModel.extend({
     }],
 
     initialize: function () {
-        this.listenTo(this.get('images'), 'add', this.updateClients);
+        this.listenTo(this.get('images'), 'add', function (img, images) {this.updateClients(img); this.limitImagesCount(images);});
     },
 
     updateClients: function (img) {
@@ -32,6 +32,16 @@ var Tag = Backbone.RelationalModel.extend({
         data.images = img.toJSON();
         data.tagName = tagName;
         this.get('server').get('io').emitToRoom(tagName, 'newImage', data);
+    },
+
+    limitImagesCount: function (images) {
+        var maxImages = 20;
+        if (images.length > maxImages) {
+            var count = images.length;
+            var excess = count - maxImages;
+            var excessImages = images.first(excess);
+            images.remove(excessImages);
+        }
     }
 });
 
