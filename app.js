@@ -110,6 +110,12 @@ app.post('/subscriptions', function (req, res) {
     sultagitLive.update(req.body);
 });
 
+// unsubscribeAll backdoor
+app.get('/unsub', basicAuth, function(req, res) {
+    sultagitLive.unsubscribeAll();
+    res.send(200);
+});
+
 app.get('/soon', function (req, res) {
     var ua = req.headers['user-agent'];
     var title = 'sultag.it - ';

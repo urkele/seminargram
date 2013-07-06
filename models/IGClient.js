@@ -101,7 +101,6 @@ var IGCLientLive = IGCLientBasic.extend({
     },
 
     unsubscribe: function (subscriptionId, callback) {
-        console.log("@IGClient.unsubscribe - unsubscribing id:", subscriptionId);
         var options = {
             id: subscriptionId,
             error: function (errorMessage, errorObject, caller) {
