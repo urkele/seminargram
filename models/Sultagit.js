@@ -86,7 +86,7 @@ var SultagitBasic = Backbone.RelationalModel.extend({
 var SultagitLive = SultagitBasic.extend({
 
     defaults: {
-        tagsLimit: (process.env.NODE_ENV == 'production') ? 30 : 2
+        tagsLimit: (process.env.NODE_ENV == 'production') ? 30 : 8
     },
 
     initialize: function (server) {
