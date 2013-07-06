@@ -56,7 +56,7 @@ var IGCLientBasic = Backbone.RelationalModel.extend({
         if (min_tag_id) {
             options.min_tag_id = min_tag_id;
         }
-        this.get('dispatcher').schedule(Instagram.tags.recent, options, Instagram.tags, false);
+        this.get('dispatcher').schedule(Instagram.tags.recent, options, Instagram.tags, min_tag_id ? false : true);
     }
 });
 
