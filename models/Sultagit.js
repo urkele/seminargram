@@ -44,8 +44,19 @@ var SultagitBasic = Backbone.RelationalModel.extend({
     },
 
     unusedTagsCleanup: function (callback) {
-        tagsToRemove = this.get('tags').where({sent: true});
-        this.get('tags').remove(tagsToRemove);
+        var tagsToRemove = [];
+        var validTags = this.get('tags').where({sent: true});
+        _.each(validTags, function (tag, index) {
+            tagsToRemove[index] = tag.get('tagName');
+        });
+        if (tagsToRemove.length > 0) {
+            for (var i = 0; i < tagsToRemove.length; i++) {
+                this.removeTags(tagsToRemove[i], callback);
+            }
+        }
+        else {
+            callback();
+        }
         callback();
     },
 
