@@ -88,13 +88,12 @@ $(function () {
         initialize: function () {
             this.createSocket();
             var s = this.get('socket');
-            this.listenTo(this, 'change:sid', this.socketCookie);
             var thisModel = this;
             if (!s) {
                 //TODO: throw error no socket.
             }
             s.on('connect', function () {
-                thisModel.connectionConnected(s.socket.sessionid);
+                thisModel.connectionConnected();
             });
             s.on('connecting', function () {
                 thisModel.connectionConnecting();
@@ -113,7 +112,7 @@ $(function () {
                 thisModel.connectionFailed();
             });
             s.on('reconnect', function () {
-                thisModel.connectionConnected(s.socket.sessionid);
+                thisModel.connectionConnected();
             });
             s.on('reconnecting', function () {
                 thisModel.connectionConnecting();
@@ -126,10 +125,9 @@ $(function () {
             this.set('socket', io.connect());
             // io.connect(,{'max reconnection attempts': 5, reconnection limit: 3000})
         },
-        connectionConnected: function (sid) {
+        connectionConnected: function () {
             this.get('master').set('status', 'ready');
             console.log("socket connected");
-            this.set('sid', sid);
         },
         connectionConnecting: function () {
             this.get('master').set('status', 'Connecting...');
@@ -142,14 +140,6 @@ $(function () {
         connectionFailed: function () {
             this.get('master').set('status', 'Failed to connect');
             console.log("socket failed");
-        },
-        socketCookie: function () {
-            var sid = this.get('socket').socket.sessionid;
-            if (sid !== $.cookie('sultagitSocketId')) {
-                $.removeCookie('sultagitSocketId');
-                $.cookie.raw = true;
-                var r = $.cookie('sultagitSocketId', sid);
-            }
         }
     });
 
@@ -360,7 +350,8 @@ $(function () {
                     },
                     error: function (model, response, options) {
                         model.set('status', 'error getting data');
-                    }
+                    },
+                    data: this.get('socket') ? {sid: this.get('socket').get('socket').socket.sessionid} : null
                 });
                 this.get('fetchXhrs').push(fetchXhr);
             }, this);

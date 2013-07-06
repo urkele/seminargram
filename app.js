@@ -80,7 +80,7 @@ app.get('/getTags/:tagName', function (req, res) {
         console.log('@app.js.getTags - gotTag', tag);
         res.send(tag);
         if (isLive && !tag.error) {
-            sultagitLive.subscribe(req.params.tagName, req.cookies.sultagitSocketId);
+            sultagitLive.subscribe(req.params.tagName, req.query.sid);
         }
     });
 });
@@ -96,7 +96,7 @@ app.delete('/getTags/:tagName', function (req, res) {
         else {
             res.send(204);
         }
-    }, isLive ? req.cookies.sultagitSocketId : null);
+    }, req.query.sid ? req.query.sid : null);
 });
 
 // handle subscription handshake
