@@ -9,7 +9,14 @@ var express = require('express'),
     Sultagit = require('./models/Sultagit.js');
 
 var app = express(),
-    server = http.createServer(app);
+    server = http.createServer(app),
+    MongoStore = require('connect-mongo')(express);
+
+var mongoUrl = {
+    production: 'mongodb://sultagit:hazulit@'+process.env.MONGO_URI,
+    development: 'mongodb://sultagit-dev:hazulit@'+process.env.MONGO_URI,
+    local: 'mongodb://localhost:27017/sultagit-local'
+};
 
 app.configure(function(){
     app.set('port', process.env.PORT || 3000);
@@ -20,7 +27,11 @@ app.configure(function(){
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser('pictureyourwords2013'));
-    app.use(express.session());
+    app.use(express.session({
+        store: new MongoStore({
+            url: mongoUrl[process.env.NODE_ENV]
+            }),
+        secret: 'pictureyourwords2013'}));
     app.use(app.router);
     app.use(require('less-middleware')({ src: __dirname + '/public' }));
 });
