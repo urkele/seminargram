@@ -112,6 +112,27 @@ var SultagitLive = SultagitBasic.extend({
         }
     },
 
+    unusedTagsCleanup: function (callback) {
+        // get list of valis tags
+        var tagsToRemove = [];
+        this.get('tags').each(function (tag, index) {
+            if (tag.get('subscriptionId') || tag.get('error')) {
+                tagsToRemove[index] = tag.get('tagName');
+                // return tag.get('tagName');
+            }
+        });
+
+        // remove the tags
+        if (tagsToRemove.length > 0) {
+            for (var i = 0; i < tagsToRemove.length; i++) {
+                this.removeTags(tagsToRemove[i], callback);
+            }
+        }
+        else {
+            callback();
+        }
+    },
+
     reachedTagsLimit: function () {
         return this.get('tags').length < this.get('tagsLimit') ? false : true;
     },
@@ -139,15 +160,21 @@ var SultagitLive = SultagitBasic.extend({
     subscribe: function (tagName, sid) {
         var tag = this.get('tags').get(tagName);
         if (!tag.get('subscriptionId')) {
+            var _this = this;
             this.get('igClient').subscribe(tagName, function (err, subscriptionId) {
                 if (!err) {
+                    //register client to the tags' room
+                    _this.get('io').joinRoom(sid, tagName);
+
                     tag.set('subscriptionId', subscriptionId);
                 }
             });
         }
+        else {
+            //register client to the tags' room
+            this.get('io').joinRoom(sid, tagName);
+        }
 
-        //register client to the tags' room
-        this.get('io').joinRoom(sid, tagName);
     },
 
     subscriptionHandshake: function (req, res) {
@@ -160,19 +187,22 @@ var SultagitLive = SultagitBasic.extend({
 
     removeTags: function (tagName, callback, sid) {
         var tag = this.get('tags').get(tagName);
+        var err = null;
         if (!tag) {
-            var err = {errorMessage: 'tag not found', errorObject: tagName};
+            err = {errorMessage: 'tag not found', errorObject: tagName};
             callback(err);
             return;
         }
 
         // leave room
-        this.get('io').leaveRoom(sid, tagName);
+        if (sid) {
+            this.get('io').leaveRoom(sid, tagName);
+        }
 
         // test to see if more there are other client subscribed to this tag
         var roomClients = this.get('io').listRoomClients(tagName);
         if (roomClients.length > 0) {
-            console.log('there are still clients waiting to hear from tag', tagName);
+            // console.log('there are still clients waiting to hear from tag', tagName);
             callback(null);
             return;
         }
@@ -181,21 +211,20 @@ var SultagitLive = SultagitBasic.extend({
             // ig unsubscribe 
             var subscriptionId = tag.get('subscriptionId');
             if (subscriptionId) {
-                this.get('igClient').unsubscribe(subscriptionId, function (err) {
-                    if (err) {
-                        callback(err);
+                this.get('igClient').unsubscribe(subscriptionId, function (error) {
+                    if (error) {
+                        callback(error);
                         return;
                     }
                 });
             }
             else {
-                callback({errorMessage: 'tag \''+tagName+'\' has no subscriptionId'});
-                return;
+                err = ({errorMessage: 'noSubscriptionId', errorObject: 'tag \''+tagName+'\' has no subscriptionId'});
             }
 
             // remove tag model
             this.get('tags').remove(tag);
-            callback(null);
+            callback(err);
         }
     }
 });
