@@ -84,6 +84,19 @@ var SultagitBasic = Backbone.RelationalModel.extend({
 });
 
 var SultagitLive = SultagitBasic.extend({
+    relations: function () {
+        var rel = SultagitBasic.prototype.relations;
+        rel.push({
+            type: Backbone.HasOne,
+            key: 'io',
+            relatedModel: Socket,
+            reverseRelation: {
+                type: Backbone.HasOne,
+                key: 'master'
+            }
+        });
+        return rel;
+    }(),
 
     defaults: {
         tagsLimit: (process.env.NODE_ENV == 'production') ? 30 : 8

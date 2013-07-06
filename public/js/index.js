@@ -83,7 +83,8 @@ $(function () {
     // define the Socket model
     Sultagit.Models.Socket = Backbone.RelationalModel.extend({
         defaults: {
-            socket: {}
+            socket: {},
+            disconnect_event_fired: false
         },
         initialize: function () {
             this.createSocket();
@@ -120,6 +121,10 @@ $(function () {
             s.on('newImage', function (data) {
                 thisModel.get('master').trigger('newImage', data);
             });
+            s.on('joined_rooms', function () {
+                console.log('rejoined rooms');
+                thisModel.set('disconnect_event_fired', false);
+            });
         },
         createSocket: function () {
             this.set('socket', io.connect());
@@ -127,7 +132,10 @@ $(function () {
         },
         connectionConnected: function () {
             this.get('master').set('status', 'ready');
-            console.log("socket connected");
+            console.log("socket connected with sid", this.get('socket').socket.sessionid);
+            if (this.get('disconnect_event_fired')) {
+                this.get('socket').emit('rejoin_rooms', this.get('master').get('tags').pluck('tagName'));
+            }
         },
         connectionConnecting: function () {
             this.get('master').set('status', 'Connecting...');
@@ -135,6 +143,7 @@ $(function () {
         },
         connectionDisconnected: function () {
             this.get('master').set('status', 'Disconnected');
+            this.set('disconnect_event_fired', true);
             console.log("socket disconnected");
         },
         connectionFailed: function () {
