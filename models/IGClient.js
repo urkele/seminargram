@@ -84,7 +84,7 @@ var IGCLientLive = IGCLientBasic.extend({
             object_id: tagName,
             verify_token: 'token_' + tagName,
             error: function (errorMessage, errorObject, caller) {
-                console.error ("@IGClient.subscribeTag - subscribing tag '%s' returned an error", tagName, errorMessage, errorObject);
+                console.error ("@IGClient.subscribe - subscribing tag '%s' returned an error", tagName, errorMessage, errorObject);
                 callback({errorMessage: errorMessage, errorObject: errorObject});
             },
             complete: function (subscription) {
