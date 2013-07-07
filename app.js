@@ -8,16 +8,20 @@ var express = require('express'),
     path = require('path'),
     Sultagit = require('./models/Sultagit.js');
 
+/* create the web server */
 var app = express(),
-    server = http.createServer(app),
-    MongoStore = require('connect-mongo')(express);
+    server = http.createServer(app);
 
-var mongoUrl = {
+
+/* details for the http session store */
+var MongoStore = require('connect-mongo')(express),
+    mongoUrl = {
     production: 'mongodb://sultagit:hazulit@'+process.env.MONGO_URI,
     development: 'mongodb://sultagit-dev:hazulit@'+process.env.MONGO_URI,
     local: 'mongodb://localhost:27017/sultagit-local'
 };
 
+/* configure express */
 app.configure(function(){
     app.set('port', process.env.PORT || 3000);
     app.set('views', __dirname + '/views');
@@ -40,21 +44,32 @@ app.configure('development', function(){
     app.use(express.errorHandler());
 });
 
+/* configure a basic authenticaion theme using basicAuth middleware */
 var basicAuth = express.basicAuth(function(username, password) {
   return (username === "sultagit" && password === "hazulit");
 }, 'Please provide credentials');
 
+/* create the two app instances */
 var sultagitBasic = new Sultagit.Basic(),
     sultagitLive = new Sultagit.Live(server);
+
+// determine the website's title
+switch (process.env.NODE_ENV) {
+    case 'local':
+        var title = 'sultag.it - local';
+        break;
+    case 'development':
+        var title = 'sultag.it - dev';
+        break;
+     default:
+         var title = 'sultag.it';
+         break;
+}
+
 
 /* define routes */
 
 // index
-
-/*app.get('/', function(req, res) {
-    res.redirect('/soon');
-});*/
-
 app.get('/',
     function (req, res) {
     if (process.env.NODE_ENV == 'production') {
@@ -62,17 +77,6 @@ app.get('/',
         return;
     }
     var isLive = (req.signedCookies.sultagitlive == 'live');
-    switch (process.env.NODE_ENV) {
-        case 'production':
-            title = 'sultag.it';
-            break;
-        case 'development':
-            title = 'sultag.it - dev';
-            break;
-         default:
-             title = 'sultag.it - local';
-             break;
-    }
     res.render('index', {open: "[%", close: "%]", title: title, live: isLive});
 });
 
@@ -110,15 +114,15 @@ app.delete('/getTags/:tagName', function (req, res) {
     }, req.query.sid ? req.query.sid : null);
 });
 
-// handle subscription handshake
-app.get('/subscriptions', function (req, res) {
-    sultagitLive.subscriptionHandshake(req, res);
-});
-
-// get updated data
+// instagram real team update callback
 app.post('/subscriptions', function (req, res) {
     res.send(200);
     sultagitLive.update(req.body);
+});
+
+// handle subscription handshake
+app.get('/subscriptions', function (req, res) {
+    sultagitLive.subscriptionHandshake(req, res);
 });
 
 // unsubscribeAll backdoor
@@ -127,20 +131,9 @@ app.get('/unsub', basicAuth, function(req, res) {
     res.send(200);
 });
 
+// 'soon' page
 app.get('/soon', function (req, res) {
     var ua = req.headers['user-agent'];
-    var title = 'sultag.it - ';
-    switch (process.env.NODE_ENV) {
-        case 'production':
-            title = 'sultag.it';
-            break;
-        case 'development':
-            title = 'sultag.it - dev';
-            break;
-         default:
-             title = 'sultag.it - local';
-             break;
-    }
     if (ua.indexOf('Android') !== -1 || ua.indexOf('iPhone') !== -1 || ua.indexOf('iPad') !== -1) {
         res.render('soon', {open: "[%", close: "%]", title: title, is_mobile: true});
     }
@@ -149,8 +142,19 @@ app.get('/soon', function (req, res) {
     }
 });
 
+// signout to delete cookie
+app.get('/signout', function (req, res) {
+    if (req.signedCookies.sultagitlive) {
+        res.clearCookie('sultagitlive');
+        res.redirect('/');
+    }
+    else {
+        res.redirect('/');
+    }
+});
+
+// development backdoors
 if (process.env.NODE_ENV !== 'production') {
-    // development backdoors
     app.get('/fakesub', function (req, res) {
         res.send(200);
         var ob = [{object_id: 'sun'}];
@@ -169,8 +173,10 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
+/* define static pages path */
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* start listening and fire up the app */
 server.listen(app.get('port'), function(){
     console.log("Express server listening on port " + app.get('port'));
 
