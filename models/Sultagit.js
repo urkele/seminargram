@@ -251,15 +251,26 @@ var SultagitLive = SultagitBasic.extend({
     },
 
     subscribe: function (tagName, sid) {
+        if (!this.get('tags')) {
+            console.error('@SultagitLive.subscribe \'%s\' - cannot get \'tags\'', tagName);
+            return;
+        }
         var tag = this.get('tags').get(tagName);
+        if (!tag) {
+            console.error('@SultagitLive.subscribe - couldn\'t find tag', tagName);
+            return;
+        }
         if (!tag.get('subscriptionId')) {
             var _this = this;
             this.get('igClient').subscribe(tagName, function (err, subscriptionId) {
                 if (!err) {
-                    //register client to the tags' room
+                    // register client to the tags' room
                     _this.get('io').joinRoom(sid, tagName);
 
                     tag.set('subscriptionId', subscriptionId);
+                }
+                else {
+                    console.error('@SultagitLive.subscribe - igClient.subscribe returned an error', err);
                 }
             });
         }
