@@ -126,7 +126,8 @@ var SultagitLive = SultagitBasic.extend({
     }(),
 
     defaults: {
-        tagsLimit: (process.env.NODE_ENV == 'production') ? 30 : 8
+        tagsLimit: (process.env.NODE_ENV == 'production') ? 30 : 8,
+        maxUpdateFrequency: 3000 //ms
     },
 
     initialize: function (server) {
@@ -243,15 +244,21 @@ var SultagitLive = SultagitBasic.extend({
                 console.error('@SultagitLive.update - couldn\'t find tag', tagName);
                 return;
             }
-            this.get('igClient').getRecentUrls(tagName, tag.min_tag_id ? tag.min_tag_id : null, function (err, imagesData, min_tag_id) {
-                if (err) {
-                    tag.set('error', err);
-                }
-                else {
-                    tag.min_tag_id = min_tag_id;
-                    tag.get('images').add(imagesData);
-                }
-            });
+
+            // avoid one tag to update too frequently.
+            var updateFrequency = new Date().getTime() - tag.get('lastUpdate');
+            if (updateFrequency >= this.get('maxUpdateFrequency')) {
+                this.get('igClient').getRecentUrls(tagName, tag.min_tag_id ? tag.min_tag_id : null, function (err, imagesData, min_tag_id) {
+                    if (err) {
+                        tag.set('error', err);
+                    }
+                    else {
+                        tag.min_tag_id = min_tag_id;
+                        tag.get('images').add(imagesData);
+                    }
+                });
+                tag.set('lastUpdate', new Date().getTime());
+            }
         }, this);
     },
 
