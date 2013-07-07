@@ -52,12 +52,13 @@ var Socket = Backbone.RelationalModel.extend({
     },
 
     joinRoom: function (sid, room) {
-        console.log('joining %s to %s', sid, room);
+        console.log('@Socket.joinRoom - joining %s to %s', sid, room);
         var s = this.get('io').sockets.socket(sid);
         s.join(room);
     },
 
     leaveRoom: function (sid, room) {
+        console.log('@Socket.leaveRoom - removing %s from %s', sid, room);
         var s = this.get('io').sockets.socket(sid);
         s.leave(room);
     },

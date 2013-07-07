@@ -104,12 +104,12 @@ var IGCLientLive = IGCLientBasic.extend({
         var options = {
             id: subscriptionId,
             error: function (errorMessage, errorObject, caller) {
-                console.log ("@IGClient.unsubscribe - unsubscribe id '%s' returned an error", subscriptionId, errorMessage, errorObject);
+                console.log ('@IGClient.unsubscribe - unsubscribe id \'%s\' returned an error', subscriptionId, errorMessage, errorObject);
                 callback({errorMessage: errorMessage, errorObject: errorObject});
             },
             complete: function (data) {
                 if (data !== null) {
-                    callback({errorMessage: 'failed to unsubscribe id '+subscriptionId+' data is not null', errorObject: data});
+                    callback({errorMessage: 'failed to unsubscribe id \''+subscriptionId+'\'. data is not null', errorObject: data});
                 }
                 else {
                     callback(null);
