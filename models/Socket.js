@@ -34,7 +34,6 @@ var Socket = Backbone.RelationalModel.extend({
         // listen to client events
         io.sockets.on('connection', function (s) {
             s.on('rejoin_rooms', function (rooms) {
-                console.log('rejoin_rooms from %s', rooms);
                 if (!_this.get('master').get('tags')) {
                     console.error('error getting the \'tags\' collection');
                     s.emit('join_rooms_failed', rooms);
@@ -52,13 +51,11 @@ var Socket = Backbone.RelationalModel.extend({
     },
 
     joinRoom: function (sid, room) {
-        console.log('@Socket.joinRoom - joining %s to %s', sid, room);
         var s = this.get('io').sockets.socket(sid);
         s.join(room);
     },
 
     leaveRoom: function (sid, room) {
-        console.log('@Socket.leaveRoom - removing %s from %s', sid, room);
         var s = this.get('io').sockets.socket(sid);
         s.leave(room);
     },

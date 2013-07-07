@@ -94,7 +94,6 @@ var SultagitBasic = Backbone.RelationalModel.extend({
             callback({errorMessage: 'cannot remove tag', errorObject: 'tag not found'});
         }
         else {
-            console.info('@SultagitBasic.removeTag - removing', tagName);
             this.get('tags').remove(tag);
             callback(null);
         }
@@ -236,7 +235,7 @@ var SultagitLive = SultagitBasic.extend({
             var tagName = element.object_id;
             var tag = this.get('tags').get(tagName);
             if (!tag) {
-                console.log('@SultagitLive.update - couldn\'t find tag', tagName);
+                console.error('@SultagitLive.update - couldn\'t find tag', tagName);
                 return;
             }
             this.get('igClient').getRecentUrls(tagName, tag.min_tag_id ? tag.min_tag_id : null, function (err, imagesData, min_tag_id) {

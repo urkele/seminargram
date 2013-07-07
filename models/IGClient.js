@@ -31,7 +31,7 @@ var IGCLientBasic = Backbone.RelationalModel.extend({
         var options = {
             name: tagName,
             error: function (errorMessage, errorObject, caller) {
-                console.log("@IGClient.getRecentUrls - getting recent for tag '%s' returned an error", tagName, errorMessage, errorObject);
+                console.error("@IGClient.getRecentUrls - getting recent for tag '%s' returned an error", tagName, errorMessage, errorObject);
                 callback({errorMessage: errorMessage, errorObject: errorObject});
             },
             complete: function (data, pagination) {
@@ -84,7 +84,7 @@ var IGCLientLive = IGCLientBasic.extend({
             object_id: tagName,
             verify_token: 'token_' + tagName,
             error: function (errorMessage, errorObject, caller) {
-                console.log ("@IGClient.subscribeTag - subscribing tag '%s' returned an error", tagName, errorMessage, errorObject);
+                console.error ("@IGClient.subscribeTag - subscribing tag '%s' returned an error", tagName, errorMessage, errorObject);
                 callback({errorMessage: errorMessage, errorObject: errorObject});
             },
             complete: function (subscription) {
@@ -104,7 +104,7 @@ var IGCLientLive = IGCLientBasic.extend({
         var options = {
             id: subscriptionId,
             error: function (errorMessage, errorObject, caller) {
-                console.log ('@IGClient.unsubscribe - unsubscribe id \'%s\' returned an error', subscriptionId, errorMessage, errorObject);
+                console.error ('@IGClient.unsubscribe - unsubscribe id \'%s\' returned an error', subscriptionId, errorMessage, errorObject);
                 callback({errorMessage: errorMessage, errorObject: errorObject});
             },
             complete: function (data) {
@@ -124,11 +124,11 @@ var IGCLientLive = IGCLientBasic.extend({
         var options = {
             dummy: "",
             error: function (errorMessage, errorObject, caller) {
-                console.log("@IGClient.unsubscribeAll - error:", errorMessage, errorObject);
+                console.error("@IGClient.unsubscribeAll - error:", errorMessage, errorObject);
             },
             complete: function (data) {
                 if (data !== null) {
-                    console.log("@IGClient.unsubscribeAll - error. data is not null", data);
+                    console.error("@IGClient.unsubscribeAll - error. data is not null", data);
                 }
             }
         };
