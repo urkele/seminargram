@@ -1,7 +1,8 @@
 var Backbone = require('backbone'),
     _ = require('underscore'),
     BackboneRelational = require('backbone-relational'),
-    MongoStore = require('socket.io-mongo');
+    MongoStore = require('socket.io-mongo'),
+    sio = require('socket.io');
 
 var Socket = Backbone.RelationalModel.extend({
     defaults: {
@@ -14,27 +15,28 @@ var Socket = Backbone.RelationalModel.extend({
     },
 
     initialize: function (server) {
-        var sio = require('socket.io');
-
         // mongo configuration
         var store = new MongoStore({url: this.get('mongoUrl')[process.env.NODE_ENV]});
         store.on('error', console.error);
 
+        // start socket.io server
         this.set('io', sio.listen(server));
 
+        //configure socket.io
         var io = this.get('io');
         var _this = this;
         io.configure(function () {
             io.set('flash policy server', false);
-            io.set('log level', (process.env.NODE_ENV == 'production') ? 1 : 2); // set socket.io logging level to 'warn'
+            io.set('log level', (process.env.NODE_ENV == 'production') ? 1 : 2); // set socket.io logging level to 'warn' on prod and 'info' on dev
             io.set('store', store);
         });
 
+        // listen to client events
         io.sockets.on('connection', function (s) {
             s.on('rejoin_rooms', function (rooms) {
-                console.log('rejoin_rooms from %s', s.id, rooms);
+                console.log('rejoin_rooms from %s', rooms);
                 var tags = _this.get('master').get('tags').pluck('tagName');
-                _.each(rooms, function (room, index, rooms) {
+                _.each(rooms, function (room) {
                     if (tags.indexOf(room) > -1) {
                         _this.joinRoom(s.id, room);
                     }

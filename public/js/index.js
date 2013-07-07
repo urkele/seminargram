@@ -93,6 +93,8 @@ $(function () {
             if (!s) {
                 //TODO: throw error no socket.
             }
+
+            // conecttion events
             s.on('connect', function () {
                 thisModel.connectionConnected();
             });
@@ -107,7 +109,6 @@ $(function () {
             });
             s.on('error', function () {
                 thisModel.connectionFailed();
-                //TODO: or maybe throw an exception
             });
             s.on('reconnect_failed', function () {
                 thisModel.connectionFailed();
@@ -118,6 +119,8 @@ $(function () {
             s.on('reconnecting', function () {
                 thisModel.connectionConnecting();
             });
+
+            // server custom events
             s.on('newImage', function (data) {
                 thisModel.get('master').trigger('newImage', data);
             });
@@ -132,23 +135,23 @@ $(function () {
         },
         connectionConnected: function () {
             this.get('master').set('status', 'ready');
-            console.log("socket connected with sid", this.get('socket').socket.sessionid);
+            console.info("socket connected with sid", this.get('socket').socket.sessionid);
             if (this.get('disconnect_event_fired')) {
                 this.get('socket').emit('rejoin_rooms', this.get('master').get('tags').pluck('tagName'));
             }
         },
         connectionConnecting: function () {
             this.get('master').set('status', 'Connecting...');
-            console.log("socket connecting");
+            console.info("socket connecting");
         },
         connectionDisconnected: function () {
             this.get('master').set('status', 'Disconnected');
             this.set('disconnect_event_fired', true);
-            console.log("socket disconnected");
+            console.warn("socket disconnected");
         },
         connectionFailed: function () {
             this.get('master').set('status', 'Failed to connect');
-            console.log("socket failed");
+            console.warn("socket failed");
         }
     });
 

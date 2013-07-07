@@ -20,10 +20,10 @@ var IGCLientBasic = Backbone.RelationalModel.extend({
         var credentials = (process.env.NODE_ENV == 'production') ? this.get('prodCredentials') : this.get('devCredentials');
         Instagram.set('client_id', credentials.client_id);
         Instagram.set('client_secret', credentials.client_secret);
-        this.set('dispatcher', new Dispatcher());
         if (credentials.callback_url) {
             Instagram.set('callback_url', credentials.callback_url);
         }
+        this.set('dispatcher', new Dispatcher());
     },
 
     getRecentUrls: function (tagName, min_tag_id, callback) {

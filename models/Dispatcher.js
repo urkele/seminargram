@@ -5,7 +5,7 @@ var Backbone = require('backbone'),
 var Dispatcher = Backbone.RelationalModel.extend({
     defaults: {
         maxOps: 5000,
-        interval: (60 * 1.01) * 60 * 1000, // mins (+1% to be safe) * secs * ms //test values (0.25 * 1.01) * 60 * 1000,
+        interval: (60 * 1.01) * 60 * 1000, // minutes (+1% to be safe) * seconds * ms
         numOps: 0,
         queue: []
     },

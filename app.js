@@ -1,7 +1,4 @@
-
-/**
- * Module dependencies.
- */
+/* Module dependencies */
 
 var express = require('express'),
     http = require('http'),
@@ -12,17 +9,16 @@ var express = require('express'),
 var app = express(),
     server = http.createServer(app);
 
-
 /* details for the http session store */
 var MongoStore = require('connect-mongo')(express),
     mongoUrl = {
-    production: 'mongodb://sultagit:hazulit@'+process.env.MONGO_URI,
-    development: 'mongodb://sultagit-dev:hazulit@'+process.env.MONGO_URI,
-    local: 'mongodb://localhost:27017/sultagit-local'
-};
+        production: 'mongodb://sultagit:hazulit@'+process.env.MONGO_URI,
+        development: 'mongodb://sultagit-dev:hazulit@'+process.env.MONGO_URI,
+        local: 'mongodb://localhost:27017/sultagit-local'
+    };
 
 /* configure express */
-app.configure(function(){
+app.configure(function () {
     app.set('port', process.env.PORT || 3000);
     app.set('views', __dirname + '/views');
     app.set('view engine', 'ejs');
@@ -30,16 +26,17 @@ app.configure(function(){
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
-    app.use(express.cookieParser('pictureyourwords2013'));
+    app.use(express.cookieParser('#Picture#Your#Words2013'));
     app.use(express.session({
         store: new MongoStore({
             url: mongoUrl[process.env.NODE_ENV]
             }),
-        secret: 'pictureyourwords2013'}));
+        secret: '#Picture#Your#Words2013'}));
     app.use(app.router);
     app.use(require('less-middleware')({ src: __dirname + '/public' }));
 });
 
+//TODO: configure an error handler
 app.configure('development', function(){
     app.use(express.errorHandler());
 });
@@ -89,9 +86,9 @@ app.get('/live', basicAuth, function(req, res) {
 // getTags endpoint
 app.get('/getTags/:tagName', function (req, res) {
     var isLive = (req.signedCookies.sultagitlive == 'live');
-    var sultagit = isLive ? sultagitLive : sultagitBasic;
+    var sultagitInstance = isLive ? sultagitLive : sultagitBasic;
 
-    sultagit.getTags(req.params.tagName, function(tag) {
+    sultagitInstance.getTags(req.params.tagName, function(tag) {
         console.log('@app.js.getTags - gotTag', tag);
         res.send(tag);
         if (isLive && !tag.error) {
@@ -103,8 +100,8 @@ app.get('/getTags/:tagName', function (req, res) {
 // getTags Delete
 app.delete('/getTags/:tagName', function (req, res) {
     var isLive = (req.signedCookies.sultagitlive == 'live');
-    var sultagit = isLive ? sultagitLive : sultagitBasic;
-    sultagit.removeTags(req.params.tagName, function (err) {
+    var sultagitInstance = isLive ? sultagitLive : sultagitBasic;
+    sultagitInstance.removeTags(req.params.tagName, function (err) {
         if (err) {
             res.send(404, err);
         }

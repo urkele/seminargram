@@ -7,8 +7,7 @@ var Backbone = require('backbone'),
     Tags = require('../collections/Tags.js').Tags;
 
 var SultagitBasic = Backbone.RelationalModel.extend({
-    relations: [
-    {
+    relations: [{
         type: Backbone.HasMany,
         key: 'tags',
         relatedModel: Tag,
