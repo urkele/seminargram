@@ -113,7 +113,7 @@ app.delete('/getTag/:tagName', function (req, res) {
         else {
             res.send(204);
         }
-    }, req.query.sid ? req.query.sid : null);
+    }, req.headers.sid ? req.headers.sid : null);
 });
 
 // instagram real team update callback

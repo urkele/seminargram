@@ -68,10 +68,18 @@ $(function () {
         urlRoot: '/getTag',
 
         initialize: function () {
-            this.listenTo(this.collection, 'reset', this.destroy);
+            this.listenTo(this.collection, 'reset', this.close);
             // populate the ‘Tag titles’ section with the array’s elements.
             this.set('titleView' , new Sultagit.Views.TagTitleView({model: this}));
             this.set('imagesView', new Sultagit.Views.TagImagesView({model: this}));
+        },
+
+        close: function () {
+            this.destroy({
+                headers: this.get('application').get('socket') ? {
+                    sid: this.get('application').get('socket').get('socket').socket.sessionid
+                } : null
+            });
         }
     });
 
