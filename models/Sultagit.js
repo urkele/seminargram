@@ -25,7 +25,15 @@ var SultagitBasic = Backbone.RelationalModel.extend({
 
     getTag: function (tagName, callback) {
         var _this = this;
-        this.unusedTagsCleanup(function () {
+        this.unusedTagsCleanup(function (err) {
+            if (err) {
+                callback({tagName: tagName, error: err});
+                return;
+            }
+            if (!_this.get('tags')) {
+                console.error('@SultagitBasic.getTag \'%s\'- cannot get \'tags\'', tagName);
+                callback({tagName: tagName, error:{errorMessage: 'error getting attributes', errorObject: 'cannot get \'tags\''}});
+            }
             _this.get('tags').add({tagName: tagName}, {merge: true}); //not sure I need merge. we can skip adding if exists
             var tag = _this.get('tags').get(tagName);
             _this.get('igClient').getRecentUrls(tagName, null, function (err, imagesData, min_tag_id) {
@@ -34,7 +42,13 @@ var SultagitBasic = Backbone.RelationalModel.extend({
                 }
                 else {
                     tag.min_tag_id = min_tag_id;
-                    tag.get('images').add(imagesData, {silent: true});
+                    if (tag.get('images')) {
+                        tag.get('images').add(imagesData, {silent: true});
+                    }
+                    else {
+                        console.error('@SultagitBasic.getTag - unable to get \'images\' attribute for tag', tagName);
+                        tag.set('error', {errorMessage: 'error getting attributes', errorObject: 'unable to get \'images\' attribute for tag'});
+                    }
                 }
                 callback(tag.toJSON());
                 tag.set('sent', true);
@@ -44,28 +58,42 @@ var SultagitBasic = Backbone.RelationalModel.extend({
 
     unusedTagsCleanup: function (callback) {
         var tagsToRemove = [];
+        if (!this.get('tags')) {
+            console.error('@SultagitBasic.unusedTagsCleanup - cannot get \'tags\'');
+            callback({errorMessage: 'error getting attributes', errorObject: 'cannot get \'tags\''});
+        }
         var validTags = this.get('tags').where({sent: true});
-        _.each(validTags, function (tag, index) {
-            tagsToRemove[index] = tag.get('tagName');
+        _.each(validTags, function (tag) {
+            tagsToRemove.push(tag.get('tagName'));
         });
         if (tagsToRemove.length > 0) {
             for (var i = 0; i < tagsToRemove.length; i++) {
-                this.removeTag(tagsToRemove[i], callback);
+                this.removeTag(tagsToRemove[i], function (err) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                });
             }
+            callback(null);
         }
         else {
-            callback();
+            callback(null);
         }
-        callback();
     },
 
     removeTag: function (tagName, callback) {
+        if (!this.get('tags')) {
+            console.error('@SultagitBasic.removeTag \'%s\' - cannot get \'tags\'', tagName);
+            callback({errorMessage: 'error getting attributes', errorObject: 'cannot get \'tags\''});
+        }
         var tag = this.get('tags').get(tagName);
         if (!tag) {
-            var err = {errorMessage: 'tag not found', errorObject: tagName};
-            callback(err);
+            console.error('@SultagitBasic.removeTag - tag \'%s\' not found', tagName);
+            callback({errorMessage: 'cannot remove tag', errorObject: 'tag not found'});
         }
         else {
+            console.info('@SultagitBasic.removeTag - removing', tagName);
             this.get('tags').remove(tag);
             callback(null);
         }
@@ -125,23 +153,32 @@ var SultagitLive = SultagitBasic.extend({
     },
 
     unusedTagsCleanup: function (callback) {
-        // get list of valis tags
+        // get list of valid tags
         var tagsToRemove = [];
-        this.get('tags').each(function (tag, index) {
+        if (!this.get('tags')) {
+            console.error('@SultagitLive.unusedTagsCleanup - cannot get \'tags\'');
+            callback({errorMessage: 'error getting attributes', errorObject: 'cannot get \'tags\''});
+        }
+        this.get('tags').each(function (tag) {
             if (tag.get('subscriptionId') || tag.get('error')) {
-                tagsToRemove[index] = tag.get('tagName');
-                // return tag.get('tagName');
+                tagsToRemove.push(tag.get('tagName'));
             }
         });
 
         // remove the tags
         if (tagsToRemove.length > 0) {
             for (var i = 0; i < tagsToRemove.length; i++) {
-                this.removeTag(tagsToRemove[i], callback);
+                this.removeTag(tagsToRemove[i], function (err) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                });
             }
+            callback(null);
         }
         else {
-            callback();
+            callback(null);
         }
     },
 
@@ -154,7 +191,7 @@ var SultagitLive = SultagitBasic.extend({
             var tagName = element.object_id;
             var tag = this.get('tags').get(tagName);
             if (!tag) {
-                console.log('@update - couldn\'t find tag', tagName);
+                console.log('@SultagitLive.update - couldn\'t find tag', tagName);
                 return;
             }
             this.get('igClient').getRecentUrls(tagName, tag.min_tag_id ? tag.min_tag_id : null, function (err, imagesData, min_tag_id) {
@@ -198,11 +235,13 @@ var SultagitLive = SultagitBasic.extend({
     },
 
     removeTag: function (tagName, callback, sid) {
+        if (!this.get('tags')) {
+            console.error('@SultagitLive.removeTag \'%s\' - cannot get \'tags\'', tagName);
+            callback({errorMessage: 'error getting attributes', errorObject: 'cannot get \'tags\''});
+        }
         var tag = this.get('tags').get(tagName);
-        var err = null;
         if (!tag) {
-            err = {errorMessage: 'tag not found', errorObject: tagName};
-            callback(err);
+            callback({errorMessage: 'cannot remove tag', errorObject: 'tag not found'});
             return;
         }
 
@@ -214,29 +253,27 @@ var SultagitLive = SultagitBasic.extend({
         // test to see if more there are other client subscribed to this tag
         var roomClients = this.get('io').listRoomClients(tagName);
         if (roomClients.length > 0) {
-            // console.log('there are still clients waiting to hear from tag', tagName);
             callback(null);
             return;
         }
-
         else {
             // ig unsubscribe 
             var subscriptionId = tag.get('subscriptionId');
             if (subscriptionId) {
                 this.get('igClient').unsubscribe(subscriptionId, function (error) {
                     if (error) {
-                        callback(error);
+                        tag.set('error',error);
                         return;
                     }
                 });
             }
             else {
-                err = ({errorMessage: 'noSubscriptionId', errorObject: 'tag \''+tagName+'\' has no subscriptionId'});
+                console.log('@SultagitLive.removeTag - tag \'%s\' has no subscriptionId', tagName);
             }
 
             // remove tag model
             this.get('tags').remove(tag);
-            callback(err);
+            callback(null);
         }
     }
 });

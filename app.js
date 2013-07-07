@@ -102,7 +102,13 @@ app.delete('/getTag/:tagName', function (req, res) {
     var sultagitInstance = isLive ? sultagitLive : sultagitBasic;
     sultagitInstance.removeTag(req.params.tagName, function (err) {
         if (err) {
+            if (err.errorObject == 'tag not found')
+            {
+                res.send(204);
+            }
+            else {
             res.send(404, err);
+        }
         }
         else {
             res.send(204);
