@@ -231,6 +231,11 @@ var SultagitLive = SultagitBasic.extend({
     },
 
     update: function (payload) {
+        //TODO: maybe add a callback that returns an error if tag is not found and will respond with error to instagram's post
+        if (!this.get('tags')) {
+            console.error('@SultagitLive.update \'%s\' - cannot get \'tags\'');
+            return;
+        }
         _.each(payload, function(element, index, payload) {
             var tagName = element.object_id;
             var tag = this.get('tags').get(tagName);
