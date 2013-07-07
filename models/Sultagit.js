@@ -27,6 +27,7 @@ var SultagitBasic = Backbone.RelationalModel.extend({
         var _this = this;
         this.unusedTagsCleanup(function (err) {
             if (err) {
+                console.error('@SultagitBasic.getTag - returned an error from unusedTagsCleanup', err);
                 callback({tagName: tagName, error: err});
                 return;
             }
@@ -170,6 +171,7 @@ var SultagitLive = SultagitBasic.extend({
             for (var i = 0; i < tagsToRemove.length; i++) {
                 this.removeTag(tagsToRemove[i], function (err) {
                     if (err) {
+                        console.error('@SultagitLive.unusedTagsCleanup - remove returned an error', err);
                         callback(err);
                         return;
                     }

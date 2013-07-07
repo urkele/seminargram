@@ -88,7 +88,7 @@ app.get('/getTag/:tagName', function (req, res) {
     var sultagitInstance = isLive ? sultagitLive : sultagitBasic;
 
     sultagitInstance.getTag(req.params.tagName, function(tag) {
-        console.log('@app.js.getTag - gotTag', tag);
+        // console.log('@app.js.getTag - gotTag', tag);
         res.send(tag);
         if (isLive && !tag.error) {
             sultagitLive.subscribe(req.params.tagName, req.query.sid);
@@ -107,8 +107,8 @@ app.delete('/getTag/:tagName', function (req, res) {
                 res.send(204);
             }
             else {
-            res.send(404, err);
-        }
+                res.send(404, err);
+            }
         }
         else {
             res.send(204);
