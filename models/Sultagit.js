@@ -184,6 +184,49 @@ var SultagitLive = SultagitBasic.extend({
         }
     },
 
+    removeTag: function (tagName, callback, sid) {
+        if (!this.get('tags')) {
+            console.error('@SultagitLive.removeTag \'%s\' - cannot get \'tags\'', tagName);
+            callback({errorMessage: 'error getting attributes', errorObject: 'cannot get \'tags\''});
+        }
+        var tag = this.get('tags').get(tagName);
+        if (!tag) {
+            callback({errorMessage: 'cannot remove tag', errorObject: 'tag not found'});
+            return;
+        }
+
+        // leave room
+        if (sid) {
+            this.get('io').leaveRoom(sid, tagName);
+        }
+
+        // test to see if more there are other client subscribed to this tag
+        var roomClients = this.get('io').listRoomClients(tagName);
+        if (roomClients.length > 0) {
+            callback(null);
+            return;
+        }
+        else {
+            // ig unsubscribe 
+            var subscriptionId = tag.get('subscriptionId');
+            if (subscriptionId) {
+                this.get('igClient').unsubscribe(subscriptionId, function (error) {
+                    if (error) {
+                        tag.set('error',error);
+                        return;
+                    }
+                });
+            }
+            else {
+                console.log('@SultagitLive.removeTag - tag \'%s\' has no subscriptionId', tagName);
+            }
+
+            // remove tag model
+            this.get('tags').remove(tag);
+            callback(null);
+        }
+    },
+
     reachedTagsLimit: function () {
         return this.get('tags').length < this.get('tagsLimit') ? false : true;
     },
@@ -234,49 +277,6 @@ var SultagitLive = SultagitBasic.extend({
 
     unsubscribeAll: function () {
         this.get('igClient').unsubscribeAll();
-    },
-
-    removeTag: function (tagName, callback, sid) {
-        if (!this.get('tags')) {
-            console.error('@SultagitLive.removeTag \'%s\' - cannot get \'tags\'', tagName);
-            callback({errorMessage: 'error getting attributes', errorObject: 'cannot get \'tags\''});
-        }
-        var tag = this.get('tags').get(tagName);
-        if (!tag) {
-            callback({errorMessage: 'cannot remove tag', errorObject: 'tag not found'});
-            return;
-        }
-
-        // leave room
-        if (sid) {
-            this.get('io').leaveRoom(sid, tagName);
-        }
-
-        // test to see if more there are other client subscribed to this tag
-        var roomClients = this.get('io').listRoomClients(tagName);
-        if (roomClients.length > 0) {
-            callback(null);
-            return;
-        }
-        else {
-            // ig unsubscribe 
-            var subscriptionId = tag.get('subscriptionId');
-            if (subscriptionId) {
-                this.get('igClient').unsubscribe(subscriptionId, function (error) {
-                    if (error) {
-                        tag.set('error',error);
-                        return;
-                    }
-                });
-            }
-            else {
-                console.log('@SultagitLive.removeTag - tag \'%s\' has no subscriptionId', tagName);
-            }
-
-            // remove tag model
-            this.get('tags').remove(tag);
-            callback(null);
-        }
     }
 });
 
