@@ -35,6 +35,11 @@ var Socket = Backbone.RelationalModel.extend({
         io.sockets.on('connection', function (s) {
             s.on('rejoin_rooms', function (rooms) {
                 console.log('rejoin_rooms from %s', rooms);
+                if (!_this.get('master').get('tags')) {
+                    console.error('error getting the \'tags\' collection');
+                    s.emit('join_rooms_failed', rooms);
+                    return;
+                }
                 var tags = _this.get('master').get('tags').pluck('tagName');
                 _.each(rooms, function (room) {
                     if (tags.indexOf(room) > -1) {

@@ -128,6 +128,9 @@ $(function () {
                 console.log('rejoined rooms');
                 thisModel.set('disconnect_event_fired', false);
             });
+            s.on('join_rooms_failed', function (rooms) {
+                console.error('failed to join rooms', rooms);
+            });
         },
         createSocket: function () {
             this.set('socket', io.connect());
