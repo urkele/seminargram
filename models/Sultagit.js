@@ -23,7 +23,7 @@ var SultagitBasic = Backbone.RelationalModel.extend({
         this.set('igClient', new IGClient.Basic());
     },
 
-    getTags: function (tagName, callback) {
+    getTag: function (tagName, callback) {
         var _this = this;
         this.unusedTagsCleanup(function () {
             _this.get('tags').add({tagName: tagName}, {merge: true}); //not sure I need merge. we can skip adding if exists
@@ -50,7 +50,7 @@ var SultagitBasic = Backbone.RelationalModel.extend({
         });
         if (tagsToRemove.length > 0) {
             for (var i = 0; i < tagsToRemove.length; i++) {
-                this.removeTags(tagsToRemove[i], callback);
+                this.removeTag(tagsToRemove[i], callback);
             }
         }
         else {
@@ -59,7 +59,7 @@ var SultagitBasic = Backbone.RelationalModel.extend({
         callback();
     },
 
-    removeTags: function (tagName, callback) {
+    removeTag: function (tagName, callback) {
         var tag = this.get('tags').get(tagName);
         if (!tag) {
             var err = {errorMessage: 'tag not found', errorObject: tagName};
@@ -106,7 +106,7 @@ var SultagitLive = SultagitBasic.extend({
         this.set('io', new Socket(server));
     },
 
-    getTags: function (tagName, callback) {
+    getTag: function (tagName, callback) {
         if (this.get('tags').get(tagName)) {
             // don't need to get images. just send back the data in the model.
             callback(this.get('tags').get(tagName).toJSON());
@@ -120,7 +120,7 @@ var SultagitLive = SultagitBasic.extend({
                 callback({tagName: tagName, error: err});
                 return;
             }
-            SultagitBasic.prototype.getTags.call(this, tagName, callback);
+            SultagitBasic.prototype.getTag.call(this, tagName, callback);
         }
     },
 
@@ -137,7 +137,7 @@ var SultagitLive = SultagitBasic.extend({
         // remove the tags
         if (tagsToRemove.length > 0) {
             for (var i = 0; i < tagsToRemove.length; i++) {
-                this.removeTags(tagsToRemove[i], callback);
+                this.removeTag(tagsToRemove[i], callback);
             }
         }
         else {
@@ -197,7 +197,7 @@ var SultagitLive = SultagitBasic.extend({
         this.get('igClient').unsubscribeAll();
     },
 
-    removeTags: function (tagName, callback, sid) {
+    removeTag: function (tagName, callback, sid) {
         var tag = this.get('tags').get(tagName);
         var err = null;
         if (!tag) {

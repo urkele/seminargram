@@ -50,7 +50,7 @@ var basicAuth = express.basicAuth(function(username, password) {
 var sultagitBasic = new Sultagit.Basic(),
     sultagitLive = new Sultagit.Live(server);
 
-// determine the website's title
+/* determine the website's title */
 switch (process.env.NODE_ENV) {
     case 'local':
         var title = 'sultag.it - local';
@@ -62,7 +62,6 @@ switch (process.env.NODE_ENV) {
          var title = 'sultag.it';
          break;
 }
-
 
 /* define routes */
 
@@ -83,13 +82,13 @@ app.get('/live', basicAuth, function(req, res) {
     res.redirect('/');
 });
 
-// getTags endpoint
-app.get('/getTags/:tagName', function (req, res) {
+// getTag endpoint
+app.get('/getTag/:tagName', function (req, res) {
     var isLive = (req.signedCookies.sultagitlive == 'live');
     var sultagitInstance = isLive ? sultagitLive : sultagitBasic;
 
-    sultagitInstance.getTags(req.params.tagName, function(tag) {
-        console.log('@app.js.getTags - gotTag', tag);
+    sultagitInstance.getTag(req.params.tagName, function(tag) {
+        console.log('@app.js.getTag - gotTag', tag);
         res.send(tag);
         if (isLive && !tag.error) {
             sultagitLive.subscribe(req.params.tagName, req.query.sid);
@@ -97,11 +96,11 @@ app.get('/getTags/:tagName', function (req, res) {
     });
 });
 
-// getTags Delete
-app.delete('/getTags/:tagName', function (req, res) {
+// getTag Delete
+app.delete('/getTag/:tagName', function (req, res) {
     var isLive = (req.signedCookies.sultagitlive == 'live');
     var sultagitInstance = isLive ? sultagitLive : sultagitBasic;
-    sultagitInstance.removeTags(req.params.tagName, function (err) {
+    sultagitInstance.removeTag(req.params.tagName, function (err) {
         if (err) {
             res.send(404, err);
         }
