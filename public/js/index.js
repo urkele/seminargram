@@ -57,7 +57,7 @@ $(function () {
                 this.getSocketId();
                 this.listenTo(this.collection.application, 'change:status', this.getSocketId);
             }
-            this.listenTo(this.collection.application, 'query', this.close);
+            this.listenTo(this.collection.application, 'destroyTags', this.close);
         },
 
         getSocketId: function (m) {
@@ -68,6 +68,7 @@ $(function () {
         },
 
         close: function () {
+            this.stopListening();
             this.destroy({
                 headers: this.get('sid') ? {
                     sid: this.get('sid') //this.get('application').get('socket').get('socket').socket.sessionid
@@ -231,8 +232,20 @@ $(function () {
             this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
 
             // bind to change event of 'query' in order to trigger a new query sequence
-            this.listenTo(this, 'query', function(words) {this.set('query', words); this.queryCleanup();});
-            this.listenTo(this.get('tags'), 'reset', this.startNewQuery);
+            this.listenTo(this, 'query', function (words) {
+                this.set('query', words);
+                if (this.get('tags').length !== 0) {
+                    this.queryCleanup();
+                }
+                else {
+                    this.startNewQuery();
+                }
+            });
+            this.listenTo(this.get('tags'), 'destroy', function () {
+                if (this.get('tags').length === 0) {
+                    this.startNewQuery();
+                }
+            });
 
             // bind to the showInfo event to show the info view
             this.on('showInfo', function () {
@@ -342,22 +355,22 @@ $(function () {
 
         queryCleanup: function () {
 
-                // Cancel pending server requests
-                _.each(this.get('fetchXhrs'), function (fetchXhr, index, fetchXhrs) {
-                    if (fetchXhr.readyState > 0 && fetchXhr.readyState < 4) {
-                        fetchXhr.abort();
-                    }
-                    fetchXhrs.splice(index, 1);
-                });
+            // Cancel pending server requests
+            _.each(this.get('fetchXhrs'), function (fetchXhr, index, fetchXhrs) {
+                if (fetchXhr.readyState > 0 && fetchXhr.readyState < 4) {
+                    fetchXhr.abort();
+                }
+                fetchXhrs.splice(index, 1);
+            });
 
-                // reset the 'tags' collection (should trigger the destruction of all child (and grandchild etc..) elements)
-                this.get('tags').reset();
+            // reset the 'tags' collection (should trigger the destruction of all child (and grandchild etc..) elements)
+            this.trigger('destroyTags');
         },
 
         startNewQuery: function () {
             var words = this.get('query');
             _.each(words, function (word) {
-
+                
                 // instatiate the tagModel and add it to the 'tags' collection
                 this.get('tags').add({tagName: word});
                 var tag = this.get('tags').get(word);
