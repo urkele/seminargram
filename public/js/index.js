@@ -763,23 +763,3 @@ $(function () {
     window.app = new Sultagit.Models.App();
 
 });
-/*
-    // secretControls
-    $("#logo").click(function(){
-        $("#secretControls").toggle();
-    })
-
-    $("#infoButtonWrapper").click(function () {
-        displayInfo();
-    })
-
-    $("#speedSelector").change(function(){
-        imageRefreshInterval = $(this).val()*1000;
-        $(this).next('span').html(imageRefreshInterval/1000);
-    });
-
-    $("#stopSubscriptions").click(function(){
-        console.log("sendstop");
-        // app.socket.emit('subscriptions',{handle: "stop"});
-    });
-*/
