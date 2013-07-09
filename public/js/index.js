@@ -14,30 +14,14 @@ $(function () {
     // define the Image model
     Sultagit.Models.Image = Backbone.RelationalModel.extend({
         defaults: {
-            'position': 0,
             'src': ""
         },
 
-        initialize: function () {
-            this.on('change:position', this.changeNext);
-        },
-
-        //this method changes the 'position' property of the model that is infront of this model in the collectio (ie this.index -1)
-        changeNext: function () {
-            if (this.get('position') > 0) { //ignore cases when position is '0' (ie model initialization)
-                var thisIndex = this.collection.indexOf(this);
-                var previousModel = this.collection.at(thisIndex - 1);
-
-                if (previousModel) {
-                    var prevPos = previousModel.get('position');
-                    previousModel.set('position', (prevPos + 1));
-                }
-            }
-        },
-
         destroy: function () {
-            this.collection.remove(this);
-            this.trigger('remove');
+            if (this.collection) {
+                this.collection.remove(this);
+                this.trigger('remove');
+            }
         }
     });
 
@@ -69,9 +53,6 @@ $(function () {
 
         initialize: function () {
             this.listenTo(this.collection, 'reset', this.close);
-            // populate the ‘Tag titles’ section with the array’s elements.
-            this.set('titleView' , new Sultagit.Views.TagTitleView({model: this}));
-            this.set('imagesView', new Sultagit.Views.TagImagesView({model: this}));
         },
 
         close: function () {
@@ -348,35 +329,40 @@ $(function () {
 
         queryCleanup: function () {
 
-            // Cancel pending server requests
-            _.each(this.get('fetchXhrs'), function (fetchXhr, index, fetchXhrs) {
-                if (fetchXhr.readyState > 0 && fetchXhr.readyState < 4) {
-                    fetchXhr.abort();
-                }
-                fetchXhrs.splice(index, 1);
-            });
+                // Cancel pending server requests
+                _.each(this.get('fetchXhrs'), function (fetchXhr, index, fetchXhrs) {
+                    if (fetchXhr.readyState > 0 && fetchXhr.readyState < 4) {
+                        fetchXhr.abort();
+                    }
+                    fetchXhrs.splice(index, 1);
+                });
 
-            // reset the 'tags' collection (should trigger the destruction of all child (and grandchild etc..) elements)
-            this.get('tags').reset();
+                // reset the 'tags' collection (should trigger the destruction of all child (and grandchild etc..) elements)
+                this.get('tags').reset();
         },
 
         startNewQuery: function (words) {
-            _.each(words, function (tag) {
+                _.each(words, function (word) {
 
-                // instatiate the tagModel and add it to the 'tags' collection
-                this.get('tags').add({tagName: tag});
+                    // instatiate the tagModel and add it to the 'tags' collection
+                    this.get('tags').add({tagName: word});
+                    var tag = this.get('tags').get(word);
 
-                // fetch the tagModel's data from the server (instatiating the 'imageModel' and fetching its data on the way)
-                var fetchXhr = this.get('tags').get(tag).fetch({
-                    success: function (model, response, options) {
-                        model.set('status', 'ready');
-                    },
-                    error: function (model, response, options) {
-                        model.set('status', 'error getting data');
-                    },
-                    data: this.get('socket') ? {sid: this.get('socket').get('socket').socket.sessionid} : null
-                });
-                this.get('fetchXhrs').push(fetchXhr);
+                    // create the views to hold the title and images of this word.
+                    new Sultagit.Views.TagTitleView({model: tag});
+                    new Sultagit.Views.TagImagesView({model: tag});
+
+                    // fetch the tagModel's data from the server (instatiating the 'imageModel' and fetching its data on the way)
+                    var fetchXhr = tag.fetch({
+                        success: function (model, response, options) {
+                            model.set('status', 'ready');
+                        },
+                        error: function (model, response, options) {
+                            model.set('status', 'error getting data');
+                        },
+                        data: this.get('socket') ? {sid: this.get('socket').get('socket').socket.sessionid} : null
+                    });
+                    this.get('fetchXhrs').push(fetchXhr);
             }, this);
         },
 
@@ -438,6 +424,7 @@ $(function () {
         className: function () {return 'tagImages '+this.model.get('tagName');},
 
         initialize: function () {
+            this.imageViews = [];
             new Sultagit.Views.LoaderView({model: this.model, parent: this.$el});
             this.render();
             this.listenTo(this.model, 'add:images', this.instantiateImageView);
@@ -451,7 +438,7 @@ $(function () {
         },
 
         instantiateImageView: function (imageModel) {
-            imageModel.set('imageView', new Sultagit.Views.ImageView({model: imageModel, parent: this.$el, tag: this.model.get('tagName')}));
+            this.imageViews.push(new Sultagit.Views.ImageView({model: imageModel, parent: this.$el, tag: this.model.get('tagName')}));
         },
 
         displayError: function (m) {
@@ -469,26 +456,46 @@ $(function () {
         },
 
         swapper: function () {
-            if (this.model.get('images').length <= 0) {
+            if (this.imageViews.length <= 0) {
                 return;
             }
-            var leader = this.model.get('images').at(0);
-            var queue = this.model.get('images').where({position: 0});
-            var leaderPosition = leader.get('position');
+            // clear images that have been removed from the DOM
+            var removed = _.where(this.imageViews, {removed: true});
+            var _this = this;
+            _.each(removed, function (imageView) {
+                var i = _.indexOf(_this.imageViews, imageView);
+                if (i > -1) {
+                    _this.imageViews.splice(i, 1);
+                }
+            });
+
+            //animate the images
+            var visible = _.where(this.imageViews, {rendered: true});
+            var queue = _.where(this.imageViews, {rendered: false});
             var animationSpeed = this.model.collection.application.get('animationSpeed');
 
             if (queue.length > 0) {
-                _.first(queue).trigger('slideIn');
-                if (leaderPosition == this.model.collection.application.get('maxImages')) {
-                    leader.destroy();
+                _.first(queue).trigger('render');
+                if (visible.length >= this.model.collection.application.get('maxImages')) {
+                    if (_.first(visible).model) {
+                        _.first(visible).model.destroy();
+                    }
+                    else {
+                        _.first(visible).trigger('destroy');
+                    }
                 }
             }
             else {
-                if (leaderPosition > 1) {
-                    leader.destroy();
+                if (visible.length == 1) {
+                    _.first(visible).trigger('fadeOut');
                 }
                 else {
-                    leader.trigger('fadeOut');
+                    if (_.first(visible).model) {
+                        _.first(visible).model.destroy();
+                    }
+                    else {
+                        _.first(visible).trigger('destroy');
+                    }
                 }
             }
         },
@@ -504,17 +511,20 @@ $(function () {
         tagName: 'img',
 
         initialize: function () {
+            this.rendered = false;
+            this.removed = false;
             this.$el.attr('src', this.model.get('src'));
             this.$el.attr('alt', this.options.tag);
             this.$el.attr('title', this.options.tag);
-            this.listenTo(this.model, 'remove', this.slideOut);
-            this.listenTo(this.model, 'slideIn', this.slideIn);
-            this.listenTo(this.model, 'fadeOut', this.fadeOut);
+            this.listenTo(this, 'render', this.render);
+            this.listenTo(this, 'fadeOut', this.fadeOut);
+            this.listenTo(this, 'destroy', this.destroy);
+            this.listenTo(this.model, 'remove', this.destroy);
             this.animationSpeed = this.model.get('imageOf').get('application').get('animationSpeed');
         },
 
         // animate a slide in from "nowhere" to the top image
-        slideIn: function () {
+        render: function () {
             this.options.parent.prepend(this.el);
             var startFromDistance = -50;
 
@@ -523,15 +533,16 @@ $(function () {
 
             //animate the image
             TweenLite.fromTo(this.$el, this.animationSpeed, {top: startFromDistance, autoAlpha: 0}, {top: 0, autoAlpha: 1, height: imgFinalHeight, display: "block"});
-            this.model.set('position', (this.model.get('position') + 1));
+            this.rendered = true;
         },
 
-        slideOut: function () {
+        destroy: function () {
             var _this = this;
             TweenLite.to(this.$el, this.animationSpeed, {top: "+=100", autoAlpha: 0,
             onComplete: function () {
                 _this.remove();
                 _this.unbind();
+                _this.removed = true;
             }});
         },
 
