@@ -34,7 +34,8 @@ $(function () {
     Sultagit.Models.Tag = Backbone.RelationalModel.extend({
         defaults: {
             status: "",
-            knownErrors: ['APINotAllowedError', 'tagsLimitReached']
+            knownErrors: ['APINotAllowedError', 'tagsLimitReached'],
+            sid: null
         },
 
         relations: [{
@@ -52,13 +53,24 @@ $(function () {
         urlRoot: '/getTag',
 
         initialize: function () {
-            this.listenTo(this.collection, 'reset', this.close);
+            if (this.collection.application.get('socket')) {
+                this.getSocketId();
+                this.listenTo(this.collection.application, 'change:status', this.getSocketId);
+            }
+            this.listenTo(this.collection.application, 'query', this.close);
+        },
+
+        getSocketId: function (m) {
+            var application = m || this.collection.application;
+            if (application.get('status') == 'ready') {
+                this.set('sid', application.get('socket').get('socket').socket.sessionid);
+            }
         },
 
         close: function () {
             this.destroy({
-                headers: this.get('application').get('socket') ? {
-                    sid: this.get('application').get('socket').get('socket').socket.sessionid
+                headers: this.get('sid') ? {
+                    sid: this.get('sid') //this.get('application').get('socket').get('socket').socket.sessionid
                 } : null
             });
         }
@@ -219,7 +231,8 @@ $(function () {
             this.on('change:imageSwapInterval', this.setAppSpeeds); //FIXME: on app init, setAppSpeeds is called twice
 
             // bind to change event of 'query' in order to trigger a new query sequence
-            this.on('query', function(words) {this.queryCleanup(); this.startNewQuery(words);});
+            this.listenTo(this, 'query', function(words) {this.set('query', words); this.queryCleanup();});
+            this.listenTo(this.get('tags'), 'reset', this.startNewQuery);
 
             // bind to the showInfo event to show the info view
             this.on('showInfo', function () {
@@ -341,28 +354,29 @@ $(function () {
                 this.get('tags').reset();
         },
 
-        startNewQuery: function (words) {
-                _.each(words, function (word) {
+        startNewQuery: function () {
+            var words = this.get('query');
+            _.each(words, function (word) {
 
-                    // instatiate the tagModel and add it to the 'tags' collection
-                    this.get('tags').add({tagName: word});
-                    var tag = this.get('tags').get(word);
+                // instatiate the tagModel and add it to the 'tags' collection
+                this.get('tags').add({tagName: word});
+                var tag = this.get('tags').get(word);
 
-                    // create the views to hold the title and images of this word.
-                    new Sultagit.Views.TagTitleView({model: tag});
-                    new Sultagit.Views.TagImagesView({model: tag});
+                // create the views to hold the title and images of this word.
+                new Sultagit.Views.TagTitleView({model: tag});
+                new Sultagit.Views.TagImagesView({model: tag});
 
-                    // fetch the tagModel's data from the server (instatiating the 'imageModel' and fetching its data on the way)
-                    var fetchXhr = tag.fetch({
-                        success: function (model, response, options) {
-                            model.set('status', 'ready');
-                        },
-                        error: function (model, response, options) {
-                            model.set('status', 'error getting data');
-                        },
-                        data: this.get('socket') ? {sid: this.get('socket').get('socket').socket.sessionid} : null
-                    });
-                    this.get('fetchXhrs').push(fetchXhr);
+                // fetch the tagModel's data from the server (instatiating the 'imageModel' and fetching its data on the way)
+                var fetchXhr = tag.fetch({
+                    success: function (model, response, options) {
+                        model.set('status', 'ready');
+                    },
+                    error: function (model, response, options) {
+                        model.set('status', 'error getting data');
+                    },
+                    data: this.get('socket') ? {sid: this.get('socket').get('socket').socket.sessionid} : null
+                });
+                this.get('fetchXhrs').push(fetchXhr);
             }, this);
         },
 
