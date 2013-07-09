@@ -588,8 +588,7 @@ $(function () {
         events: {
             "click #submitButton": "validateInput",
             "keyup #submitButton": "validateInput",
-            "keyup #searchbox": "validateInput",
-            "focus #searchbox": "clearBox"
+            "keyup #searchbox": "validateInput"
         },
 
         initialize: function() {
