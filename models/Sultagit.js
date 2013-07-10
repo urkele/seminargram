@@ -44,7 +44,7 @@ var SultagitBasic = Backbone.RelationalModel.extend({
                 else {
                     tag.min_tag_id = min_tag_id;
                     if (tag.get('images')) {
-                        tag.get('images').add(imagesData, {silent: true});
+                        tag.get('images').add(imagesData, {at:0, silent: true});
                     }
                     else {
                         console.error('@SultagitBasic.getTag - unable to get \'images\' attribute for tag', tagName);

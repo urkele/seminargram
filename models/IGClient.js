@@ -38,14 +38,15 @@ var IGCLientBasic = Backbone.RelationalModel.extend({
                 var min_tag_id = null;
                 var imagesData = [];
                 for (var i = 0; i < data.length; i++) {
-                    imagesData[i] = {};
+                    imageData = {};
                     if (data[i].images[resolution].url) {
-                        imagesData[i].src = data[i].images[resolution].url;
+                        imageData.src = data[i].images[resolution].url;
                     }
                     else {
-                        imagesData[i].src = data[i].images[resolution];
+                        imageData.src = data[i].images[resolution];
                     }
-                    imagesData[i].id = data[i].id;
+                    imageData.id = data[i].id;
+                    imagesData.unshift(imageData);
                 }
                 if (pagination && pagination.min_tag_id) {
                     min_tag_id = pagination.min_tag_id;
