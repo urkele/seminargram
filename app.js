@@ -73,7 +73,12 @@ app.get('/',
         return;
     }
     var isLive = (req.signedCookies.sultagitlive == 'live');
-    res.render('index', {open: "[%", close: "%]", title: title, live: isLive});
+    res.render('index', {open: "[%", close: "%]", title: title, live: isLive, tv: false});
+});
+
+// tv - an endpoint for what runs on the TV in the exhibition
+app.get('/tv', basicAuth, function (req, res) {
+    res.render('index', {open: "[%", close: "%]", title: title, live: false, tv: true});
 });
 
 // live
