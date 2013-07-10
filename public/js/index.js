@@ -616,7 +616,7 @@ $(function () {
             var words = _.compact(searchBoxEl.val().trim().split(this.illegalHashtagChars));
 
             // if its an 'enter' key or a mouse click
-            if(e.which == 13 || e.which == 1){
+            if(e.which == 13 || e.which == 1 || e.type == 'click'){
                 e.target.blur();
                 this.setQuery(words);
             }
