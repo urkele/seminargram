@@ -34,7 +34,7 @@ $(function () {
     Sultagit.Models.Tag = Backbone.RelationalModel.extend({
         defaults: {
             status: "",
-            knownErrors: ['APINotAllowedError', 'tagsLimitReached'],
+            knownErrors: ['APINotAllowedError', 'tagsLimitReached', 'noImages'],
             sid: null
         },
 
@@ -461,6 +461,7 @@ $(function () {
             this.listenTo(this.model.collection.application, 'swap', this.swapper);
             this.listenTo(this.model, 'destroy', this.destroy);
             this.listenTo(this.model, 'change:error', this.displayError);
+            this.listenTo(this.model, 'change:status', this.testEmpty);
         },
 
         render: function () {
@@ -469,6 +470,12 @@ $(function () {
 
         instantiateImageView: function (imageModel) {
             this.imageViews.push(new Sultagit.Views.ImageView({model: imageModel, parent: this.$el, tag: this.model.get('tagName')}));
+        },
+
+        testEmpty: function () {
+            if (this.model.get('images').length === 0) {
+                this.model.set('error', {errorMessage: 'noImages', errorObject: 'No images for "'+this.model.get('tagName')+'"'});
+            }
         },
 
         displayError: function (m) {
@@ -722,6 +729,7 @@ $(function () {
 
         hide: function () {
             clearInterval(this.intervalId);
+            this.model.set('imageSwapInterval', this.originalSpeed);
             TweenLite.to(this.$el, 0, {autoAlpha: 0});
         },
 
