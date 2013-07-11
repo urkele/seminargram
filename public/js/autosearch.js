@@ -1,6 +1,6 @@
 var AutoSearch = {
 
-    interval: 30 * 1000,
+    interval: 4500 * 15,
     currentIndex: 0,
 
     sentences: [
