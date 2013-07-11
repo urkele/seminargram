@@ -41,6 +41,7 @@ body {
 }
 a {
   color: #d2232a;
+  text-decoration: none;
 }
 .popup {
   z-index: 1000;
