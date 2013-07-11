@@ -68,7 +68,7 @@ switch (process.env.NODE_ENV) {
 // index
 app.get('/',
     function (req, res) {
-    if (process.env.NODE_ENV == 'production') {
+    if (process.env.MAINT == 'true') {
         res.redirect('/soon');
         return;
     }
