@@ -398,12 +398,7 @@ a {
         //header should have the same margin-top as the #logoWrapper in order for index.js->calculateSideLength to work properly
         margin-top: 4.4%;
 
-        #infoButton {
-            //20px for a 1024*768 display = 2%
-            margin: 2% 0 0 2%;
-            position: absolute;
-            top: 0;
-            height: 4.6%;
+        .roundButton {
             @info_button_radius: 50%;
             -moz-border-radius:@info_button_radius;
             -webkit-border-radius:@info_button_radius;
@@ -417,18 +412,13 @@ a {
             width: 35px;
             font-size: 2em;
             height: 35px;
-            /*
-            @media only screen {
-                @media (min-device-width : 1200px) {
-                    width: 2.5%;
-                    font-size: 2.5em;
                 }
-                @media (min-device-width : 768px) and (max-device-width : 1024px) {
-                    width: 3.5%;
-                    font-size: 1.8em;
-                }
-            }
-*/
+
+        #infoButton {
+            //20px for a 1024*768 display = 2%
+            margin: 20px 0 0 20px;
+            position: absolute;
+            top: 0;
         }
 
         #logoWrapper {

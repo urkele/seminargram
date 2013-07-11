@@ -260,7 +260,7 @@ $(function () {
             new Sultagit.Views.SearchView({model: this});
             new Sultagit.Views.SearchError({model: this});
 
-            //crete the info button view
+            // create the info button view
             new Sultagit.Views.infoButtonView({model: this});
 
             //caculate the width of a result container and its right margin
