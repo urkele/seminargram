@@ -203,7 +203,7 @@ $(function () {
 
         // define various app variables
         defaults: {
-            'imageSwapInterval': 4500,
+            'imageSwapInterval': 1500,
             'maxImages': 3,
             'maxTags': 6,
             'illegalHashtagChars': /[^\w]/,
@@ -259,6 +259,9 @@ $(function () {
             // create the search form view
             new Sultagit.Views.SearchView({model: this});
             new Sultagit.Views.SearchError({model: this});
+
+            // create the pause button view
+            new Sultagit.Views.pauseButtonView({model: this});
 
             // create the info button view
             new Sultagit.Views.infoButtonView({model: this});
@@ -370,7 +373,7 @@ $(function () {
         startNewQuery: function () {
             var words = this.get('query');
             _.each(words, function (word) {
-                
+
                 // instatiate the tagModel and add it to the 'tags' collection
                 this.get('tags').add({tagName: word});
                 var tag = this.get('tags').get(word);
@@ -696,6 +699,49 @@ $(function () {
 
         changeLoaderMessage: function () {
             this.$el.find('.loaderMessage').html(this.status);
+        }
+    });
+
+    // define the pause button view
+    Sultagit.Views.pauseButtonView = Backbone.View.extend({
+        el: $('#pauseButton'),
+
+        events: {
+            "click": "tooglePause"
+        },
+
+        initialize: function () {
+            this.originalSpeed = this.model.get('imageSwapInterval');
+            this.listenTo(this.model.get('tags'), 'add:images', this.show);
+            this.listenTo(this.model, 'query', this.hide);
+        },
+
+        show: function () {
+            TweenLite.to(this.$el, 1, {autoAlpha: 1});
+        },
+
+        hide: function () {
+            clearInterval(this.intervalId);
+            TweenLite.to(this.$el, 0, {autoAlpha: 0});
+        },
+
+        tooglePause: function () {
+            var thisEl = this.$el;
+            // unpause
+            if (this.model.get('imageSwapInterval') == 999999999) {
+                this.model.trigger('swap');
+                this.model.set('imageSwapInterval', this.originalSpeed);
+                clearInterval(this.intervalId);
+                this.$el.removeClass('hiddenVal');
+            }
+            // pause
+            else {
+                this.originalSpeed = this.model.get('imageSwapInterval');
+                this.model.set('imageSwapInterval', 999999999);
+                this.intervalId = setInterval(function () {
+                    thisEl.toggleClass('hiddenVal');
+                }, 750);
+            }
         }
     });
 
