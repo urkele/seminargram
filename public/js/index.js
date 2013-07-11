@@ -730,6 +730,7 @@ $(function () {
         hide: function () {
             clearInterval(this.intervalId);
             this.model.set('imageSwapInterval', this.originalSpeed);
+            this.$el.removeClass('hiddenVal');
             TweenLite.to(this.$el, 0, {autoAlpha: 0});
         },
 
