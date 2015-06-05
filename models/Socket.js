@@ -1,23 +1,23 @@
 var Backbone = require('backbone'),
     _ = require('underscore'),
     BackboneRelational = require('backbone-relational'),
-    MongoStore = require('socket.io-mongo'),
+    // MongoStore = require('socket.io-mongo'),
     sio = require('socket.io');
 
 var Socket = Backbone.RelationalModel.extend({
     defaults: {
         io: {},
-        mongoUrl: {
-            production: 'mongodb://sultagit:hazulit@'+process.env.MONGO_URI,
-            development: 'mongodb://sultagit-dev:hazulit@'+process.env.MONGO_URI,
-            local: 'mongodb://localhost:27017/sultagit-local'
-        }
+        // mongoUrl: {
+        //     production: 'mongodb://sultagit:hazulit@'+process.env.MONGO_URI,
+        //     development: 'mongodb://sultagit-dev:hazulit@'+process.env.MONGO_URI,
+        //     local: 'mongodb://localhost:27017/sultagit-local'
+        // }
     },
 
     initialize: function (server) {
         // mongo configuration
-        var store = new MongoStore({url: this.get('mongoUrl')[process.env.NODE_ENV]});
-        store.on('error', console.error);
+        // var store = new MongoStore({url: this.get('mongoUrl')[process.env.NODE_ENV]});
+        // store.on('error', console.error);
 
         // start socket.io server
         this.set('io', sio.listen(server));
@@ -28,7 +28,7 @@ var Socket = Backbone.RelationalModel.extend({
         io.configure(function () {
             io.set('flash policy server', false);
             io.set('log level', (process.env.NODE_ENV == 'production') ? 1 : 2); // set socket.io logging level to 'warn' on prod and 'info' on dev
-            io.set('store', store);
+            // io.set('store', store);
         });
 
         // listen to client events

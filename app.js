@@ -10,12 +10,12 @@ var app = express(),
     server = http.createServer(app);
 
 /* details for the http session store */
-var MongoStore = require('connect-mongo')(express),
-    mongoUrl = {
-        production: 'mongodb://sultagit:hazulit@'+process.env.MONGO_URI,
-        development: 'mongodb://sultagit-dev:hazulit@'+process.env.MONGO_URI,
-        local: 'mongodb://localhost:27017/sultagit-local'
-    };
+// var MongoStore = require('connect-mongo')(express),
+//     mongoUrl = {
+//         production: 'mongodb://sultagit:hazulit@'+process.env.MONGO_URI,
+//         development: 'mongodb://sultagit-dev:hazulit@'+process.env.MONGO_URI,
+//         local: 'mongodb://localhost:27017/sultagit-local'
+//     };
 
 /* configure express */
 app.configure(function () {
@@ -27,11 +27,11 @@ app.configure(function () {
     app.use(express.bodyParser());
     app.use(express.methodOverride());
     app.use(express.cookieParser('#Picture#Your#Words2013'));
-    app.use(express.session({
-        store: new MongoStore({
-            url: mongoUrl[process.env.NODE_ENV]
-            }),
-        secret: '#Picture#Your#Words2013'}));
+    // app.use(express.session({
+    //     store: new MongoStore({
+    //         url: mongoUrl[process.env.NODE_ENV]
+    //         }),
+        // secret: '#Picture#Your#Words2013'}));
     app.use(app.router);
     app.use(require('less-middleware')({ src: __dirname + '/public' }));
 });
