@@ -50,7 +50,7 @@ $(function () {
 
         idAttribute: "tagName",
 
-        urlRoot: '/getTag',
+        urlRoot: 'getTag',
 
         initialize: function () {
             if (this.collection.application.get('socket')) {
