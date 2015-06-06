@@ -203,7 +203,7 @@ $(function () {
 
         // define various app variables
         defaults: {
-            'imageSwapInterval': 4500,
+            'imageSwapInterval': 1700,
             'maxImages': 3,
             'maxTags': 6,
             'illegalHashtagChars': /[^\w]/,
