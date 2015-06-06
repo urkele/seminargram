@@ -295,7 +295,7 @@ a {
 @media only screen and (min-width: 1224px) {
   #infoWrapper #infoDialog #infoData {
     width: 39%;
-    font-size: 20px;
+    font-size: 15px;
   }
   #infoWrapper #infoDialog #infoData p {
     margin: 1em 0;
